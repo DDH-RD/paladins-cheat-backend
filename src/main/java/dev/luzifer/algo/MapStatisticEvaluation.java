@@ -1,9 +1,10 @@
 package dev.luzifer.algo;
 
-import dev.luzifer.data.DataMapper;
-import dev.luzifer.dto.ChampDto;
-import dev.luzifer.dto.MapDto;
-import dev.luzifer.enums.Category;
+import dev.luzifer.data.GameMapper;
+import dev.luzifer.data.gamestats.Champ;
+import dev.luzifer.data.gamestats.GameMap;
+import dev.luzifer.data.gamestats.champ.Category;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,37 +15,40 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class MapStatisticEvaluation {
 
-    public static final MapStatisticEvaluation MAP_STATISTIC_EVALUATION = new MapStatisticEvaluation();
+    private static final Comparator<Champ> ALPHABETIC_ORDER = (c1, c2) -> {
 
-    private static final Comparator<ChampDto> ALPHABETIC_ORDER = (c1, c2) -> {
         int res = String.CASE_INSENSITIVE_ORDER.compare(c1.getName(), c2.getName());
-        if (res == 0) {
+
+        if (res == 0)
             res = c1.getName().compareTo(c2.getName());
-        }
+
         return res;
     };
 
-    public ChampDto[] evaluate(MapDto mapDto, Category category) {
+    private final GameMapper gameMapper;
 
-        if(!DataMapper.hasDataFor(mapDto))
-            return new ChampDto[0];
+    public Champ[] evaluate(GameMap gameMap, Category category) {
 
-        Map<ChampDto, Integer> champsForMap = sortOutChamps(DataMapper.getEntriesForMap(mapDto), category);
+        if(!gameMapper.hasMapped(gameMap))
+            return new Champ[0];
+
+        Map<Champ, Integer> champsForMap = sortOutChamps(gameMapper.getMapping(gameMap), category);
         return getFirstThreeEntries(convertMapToSortedList(champsForMap));
     }
 
-    public ChampDto[] evaluateAllTime(Category category) {
+    public Champ[] evaluateAllTime(Category category) {
 
-        if(!DataMapper.hasData())
-            return new ChampDto[0];
+        if(!gameMapper.hasAnyMapped())
+            return new Champ[0];
 
-        Map<ChampDto, Integer> champs = new HashMap<>();
+        Map<Champ, Integer> champs = new HashMap<>();
 
-        for(MapDto mapDto : DataMapper.getMaps()) {
-            Map<ChampDto, Integer> mapChamps = DataMapper.getEntriesForMap(mapDto);
-            for(Map.Entry<ChampDto, Integer> entry : mapChamps.entrySet()) {
+        for(GameMap gameMap : gameMapper.getMappings().keySet()) {
+            Map<Champ, Integer> mapChamps = gameMapper.getMapping(gameMap);
+            for(Map.Entry<Champ, Integer> entry : mapChamps.entrySet()) {
                 if(!champs.containsKey(entry.getKey()))
                     champs.put(entry.getKey(), entry.getValue());
                 else
@@ -55,41 +59,31 @@ public class MapStatisticEvaluation {
         return getFirstThreeEntries(convertMapToSortedList(sortOutChamps(champs, category)));
     }
 
-    private Map<ChampDto, Integer> sortOutChamps(Map<ChampDto, Integer> map, Category category) {
+    private Map<Champ, Integer> sortOutChamps(Map<Champ, Integer> map, Category category) {
 
-        Set<ChampDto> set = map.keySet().stream()
-                .filter(champ -> !champ.getCategory().equalsIgnoreCase(category.name()))
+        Set<Champ> set = map.keySet().stream()
+                .filter(champ -> champ.getCategory() != category)
                 .collect(Collectors.toSet());
 
-        for(ChampDto champDto : set)
-            map.remove(champDto);
+        for(Champ champ : set)
+            map.remove(champ);
 
         return map;
     }
 
-    private List<ChampDto> convertMapToSortedList(Map<ChampDto, Integer> map) {
+    private List<Champ> convertMapToSortedList(Map<Champ, Integer> map) {
 
-        List<ChampDto> sortedByUse = new ArrayList<>(map.keySet());
+        List<Champ> sortedByUse = new ArrayList<>(map.keySet());
 
         sortedByUse.sort(ALPHABETIC_ORDER);
         sortedByUse.sort(Comparator.comparingInt(map::get));
-
-        /*
-         * joah, die order hier ist irgendwie fucked.
-         * eigentlich sollte das nach der gewichtung gehen
-         * wie oft dieser champ auf der map gespielt wurde und dann alphabetisch sortiert,
-         * aber irgendwie will der nicht und deswegen ist das reverse alphabetisch sortiert haha lol
-         */
 
         Collections.reverse(sortedByUse);
 
         return sortedByUse;
     }
 
-    private ChampDto[] getFirstThreeEntries(List<ChampDto> list) {
-        return list.subList(0, Math.min(list.size(), 3)).toArray(new ChampDto[0]);
-    }
-
-    private MapStatisticEvaluation() {
+    private Champ[] getFirstThreeEntries(List<Champ> list) {
+        return list.subList(0, Math.min(list.size(), 3)).toArray(new Champ[0]);
     }
 }

@@ -1,13 +1,14 @@
 package dev.luzifer;
 
 import dev.luzifer.algo.MapStatisticEvaluation;
-import dev.luzifer.data.DataMapper;
-import dev.luzifer.dto.ChampDto;
-import dev.luzifer.dto.MapDto;
-import dev.luzifer.enums.Category;
+import dev.luzifer.data.GameMapper;
+import dev.luzifer.data.gamestats.Champ;
+import dev.luzifer.data.gamestats.GameMap;
+import dev.luzifer.data.gamestats.champ.Category;
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,31 +17,38 @@ public class EvaluationTests {
     @Test
     public void testEvaluation() {
 
-        MapDto mapDto = new MapDto("CoolerMap");
-        ChampDto maeve = new ChampDto("Maeve", "SUPPORT");
-        ChampDto makoa = new ChampDto("Makoa", "SUPPORT");
-        ChampDto khan = new ChampDto("Khan", "SUPPORT");
-        ChampDto evie = new ChampDto("Evie", "SUPPORT");
-        ChampDto ying = new ChampDto("Ying", "SUPPORT");
+        GameMapper gameMapper = new GameMapper();
 
-        DataMapper.map(mapDto, maeve);
-        DataMapper.map(mapDto, maeve);
-        DataMapper.map(mapDto, maeve);
-        DataMapper.map(mapDto, makoa);
-        DataMapper.map(mapDto, makoa);
-        DataMapper.map(mapDto, makoa);
-        DataMapper.map(mapDto, makoa);
-        DataMapper.map(mapDto, makoa);
-        DataMapper.map(mapDto, khan);
-        DataMapper.map(mapDto, khan);
-        DataMapper.map(mapDto, khan);
-        DataMapper.map(mapDto, evie);
-        DataMapper.map(mapDto, evie);
-        DataMapper.map(mapDto, ying);
-        DataMapper.map(mapDto, ying);
+        GameMap gameMap = new GameMap("CoolerMap");
+        Champ maeve = new Champ(1, "Maeve", Category.PALADINS_SUPPORT);
+        Champ makoa = new Champ(2, "Makoa", Category.PALADINS_SUPPORT);
+        Champ khan = new Champ(3, "Khan", Category.PALADINS_SUPPORT);
+        Champ evie = new Champ(4, "Evie", Category.PALADINS_SUPPORT);
+        Champ ying = new Champ(5, "Ying", Category.PALADINS_SUPPORT);
 
-        ChampDto[] expected = new ChampDto[] {makoa, maeve, khan};
-        ChampDto[] actual = MapStatisticEvaluation.MAP_STATISTIC_EVALUATION.evaluate(mapDto, Category.SUPPORT);
+        Map<Champ, Integer> maeveMap = new HashMap<>();
+        maeveMap.put(maeve, 1);
+
+        Map<Champ, Integer> makoaMap = new HashMap<>();
+        maeveMap.put(makoa, 2);
+
+        Map<Champ, Integer> khanMap = new HashMap<>();
+        maeveMap.put(khan, 4);
+
+        Map<Champ, Integer> yingMap = new HashMap<>();
+        maeveMap.put(ying, 1);
+
+        Map<Champ, Integer> evieMap = new HashMap<>();
+        maeveMap.put(evie, 7);
+
+        gameMapper.map(gameMap, maeveMap);
+        gameMapper.map(gameMap, makoaMap);
+        gameMapper.map(gameMap, khanMap);
+        gameMapper.map(gameMap, evieMap);
+        gameMapper.map(gameMap, yingMap);
+
+        Champ[] expected = new Champ[] {evie, khan, makoa};
+        Champ[] actual = new MapStatisticEvaluation(gameMapper).evaluate(gameMap, Category.PALADINS_SUPPORT);
 
         assertEquals(expected, actual);
     }
@@ -48,36 +56,40 @@ public class EvaluationTests {
     @Test
     public void testEvaluationAllTime() {
 
-        MapDto mapDto = new MapDto("CoolerMap");
-        MapDto mapDto1 = new MapDto("HahaLol");
-        MapDto mapDto2 = new MapDto("Hurensonh");
-        ChampDto maeve = new ChampDto("Maeve", "SUPPORT");
-        ChampDto makoa = new ChampDto("Makoa", "SUPPORT");
-        ChampDto khan = new ChampDto("Khan", "SUPPORT");
-        ChampDto evie = new ChampDto("Evie", "SUPPORT");
-        ChampDto ying = new ChampDto("Ying", "SUPPORT");
+        GameMapper gameMapper = new GameMapper();
 
-        DataMapper.map(mapDto, maeve);
-        DataMapper.map(mapDto1, maeve);
-        DataMapper.map(mapDto, maeve);
-        DataMapper.map(mapDto, makoa);
-        DataMapper.map(mapDto1, makoa);
-        DataMapper.map(mapDto1, makoa);
-        DataMapper.map(mapDto2, makoa);
-        DataMapper.map(mapDto, makoa);
-        DataMapper.map(mapDto2, khan);
-        DataMapper.map(mapDto, khan);
-        DataMapper.map(mapDto, khan);
-        DataMapper.map(mapDto1, evie);
-        DataMapper.map(mapDto, evie);
-        DataMapper.map(mapDto, ying);
-        DataMapper.map(mapDto, ying);
+        GameMap gameMap = new GameMap("CoolerMap");
+        GameMap gameMap1 = new GameMap("HahaLol");
+        GameMap gameMap2 = new GameMap("Hurensonh");
+        Champ maeve = new Champ(1, "Maeve", Category.PALADINS_SUPPORT);
+        Champ makoa = new Champ(2, "Makoa", Category.PALADINS_SUPPORT);
+        Champ khan = new Champ(3, "Khan", Category.PALADINS_SUPPORT);
+        Champ evie = new Champ(4, "Evie", Category.PALADINS_SUPPORT);
+        Champ ying = new Champ(5, "Ying", Category.PALADINS_SUPPORT);
 
-        ChampDto[] expected = new ChampDto[] {makoa, maeve, khan};
-        ChampDto[] actual = MapStatisticEvaluation.MAP_STATISTIC_EVALUATION.evaluateAllTime(Category.SUPPORT);
+        Map<Champ, Integer> maeveMap = new HashMap<>();
+        maeveMap.put(maeve, 1);
 
-        System.out.println(Arrays.toString(expected));
-        System.out.println(Arrays.toString(actual));
+        Map<Champ, Integer> makoaMap = new HashMap<>();
+        maeveMap.put(makoa, 2);
+
+        Map<Champ, Integer> khanMap = new HashMap<>();
+        maeveMap.put(khan, 4);
+
+        Map<Champ, Integer> yingMap = new HashMap<>();
+        maeveMap.put(ying, 1);
+
+        Map<Champ, Integer> evieMap = new HashMap<>();
+        maeveMap.put(evie, 7);
+
+        gameMapper.map(gameMap, maeveMap);
+        gameMapper.map(gameMap1, makoaMap);
+        gameMapper.map(gameMap, khanMap);
+        gameMapper.map(gameMap2, evieMap);
+        gameMapper.map(gameMap, yingMap);
+
+        Champ[] expected = new Champ[] {evie, khan, makoa};
+        Champ[] actual = new MapStatisticEvaluation(gameMapper).evaluateAllTime(Category.PALADINS_SUPPORT);
 
         assertEquals(expected, actual);
     }

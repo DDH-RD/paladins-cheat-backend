@@ -1,5 +1,6 @@
-package dev.luzifer.dto;
+package dev.luzifer.data.gamestats;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -9,8 +10,9 @@ import lombok.Value;
 @Getter
 @RequiredArgsConstructor
 @ToString
-public class ChampDto {
+@EqualsAndHashCode
+public class MatchId {
 
-    String name; // UPPERCASE
-    String category;
+    long id;
+
 }

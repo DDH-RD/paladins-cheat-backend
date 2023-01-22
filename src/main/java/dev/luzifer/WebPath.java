@@ -6,8 +6,8 @@ import lombok.experimental.UtilityClass;
 public class WebPath {
 
     public static final String PALADINS_PATH = "/paladins";
-    public static final String PALADINS_EVALUATED_FOR_MAP = PALADINS_PATH + "/get";
-    public static final String PALADINS_EVALUATED_TOTAL = PALADINS_PATH + "/get/total";
-    public static final String PALADINS_RECEIVE_ENTRY = PALADINS_PATH + "/post/champ_map";
+    public static final String GET_EVALUATED_SPECIFIC = PALADINS_PATH + "/get/evaluated";
+    public static final String GET_EVALUATED_TOTAL = PALADINS_PATH + "/get/evaluated/total";
+    public static final String POST_ENTRY = PALADINS_PATH + "/post/entry";
 
 }
