@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Map;
+
 @Controller
 public class PaladinsController {
 
@@ -36,6 +38,7 @@ public class PaladinsController {
 
     @PostMapping(value = WebPath.POST_ENTRY, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void post(@RequestParam(value = "map") GameMap map, @RequestBody Champ... champ) {
-        // TODO:
+        for(Champ ch : champ)
+            gameMapper.map(map, Map.of(ch, 1)); // das ist eigentlich so dumm - alles für clean generics
     }
 }
