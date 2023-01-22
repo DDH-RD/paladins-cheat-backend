@@ -6,6 +6,7 @@ import dev.luzifer.data.gamestats.GameMap;
 import java.util.HashMap;
 import java.util.Map;
 
+/* das ist eigentlich so dumm. könnte locker <GameMap, Champ> sein */
 public class ChampMapper implements Mapper<GameMap, Map<Champ, Integer>> {
 
     private final Map<GameMap, Map<Champ, Integer>> map = new HashMap<>();

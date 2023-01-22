@@ -53,7 +53,7 @@ public class PaladinsController {
 
     @PostMapping(value = WebPath.POST_PLAYED_ENTRY, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void postPlayed(@RequestParam(value = "map") GameMap map, @RequestBody Champ... champ) {
-        Arrays.stream(champ).forEach(c -> playedMapper.map(map, Map.of(c, 1))); // das ist eigentlich so dumm - alles für clean generics
+        Arrays.stream(champ).forEach(c -> playedMapper.map(map, Map.of(c, 1)));
     }
 
     @PostMapping(value = WebPath.POST_BANNED_ENTRY, consumes = MediaType.APPLICATION_JSON_VALUE)
