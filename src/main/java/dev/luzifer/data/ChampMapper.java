@@ -19,13 +19,6 @@ public class ChampMapper implements Mapper<GameMap, Map<Champ, Integer>> {
         map.put(key, keyMap);
     }
 
-    @SafeVarargs
-    @Override
-    public final void mapMultiple(GameMap key, Map<Champ, Integer>... values) {
-        for(Map<Champ, Integer> value : values)
-            map(key, value);
-    }
-
     @Override
     public boolean hasMapped(GameMap key) {
         return map.get(key) != null;
