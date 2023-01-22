@@ -1,5 +1,6 @@
 package dev.luzifer.spring;
 
+import dev.luzifer.Main;
 import dev.luzifer.WebPath;
 import dev.luzifer.algo.MapStatisticEvaluation;
 import dev.luzifer.data.ChampMapper;
@@ -30,12 +31,14 @@ public class PaladinsController {
     public @ResponseBody ResponseEntity<String> evaluatedPlayedForMap(@RequestParam(value = "map") GameMap map,
                                                                       @RequestParam(value = "category") Category category) {
         Champ[] result = new MapStatisticEvaluation(playedMapper, 3).evaluate(map, category);
+        Main.LOGGER.info("Evaluated 3 played champs for MAP:" + map.getName() + " and CATEGORY:" + category.name());
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 
     @GetMapping(value = WebPath.GET_EVALUATED_PLAYED_TOTAL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> evaluatedPlayedTotal(@RequestParam(value = "category") Category category) {
         Champ[] result = new MapStatisticEvaluation(playedMapper, 3).evaluateAllTime(category);
+        Main.LOGGER.info("Evaluated 3 played champs for MAP:all and CATEGORY:" + category.name());
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 
@@ -43,22 +46,30 @@ public class PaladinsController {
     public @ResponseBody ResponseEntity<String> evaluatedBannedForMap(@RequestParam(value = "map") GameMap map,
                                                                       @RequestParam(value = "category") Category category) {
         Champ[] result = new MapStatisticEvaluation(bannedMapper, 6).evaluate(map, category);
+        Main.LOGGER.info("Evaluated 6 banned champs for MAP:" + map.getName() + " and CATEGORY:" + category.name());
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 
     @GetMapping(value = WebPath.GET_EVALUATED_BANNED_TOTAL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> evaluatedBannedTotal(@RequestParam(value = "category") Category category) {
         Champ[] result = new MapStatisticEvaluation(bannedMapper, 6).evaluateAllTime(category);
+        Main.LOGGER.info("Evaluated 6 banned champs for MAP:all and CATEGORY:" + category.name());
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 
     @PostMapping(value = WebPath.POST_PLAYED_ENTRY, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void postPlayed(@RequestParam(value = "map") GameMap map, @RequestBody Champ... champ) {
-        Arrays.stream(champ).forEach(c -> playedMapper.map(map, Map.of(c, 1)));
+        Arrays.stream(champ).forEach(c -> {
+            playedMapper.map(map, Map.of(c, 1));
+            Main.LOGGER.info("Mapped 1 PLAYED_CHAMP:" + c.getName() + " into MAP:" + map.getName());
+        });
     }
 
     @PostMapping(value = WebPath.POST_BANNED_ENTRY, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void postBanned(@RequestParam(value = "map") GameMap map, @RequestBody Champ... champ) {
-        Arrays.stream(champ).forEach(c -> bannedMapper.map(map, Map.of(c, 1)));
+        Arrays.stream(champ).forEach(c -> {
+            bannedMapper.map(map, Map.of(c, 1));
+            Main.LOGGER.info("Mapped 1 BANNED_CHAMP:" + c.getName() + " into MAP:" + map.getName());
+        });
     }
 }

@@ -7,15 +7,32 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class Main {
 
+    public static final Logger LOGGER = Logger.getLogger("Paladins");
     private static final JFrame LOG_WINDOW = new JFrame();
 
     public static void main(String[] args) {
 
+        setupWebserviceOverview();
+        setupLogWindow();
+
+        SpringApplication.run(Application.class);
+    }
+
+    private static void setupWebserviceOverview() {
+
         JFrame window = new JFrame("Webservice");
         JPanel panel = new JPanel(new FlowLayout());
+
         JButton logButton = new JButton("Log");
         JLabel statusLabel = new JLabel("Status: RUNNING");
 
@@ -29,10 +46,6 @@ public class Main {
         panel.add(statusLabel);
         panel.add(logButton);
         window.add(panel);
-
-        setupLogWindow();
-
-        SpringApplication.run(Application.class);
     }
 
     private static void setupLogWindow() {
@@ -61,6 +74,30 @@ public class Main {
         PrintStream ps = new PrintStream(baos);
 
         System.setOut(ps);
+
+        LOGGER.addHandler(new Handler() {
+
+            private final SimpleDateFormat dt = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMANY);
+
+            {
+                dt.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+            }
+
+            @Override
+            public void publish(LogRecord record) {
+                log.append(dt.format(new Date()) + " [LOG:" + record.getLoggerName() + "]   " + record.getMessage());
+            }
+
+            @Override
+            public void flush() {
+
+            }
+
+            @Override
+            public void close() throws SecurityException {
+
+            }
+        });
 
         Thread thread = new Thread(() -> {
 
