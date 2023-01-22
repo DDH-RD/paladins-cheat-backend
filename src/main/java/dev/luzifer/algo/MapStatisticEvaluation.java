@@ -1,6 +1,6 @@
 package dev.luzifer.algo;
 
-import dev.luzifer.data.GameMapper;
+import dev.luzifer.data.ChampMapper;
 import dev.luzifer.data.gamestats.Champ;
 import dev.luzifer.data.gamestats.GameMap;
 import dev.luzifer.data.gamestats.champ.Category;
@@ -28,26 +28,26 @@ public class MapStatisticEvaluation {
         return res;
     };
 
-    private final GameMapper gameMapper;
+    private final ChampMapper champMapper;
 
     public Champ[] evaluate(GameMap gameMap, Category category) {
 
-        if(!gameMapper.hasMapped(gameMap))
+        if(!champMapper.hasMapped(gameMap))
             return new Champ[0];
 
-        Map<Champ, Integer> champsForMap = sortOutChamps(gameMapper.getMapping(gameMap), category);
+        Map<Champ, Integer> champsForMap = sortOutChamps(champMapper.getMapping(gameMap), category);
         return getFirstThreeEntries(convertMapToSortedList(champsForMap));
     }
 
     public Champ[] evaluateAllTime(Category category) {
 
-        if(!gameMapper.hasAnyMapped())
+        if(!champMapper.hasAnyMapped())
             return new Champ[0];
 
         Map<Champ, Integer> champs = new HashMap<>();
 
-        for(GameMap gameMap : gameMapper.getMappings().keySet()) {
-            Map<Champ, Integer> mapChamps = gameMapper.getMapping(gameMap);
+        for(GameMap gameMap : champMapper.getMappings().keySet()) {
+            Map<Champ, Integer> mapChamps = champMapper.getMapping(gameMap);
             for(Map.Entry<Champ, Integer> entry : mapChamps.entrySet()) {
                 if(!champs.containsKey(entry.getKey()))
                     champs.put(entry.getKey(), entry.getValue());

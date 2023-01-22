@@ -6,7 +6,7 @@ import dev.luzifer.data.gamestats.GameMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameMapper implements Mapper<GameMap, Map<Champ, Integer>> {
+public class ChampMapper implements Mapper<GameMap, Map<Champ, Integer>> {
 
     private final Map<GameMap, Map<Champ, Integer>> map = new HashMap<>();
 

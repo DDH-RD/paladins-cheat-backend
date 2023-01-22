@@ -6,8 +6,11 @@ import lombok.experimental.UtilityClass;
 public class WebPath {
 
     public static final String PALADINS_PATH = "/paladins";
-    public static final String GET_EVALUATED_SPECIFIC = PALADINS_PATH + "/get/evaluated";
-    public static final String GET_EVALUATED_TOTAL = PALADINS_PATH + "/get/evaluated/total";
-    public static final String POST_ENTRY = PALADINS_PATH + "/post/entry";
+    public static final String GET_EVALUATED_PLAYED_SPECIFIC = PALADINS_PATH + "/get/evaluated/played";
+    public static final String GET_EVALUATED_PLAYED_TOTAL = PALADINS_PATH + "/get/evaluated/played/total";
+    public static final String GET_EVALUATED_BANNED_SPECIFIC = PALADINS_PATH + "/get/evaluated/banned";
+    public static final String GET_EVALUATED_BANNED_TOTAL = PALADINS_PATH + "/get/evaluated/banned/total";
+    public static final String POST_PLAYED_ENTRY = PALADINS_PATH + "/post/played";
+    public static final String POST_BANNED_ENTRY = PALADINS_PATH + "/post/banned";
 
 }
