@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.Map;
 
 @Controller
@@ -52,13 +53,11 @@ public class PaladinsController {
 
     @PostMapping(value = WebPath.POST_PLAYED_ENTRY, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void postPlayed(@RequestParam(value = "map") GameMap map, @RequestBody Champ... champ) {
-        for(Champ ch : champ)
-            playedMapper.map(map, Map.of(ch, 1)); // das ist eigentlich so dumm - alles für clean generics
+        Arrays.stream(champ).forEach(c -> playedMapper.map(map, Map.of(c, 1))); // das ist eigentlich so dumm - alles für clean generics
     }
 
     @PostMapping(value = WebPath.POST_BANNED_ENTRY, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void postBanned(@RequestParam(value = "map") GameMap map, @RequestBody Champ... champ) {
-        for(Champ ch : champ)
-            bannedMapper.map(map, Map.of(ch, 1));
+        Arrays.stream(champ).forEach(c -> bannedMapper.map(map, Map.of(c, 1)));
     }
 }
