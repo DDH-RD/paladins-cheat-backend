@@ -27,26 +27,26 @@ public class PaladinsController {
     @GetMapping(value = WebPath.GET_EVALUATED_PLAYED_SPECIFIC, consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> evaluatedPlayedForMap(@RequestParam(value = "map") GameMap map,
                                                                       @RequestParam(value = "category") Category category) {
-        Champ[] result = new MapStatisticEvaluation(playedMapper).evaluate(map, category);
+        Champ[] result = new MapStatisticEvaluation(playedMapper, 3).evaluate(map, category);
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 
     @GetMapping(value = WebPath.GET_EVALUATED_PLAYED_TOTAL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> evaluatedPlayedTotal(@RequestParam(value = "category") Category category) {
-        Champ[] result = new MapStatisticEvaluation(playedMapper).evaluateAllTime(category);
+        Champ[] result = new MapStatisticEvaluation(playedMapper, 3).evaluateAllTime(category);
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 
     @GetMapping(value = WebPath.GET_EVALUATED_BANNED_SPECIFIC, consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> evaluatedBannedForMap(@RequestParam(value = "map") GameMap map,
                                                                       @RequestParam(value = "category") Category category) {
-        Champ[] result = new MapStatisticEvaluation(bannedMapper).evaluate(map, category);
+        Champ[] result = new MapStatisticEvaluation(bannedMapper, 6).evaluate(map, category);
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 
     @GetMapping(value = WebPath.GET_EVALUATED_BANNED_TOTAL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> evaluatedBannedTotal(@RequestParam(value = "category") Category category) {
-        Champ[] result = new MapStatisticEvaluation(bannedMapper).evaluateAllTime(category);
+        Champ[] result = new MapStatisticEvaluation(bannedMapper, 6).evaluateAllTime(category);
         return new ResponseEntity<>(JsonUtil.toJson(result), HttpStatus.OK);
     }
 

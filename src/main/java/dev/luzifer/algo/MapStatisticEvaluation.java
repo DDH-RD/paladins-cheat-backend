@@ -29,6 +29,7 @@ public class MapStatisticEvaluation {
     };
 
     private final ChampMapper champMapper;
+    private final int returnAmount;
 
     public Champ[] evaluate(GameMap gameMap, Category category) {
 
@@ -36,7 +37,7 @@ public class MapStatisticEvaluation {
             return new Champ[0];
 
         Map<Champ, Integer> champsForMap = sortOutChamps(champMapper.getMapping(gameMap), category);
-        return getFirstThreeEntries(convertMapToSortedList(champsForMap));
+        return getAmountOfEntries(convertMapToSortedList(champsForMap));
     }
 
     public Champ[] evaluateAllTime(Category category) {
@@ -56,7 +57,7 @@ public class MapStatisticEvaluation {
             }
         }
 
-        return getFirstThreeEntries(convertMapToSortedList(sortOutChamps(champs, category)));
+        return getAmountOfEntries(convertMapToSortedList(sortOutChamps(champs, category)));
     }
 
     private Map<Champ, Integer> sortOutChamps(Map<Champ, Integer> map, Category category) {
@@ -83,7 +84,7 @@ public class MapStatisticEvaluation {
         return sortedByUse;
     }
 
-    private Champ[] getFirstThreeEntries(List<Champ> list) {
-        return list.subList(0, Math.min(list.size(), 3)).toArray(new Champ[0]);
+    private Champ[] getAmountOfEntries(List<Champ> list) {
+        return list.subList(0, Math.min(list.size(), returnAmount)).toArray(new Champ[0]);
     }
 }

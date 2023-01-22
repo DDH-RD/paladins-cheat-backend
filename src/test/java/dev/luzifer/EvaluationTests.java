@@ -46,7 +46,7 @@ public class EvaluationTests {
         champMapper.map(gameMap, Map.of(evie, 7));
 
         Champ[] expected = new Champ[] {evie, khan, makoa};
-        Champ[] actual = new MapStatisticEvaluation(champMapper).evaluate(gameMap, Category.PALADINS_SUPPORT);
+        Champ[] actual = new MapStatisticEvaluation(champMapper, 3).evaluate(gameMap, Category.PALADINS_SUPPORT);
 
         assertEquals(expected, actual);
     }
@@ -73,7 +73,7 @@ public class EvaluationTests {
         champMapper.map(gameMap, Map.of(evie, 7));
 
         Champ[] expected = new Champ[] {evie, khan, makoa};
-        Champ[] actual = new MapStatisticEvaluation(champMapper).evaluateAllTime(Category.PALADINS_SUPPORT);
+        Champ[] actual = new MapStatisticEvaluation(champMapper, 3).evaluateAllTime(Category.PALADINS_SUPPORT);
 
         assertEquals(expected, actual);
     }
