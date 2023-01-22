@@ -1,5 +1,6 @@
-package dev.luzifer;
+package dev.luzifer.spring;
 
+import dev.luzifer.WebPath;
 import dev.luzifer.algo.MapStatisticEvaluation;
 import dev.luzifer.data.ChampMapper;
 import dev.luzifer.data.gamestats.Champ;

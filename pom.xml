@@ -24,37 +24,38 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <finalName>lokaler-webservice-starter</finalName>
+                    <archive>
+                        <manifest>
+                            <mainClass>dev.luzifer.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
                 <configuration>
                     <source>9</source>
                     <target>9</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
     </build>
 
     <dependencies>
