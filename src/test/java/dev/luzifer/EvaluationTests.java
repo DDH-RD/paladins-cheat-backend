@@ -10,9 +10,26 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class EvaluationTests {
+
+    @Test
+    public void testMerge() {
+
+        GameMapper gameMapper = new GameMapper();
+
+        GameMap key = new GameMap("KeyMap");
+        Champ maeve = new Champ(1, "Maeve", Category.PALADINS_FLANKER);
+
+        Map<Champ, Integer> map = new HashMap<>();
+        map.put(maeve, 2);
+
+        gameMapper.map(key, map);
+        gameMapper.map(key, map);
+
+        assertEquals(4, (int) gameMapper.getMapping(key).get(maeve));
+    }
 
     @Test
     public void testEvaluation() {
@@ -30,16 +47,16 @@ public class EvaluationTests {
         maeveMap.put(maeve, 1);
 
         Map<Champ, Integer> makoaMap = new HashMap<>();
-        maeveMap.put(makoa, 2);
+        makoaMap.put(makoa, 2);
 
         Map<Champ, Integer> khanMap = new HashMap<>();
-        maeveMap.put(khan, 4);
+        khanMap.put(khan, 4);
 
         Map<Champ, Integer> yingMap = new HashMap<>();
-        maeveMap.put(ying, 1);
+        yingMap.put(ying, 1);
 
         Map<Champ, Integer> evieMap = new HashMap<>();
-        maeveMap.put(evie, 7);
+        evieMap.put(evie, 7);
 
         gameMapper.map(gameMap, maeveMap);
         gameMapper.map(gameMap, makoaMap);
