@@ -1,23 +1,11 @@
 package dev.luzifer.algo;
 
-import dev.luzifer.data.ChampMapper;
-import dev.luzifer.data.gamestats.Champ;
-import dev.luzifer.data.gamestats.GameMap;
-import dev.luzifer.data.gamestats.champ.Category;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class MapStatisticEvaluation {
 
+/*
     private static final Comparator<Champ> ALPHABETIC_ORDER = (c1, c2) -> {
 
         int res = String.CASE_INSENSITIVE_ORDER.compare(c1.getName(), c2.getName());
@@ -87,4 +75,5 @@ public class MapStatisticEvaluation {
     private Champ[] getAmountOfEntries(List<Champ> list) {
         return list.subList(0, Math.min(list.size(), returnAmount)).toArray(new Champ[0]);
     }
+ */
 }

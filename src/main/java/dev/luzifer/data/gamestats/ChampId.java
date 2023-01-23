@@ -1,6 +1,5 @@
 package dev.luzifer.data.gamestats;
 
-import dev.luzifer.data.gamestats.champ.Category;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +8,11 @@ import lombok.Value;
 
 @Value
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 @ToString
 @EqualsAndHashCode
-public class Champ {
+public class ChampId {
 
-    int id;
-    String name;
-    Category category;
+    long id;
 
 }

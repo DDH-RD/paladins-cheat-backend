@@ -8,11 +8,13 @@ import lombok.Value;
 
 @Value
 @Getter
-@RequiredArgsConstructor(staticName = "of")
+@RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class MatchId {
+public class GameInfo {
 
-    long id;
+    String mapName;
+    long[] playedChampIds;
+    long[] bannedChampIds;
 
 }

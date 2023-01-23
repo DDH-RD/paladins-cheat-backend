@@ -11,8 +11,9 @@ import lombok.Value;
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class GameMap {
+public class ChampInfo {
 
     String name;
+    String category;
 
 }
