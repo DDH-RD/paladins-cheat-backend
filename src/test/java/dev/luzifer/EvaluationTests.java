@@ -14,6 +14,25 @@ import static org.junit.Assert.*;
 public class EvaluationTests {
 
     @Test
+    public void champEvaluationWingmanTest() {
+        
+        MatchMapper matchMapper = new MatchMapper();
+        
+        long[] played = {1L, 1L, 3L, 2L, 3L, 1L};
+        long[] banned = {4L, 5L, 6L, 6L, 6L, 5L};
+        
+        TeamInfo winner = new TeamInfo(played, banned);
+        TeamInfo loser = new TeamInfo(banned, banned);
+        
+        matchMapper.map(MatchId.of(1), new GameInfo("xD", winner, loser));
+        
+        long expected = 1L;
+        long actual = new ChampStatisticEvaluation(matchMapper).evaluateWingmanFor(2L);
+        
+        assertEquals(expected, actual);
+    }
+    
+    @Test
     public void champEvaluationCounterTest() {
         
         MatchMapper matchMapper = new MatchMapper();

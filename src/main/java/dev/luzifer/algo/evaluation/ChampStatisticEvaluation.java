@@ -9,10 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * @deprecated in Arbeit
- */
-@Deprecated
 public class ChampStatisticEvaluation extends StatisticEvaluation {
 
     public ChampStatisticEvaluation(Mapper<MatchId, GameInfo> mapper) {
@@ -37,6 +33,30 @@ public class ChampStatisticEvaluation extends StatisticEvaluation {
             
             sortInSingleTeam(counter, gameInfo, oppositeTeam.get());
         }
+        
+        long[] counterAsArray = sortByValue(counter);
+        return counterAsArray.length > 0 ? counterAsArray[0] : -1;
+    }
+    
+    public long evaluateWingmanFor(long id) {
+        
+        Map<Long, Double> counter = new HashMap<>();
+        
+        for(MatchId matchId : mapper.getMappings().keySet()) {
+            
+            GameInfo gameInfo = mapper.getMapping(matchId);
+            Optional<TeamInfo> oppositeTeam = getOppositeTeam(id, gameInfo);
+            
+            if(!oppositeTeam.isPresent()) // not in match
+                continue;
+            
+            TeamInfo team = oppositeTeam.get() == gameInfo.getWinnerTeam() ?
+                    gameInfo.getLoserTeam() : gameInfo.getWinnerTeam();
+            
+            sortInSingleTeam(counter, gameInfo, team);
+        }
+        
+        counter.remove(id); // so it will not be its own wingman
         
         long[] counterAsArray = sortByValue(counter);
         return counterAsArray.length > 0 ? counterAsArray[0] : -1;
