@@ -1,6 +1,6 @@
 package dev.luzifer.algo;
 
-public enum ResultType {
+public enum ChampType {
 
     PLAYED,
     BANNED

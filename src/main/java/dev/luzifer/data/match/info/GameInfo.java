@@ -1,4 +1,4 @@
-package dev.luzifer.data.gamestats;
+package dev.luzifer.data.match.info;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,7 +14,6 @@ import lombok.Value;
 public class GameInfo {
 
     String mapName;
-    long[] playedChampIds;
-    long[] bannedChampIds;
-
+    TeamInfo winnerTeam;
+    TeamInfo loserTeam;
 }

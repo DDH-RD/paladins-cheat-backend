@@ -1,4 +1,4 @@
-package dev.luzifer.data.gamestats;
+package dev.luzifer.data.match;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
