@@ -1,7 +1,6 @@
-package dev.luzifer.data;
+package dev.luzifer.data.gamestats;
 
-import dev.luzifer.data.gamestats.GameInfo;
-import dev.luzifer.data.gamestats.MatchId;
+import dev.luzifer.data.Mapper;
 
 import java.util.HashMap;
 import java.util.Map;

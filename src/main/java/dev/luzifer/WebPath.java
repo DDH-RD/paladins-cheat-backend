@@ -9,5 +9,6 @@ public class WebPath {
 
     public static final String PALADINS_PATH = "/paladins";
     public static final String PALADINS_POST_MATCH_INFO = PALADINS_PATH + "/post/{id}";
+    public static final String PALADINS_GET_MATCH_IDS = PALADINS_PATH + "/get";
     public static final String PALADINS_GET_MATCH_INFO = PALADINS_PATH + "/get/{id}";
 }
