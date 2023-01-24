@@ -49,41 +49,4 @@ public class MapStatisticEvaluation extends StatisticEvaluation {
 
         return sortByValue(counter);
     }
-
-    private void sortInBothTeams(Map<Long, Double> counter, GameInfo gameInfo, ChampType champType) {
-
-        TeamInfo winner = gameInfo.getWinnerTeam();
-        TeamInfo loser = gameInfo.getLoserTeam();
-
-        long[] winnerIds = champType == ChampType.PLAYED ? winner.getPlayedChampIds() : winner.getBannedChampIds();
-        long[] loserIds = champType == ChampType.PLAYED ? loser.getPlayedChampIds() : loser.getBannedChampIds();
-
-        sortIn(counter, winnerIds, true);
-        sortIn(counter, loserIds, false);
-    }
-
-    private long[] sortByValue(Map<Long, Double> counter) {
-
-        List<Long> sortedList = new ArrayList<>(counter.keySet());
-        sortedList.sort(Comparator.comparingDouble(counter::get));
-
-        Collections.reverse(sortedList);
-
-        return sortedList.stream().mapToLong(id -> id).toArray();
-    }
-
-    private void sortIn(Map<Long, Double> counter, long[] ids, boolean won) {
-
-        double multiplicator = won ? GEWINNER_GEWICHTUNG : VERLIERER_GEWICHTUNG;
-
-        int index = 0;
-        while(index < ids.length) {
-
-            long id = ids[index++];
-            if(!counter.containsKey(id))
-                counter.put(id, multiplicator);
-            else
-                counter.put(id, counter.get(id) + multiplicator);
-        }
-    }
 }
