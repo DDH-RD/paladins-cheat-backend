@@ -22,13 +22,12 @@ public class EvaluationTests {
         long[] banned = {4L, 5L, 6L, 6L, 6L, 5L};
         
         TeamInfo winner = new TeamInfo(played, banned);
-        TeamInfo loser = new TeamInfo(played, banned);
+        TeamInfo loser = new TeamInfo(banned, banned);
         
-        matchMapper.map(MatchId.of(1), new GameInfo("xD", winner, winner));
-        matchMapper.map(MatchId.of(2), new GameInfo("xDD", loser, loser));
-        matchMapper.map(MatchId.of(3), new GameInfo("xDDD", winner, loser));
+        matchMapper.map(MatchId.of(1), new GameInfo("xD", winner, loser));
+        matchMapper.map(MatchId.of(2), new GameInfo("xDD", loser, winner));
         
-        long expected = 1L;
+        long expected = 6L;
         long actual = new ChampStatisticEvaluation(matchMapper).evaluateCounterFor(2L);
         
         assertEquals(expected, actual);

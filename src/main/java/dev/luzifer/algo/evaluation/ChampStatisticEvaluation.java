@@ -1,6 +1,5 @@
 package dev.luzifer.algo.evaluation;
 
-import dev.luzifer.algo.ChampType;
 import dev.luzifer.data.Mapper;
 import dev.luzifer.data.match.MatchId;
 import dev.luzifer.data.match.info.GameInfo;
@@ -8,6 +7,7 @@ import dev.luzifer.data.match.info.TeamInfo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @deprecated in Arbeit
@@ -30,27 +30,29 @@ public class ChampStatisticEvaluation extends StatisticEvaluation {
         for(MatchId matchId : mapper.getMappings().keySet()) {
             
             GameInfo gameInfo = mapper.getMapping(matchId);
-            if(!matchContainsChamp(id))
+            Optional<TeamInfo> oppositeTeam = getOppositeTeam(id, gameInfo);
+            
+            if(!oppositeTeam.isPresent()) // not in match
                 continue;
             
-            sortInBothTeams(counter, gameInfo, ChampType.PLAYED);
+            sortInSingleTeam(counter, gameInfo, oppositeTeam.get());
         }
         
         long[] counterAsArray = sortByValue(counter);
         return counterAsArray.length > 0 ? counterAsArray[0] : -1;
     }
     
-    private boolean matchContainsChamp(long id) {
-        return mapper.getMappings().values().stream().anyMatch(gameInfo -> hasAnyTeamChamp(id, gameInfo));
-    }
-    
-    private boolean hasAnyTeamChamp(long id, GameInfo gameInfo) {
+    private Optional<TeamInfo> getOppositeTeam(long id, GameInfo gameInfo) {
         
         TeamInfo winner = gameInfo.getWinnerTeam();
         TeamInfo loser = gameInfo.getLoserTeam();
         
-        return arrayContains(winner.getPlayedChampIds(), id)
-                || arrayContains(loser.getPlayedChampIds(), id);
+        if(arrayContains(winner.getPlayedChampIds(), id))
+            return Optional.of(loser);
+        else if(arrayContains(loser.getPlayedChampIds(), id))
+            return Optional.of(winner);
+        
+        return Optional.empty();
     }
     
     private boolean arrayContains(long[] array, long id) {

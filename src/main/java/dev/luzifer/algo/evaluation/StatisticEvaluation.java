@@ -31,6 +31,11 @@ public abstract class StatisticEvaluation {
         return sortedList.stream().mapToLong(id -> id).toArray();
     }
     
+    protected void sortInSingleTeam(Map<Long, Double> counter, GameInfo gameInfo, TeamInfo teamInfo) {
+        long[] ids = teamInfo.getPlayedChampIds();
+        sortIn(counter, ids, gameInfo.getWinnerTeam() == teamInfo);
+    }
+    
     protected void sortInBothTeams(Map<Long, Double> counter, GameInfo gameInfo, ChampType champType) {
         
         TeamInfo winner = gameInfo.getWinnerTeam();
