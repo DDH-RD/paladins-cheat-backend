@@ -3,6 +3,8 @@ package dev.luzifer.spring;
 import dev.luzifer.Main;
 import dev.luzifer.WebPath;
 import dev.luzifer.algo.evaluation.ChampStatisticEvaluation;
+import dev.luzifer.data.match.MatchMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +15,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller(WebPath.CHAMP)
 public class ChampController {
-    
+
+    @Autowired
+    private MatchMapper matchMapper;
+
     @GetMapping(value = WebPath.GET_CHAMP_COUNTER, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<long[]> getChampCounter(@PathVariable long id) {
         
         Main.LOGGER.info("RECEIVED GET REQUEST FOR CHAMP:" + id + " COUNTER");
         
-        return new ResponseEntity<>(new ChampStatisticEvaluation(Application.MATCH_ID_GAME_INFO_MAPPER)
+        return new ResponseEntity<>(new ChampStatisticEvaluation(matchMapper)
                 .evaluateCounterFor(id), HttpStatus.OK);
     }
     
@@ -28,7 +33,7 @@ public class ChampController {
         
         Main.LOGGER.info("RECEIVED GET REQUEST FOR CHAMP:" + id + " WINGMAN");
         
-        return new ResponseEntity<>(new ChampStatisticEvaluation(Application.MATCH_ID_GAME_INFO_MAPPER)
+        return new ResponseEntity<>(new ChampStatisticEvaluation(matchMapper)
                 .evaluateWingmanFor(id), HttpStatus.OK);
     }
 }

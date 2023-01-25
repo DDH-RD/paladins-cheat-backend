@@ -2,10 +2,12 @@ package dev.luzifer.data.match;
 
 import dev.luzifer.data.Mapper;
 import dev.luzifer.data.match.info.GameInfo;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component("matchMapper")
 public class MatchMapper implements Mapper<MatchId, GameInfo> {
 
     private final Map<MatchId, GameInfo> map = new HashMap<>();
@@ -13,6 +15,11 @@ public class MatchMapper implements Mapper<MatchId, GameInfo> {
     @Override
     public void map(MatchId key, GameInfo value) {
         map.put(key, value);
+    }
+
+    @Override
+    public void mapAll(Map<MatchId, GameInfo> map) {
+        this.map.putAll(map);
     }
 
     @Override

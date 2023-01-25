@@ -6,18 +6,15 @@ import org.springframework.boot.SpringApplication;
 import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 public class Main {
 
     public static final Logger LOGGER = Logger.getLogger("Paladins");
+    public static final File JAR_POSITION = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+
     private static final JFrame LOG_WINDOW = new JFrame();
 
     public static void main(String[] args) {
@@ -74,30 +71,6 @@ public class Main {
         PrintStream ps = new PrintStream(baos);
 
         System.setOut(ps);
-
-        LOGGER.addHandler(new Handler() {
-
-            private final SimpleDateFormat dt = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMANY);
-
-            {
-                dt.setTimeZone(TimeZone.getTimeZone("GMT+1"));
-            }
-
-            @Override
-            public void publish(LogRecord record) {
-                log.append(dt.format(new Date()) + " [LOG:" + record.getLoggerName() + "]   " + record.getMessage());
-            }
-
-            @Override
-            public void flush() {
-
-            }
-
-            @Override
-            public void close() throws SecurityException {
-
-            }
-        });
 
         Thread thread = new Thread(() -> {
 

@@ -2,8 +2,10 @@ package dev.luzifer.spring;
 
 import dev.luzifer.Main;
 import dev.luzifer.WebPath;
+import dev.luzifer.data.match.MatchMapper;
 import dev.luzifer.data.match.info.GameInfo;
 import dev.luzifer.data.match.MatchId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,10 @@ import java.text.MessageFormat;
 
 @Controller(WebPath.MATCH)
 public class MatchController {
-    
+
+    @Autowired
+    private MatchMapper matchMapper;
+
     @PostMapping(WebPath.POST_MATCH_INFO)
     @ResponseStatus(HttpStatus.OK)
     public void postMatchInfo(@PathVariable long id, @RequestBody GameInfo[] gameInfos) {
@@ -27,7 +32,7 @@ public class MatchController {
         Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH ID:{0} AND GAMEINFOS:{1}", id, gameInfos.length));
 
         for(GameInfo gameInfo : gameInfos)
-            Application.MATCH_ID_GAME_INFO_MAPPER.map(MatchId.of(id), gameInfo);
+            matchMapper.map(MatchId.of(id), gameInfo);
     }
     
     @GetMapping(value = WebPath.GET_MATCH_IDS, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -35,7 +40,7 @@ public class MatchController {
 
         Main.LOGGER.info("RECEIVED GET REQUEST FOR ALL MATCH IDS");
 
-        MatchId[] matchIds = Application.MATCH_ID_GAME_INFO_MAPPER.getMappings().keySet().toArray(new MatchId[0]);
+        MatchId[] matchIds = matchMapper.getMappings().keySet().toArray(new MatchId[0]);
         return new ResponseEntity<>(matchIds, HttpStatus.OK);
     }
 
@@ -44,7 +49,7 @@ public class MatchController {
 
         Main.LOGGER.info(MessageFormat.format("RECEIVED GET REQUEST WITH ID:{0}", id));
 
-        return new ResponseEntity<>(Application.MATCH_ID_GAME_INFO_MAPPER.getMapping(MatchId.of(id)), HttpStatus.OK);
+        return new ResponseEntity<>(matchMapper.getMapping(MatchId.of(id)), HttpStatus.OK);
     }
 
 }
