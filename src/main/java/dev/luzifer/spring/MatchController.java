@@ -2,9 +2,6 @@ package dev.luzifer.spring;
 
 import dev.luzifer.Main;
 import dev.luzifer.WebPath;
-import dev.luzifer.algo.evaluation.ChampStatisticEvaluation;
-import dev.luzifer.data.Mapper;
-import dev.luzifer.data.match.MatchMapper;
 import dev.luzifer.data.match.info.GameInfo;
 import dev.luzifer.data.match.MatchId;
 import org.springframework.http.HttpStatus;
@@ -25,11 +22,12 @@ public class MatchController {
     
     @PostMapping(WebPath.POST_MATCH_INFO)
     @ResponseStatus(HttpStatus.OK)
-    public void postMatchInfo(@PathVariable long id, @RequestBody GameInfo gameInfo) {
+    public void postMatchInfo(@PathVariable long id, @RequestBody GameInfo[] gameInfos) {
 
-        Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH ID:{0} AND GAMEINFO:{1}", id, gameInfo));
+        Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH ID:{0} AND GAMEINFOS:{1}", id, gameInfos.length));
 
-        Application.MATCH_ID_GAME_INFO_MAPPER.map(MatchId.of(id), gameInfo);
+        for(GameInfo gameInfo : gameInfos)
+            Application.MATCH_ID_GAME_INFO_MAPPER.map(MatchId.of(id), gameInfo);
     }
     
     @GetMapping(value = WebPath.GET_MATCH_IDS, produces = MediaType.APPLICATION_JSON_VALUE)

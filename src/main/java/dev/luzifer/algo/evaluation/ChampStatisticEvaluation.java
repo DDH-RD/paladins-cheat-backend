@@ -2,6 +2,7 @@ package dev.luzifer.algo.evaluation;
 
 import dev.luzifer.data.Mapper;
 import dev.luzifer.data.match.MatchId;
+import dev.luzifer.data.match.info.ChampInfo;
 import dev.luzifer.data.match.info.GameInfo;
 import dev.luzifer.data.match.info.TeamInfo;
 
@@ -19,7 +20,7 @@ public class ChampStatisticEvaluation extends StatisticEvaluation {
      * Possibility, dass es immer ein Tank wird.
      * Category mit angeben?
      */
-    public long evaluateCounterFor(long id) {
+    public long[] evaluateCounterFor(long id) {
         
         Map<Long, Double> counter = new HashMap<>();
         
@@ -31,14 +32,14 @@ public class ChampStatisticEvaluation extends StatisticEvaluation {
             if(!oppositeTeam.isPresent()) // not in match
                 continue;
             
-            sortInSingleTeam(counter, gameInfo, oppositeTeam.get());
+            sortInSingleTeamPlayed(counter, oppositeTeam.get());
         }
         
         long[] counterAsArray = sortByValue(counter);
-        return counterAsArray.length > 0 ? counterAsArray[0] : -1;
+        return counterAsArray.length > 0 ? counterAsArray : new long[]{-1};
     }
     
-    public long evaluateWingmanFor(long id) {
+    public long[] evaluateWingmanFor(long id) {
         
         Map<Long, Double> counter = new HashMap<>();
         
@@ -53,13 +54,13 @@ public class ChampStatisticEvaluation extends StatisticEvaluation {
             TeamInfo team = oppositeTeam.get() == gameInfo.getWinnerTeam() ?
                     gameInfo.getLoserTeam() : gameInfo.getWinnerTeam();
             
-            sortInSingleTeam(counter, gameInfo, team);
+            sortInSingleTeamPlayed(counter, team);
         }
         
         counter.remove(id); // so it will not be its own wingman
         
         long[] counterAsArray = sortByValue(counter);
-        return counterAsArray.length > 0 ? counterAsArray[0] : -1;
+        return counterAsArray.length > 0 ? counterAsArray : new long[]{-1};
     }
     
     private Optional<TeamInfo> getOppositeTeam(long id, GameInfo gameInfo) {
@@ -67,17 +68,17 @@ public class ChampStatisticEvaluation extends StatisticEvaluation {
         TeamInfo winner = gameInfo.getWinnerTeam();
         TeamInfo loser = gameInfo.getLoserTeam();
         
-        if(arrayContains(winner.getPlayedChampIds(), id))
+        if(arrayContains(winner.getPlayedChamps(), id))
             return Optional.of(loser);
-        else if(arrayContains(loser.getPlayedChampIds(), id))
+        else if(arrayContains(loser.getPlayedChamps(), id))
             return Optional.of(winner);
         
         return Optional.empty();
     }
     
-    private boolean arrayContains(long[] array, long id) {
-        for(long l : array) {
-            if(l == id)
+    private boolean arrayContains(ChampInfo[] array, long id) {
+        for(ChampInfo l : array) {
+            if(l.getId() == id)
                 return true;
         }
         return false;

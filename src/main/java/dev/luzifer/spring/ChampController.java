@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ChampController {
     
     @GetMapping(value = WebPath.GET_CHAMP_COUNTER, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<Long> getChampCounter(@PathVariable long id) {
+    public @ResponseBody ResponseEntity<long[]> getChampCounter(@PathVariable long id) {
         
         Main.LOGGER.info("RECEIVED GET REQUEST FOR CHAMP:" + id + " COUNTER");
         
@@ -24,7 +24,7 @@ public class ChampController {
     }
     
     @GetMapping(value = WebPath.GET_CHAMP_WINGMAN, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<Long> getChampWingman(@PathVariable long id) {
+    public @ResponseBody ResponseEntity<long[]> getChampWingman(@PathVariable long id) {
         
         Main.LOGGER.info("RECEIVED GET REQUEST FOR CHAMP:" + id + " WINGMAN");
         

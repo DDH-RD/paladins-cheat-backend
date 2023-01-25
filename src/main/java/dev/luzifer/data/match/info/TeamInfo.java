@@ -13,9 +13,11 @@ import lombok.Value;
 @EqualsAndHashCode
 public class TeamInfo {
 
-    /* Die gespielten Champs des jeweiligen Teams. Es sind immer 5. */
-    long[] playedChampIds;
-    /* Die gebannten Champs des jeweiligen Teams. Kann variieren. */
-    long[] bannedChampIds;
+    /* Die Punkte, zu wie viel das Team verloren/gewonnen hat */
+    int points; // gehört eigentlich in GameInfo aber fuck it
+    /* Die Champs die von diesem Team gespielt wurden. Max. 5 */
+    ChampInfo[] playedChamps;
+    /* Die Champs, die in der Vorauswahl von dem Team gebannt wurden */
+    ChampInfo[] bannedChamps;
 
 }
