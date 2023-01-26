@@ -21,10 +21,10 @@ public class EvaluationTests {
         
         MatchMapper matchMapper = new MatchMapper();
 
-        ChampInfo champInfo = new ChampInfo(1, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo2 = new ChampInfo(2, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo3 = new ChampInfo(3, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo4 = new ChampInfo(4, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo = new ChampInfo(1, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo2 = new ChampInfo(2, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo3 = new ChampInfo(3, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo4 = new ChampInfo(4, 1, new long[] {1L,2L,3L,4L});
 
         TeamInfo winner = new TeamInfo(2, new ChampInfo[] {champInfo, champInfo, champInfo2}, null);
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, null);
@@ -42,10 +42,10 @@ public class EvaluationTests {
         
         MatchMapper matchMapper = new MatchMapper();
 
-        ChampInfo champInfo = new ChampInfo(1, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo2 = new ChampInfo(2, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo3 = new ChampInfo(3, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo4 = new ChampInfo(4, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo = new ChampInfo(1, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo2 = new ChampInfo(2, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo3 = new ChampInfo(3, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo4 = new ChampInfo(4, 1, new long[] {1L,2L,3L,4L});
 
         TeamInfo winner = new TeamInfo(2, new ChampInfo[] {champInfo, champInfo, champInfo2}, null);
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, null);
@@ -69,10 +69,10 @@ public class EvaluationTests {
 
         MatchMapper matchMapper = new MatchMapper();
 
-        ChampInfo champInfo = new ChampInfo(1, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo2 = new ChampInfo(2, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo3 = new ChampInfo(3, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo4 = new ChampInfo(4, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo = new ChampInfo(1, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo2 = new ChampInfo(2, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo3 = new ChampInfo(3, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo4 = new ChampInfo(4, 1, new long[] {1L,2L,3L,4L});
 
         TeamInfo winner = new TeamInfo(3, new ChampInfo[] {champInfo, champInfo, champInfo2}, new ChampInfo[] {champInfo});
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, new ChampInfo[] {champInfo});
@@ -97,10 +97,10 @@ public class EvaluationTests {
 
         MatchMapper matchMapper = new MatchMapper();
 
-        ChampInfo champInfo = new ChampInfo(1, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo2 = new ChampInfo(2, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo3 = new ChampInfo(3, new long[] {1L,2L,3L,4L});
-        ChampInfo champInfo4 = new ChampInfo(4, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo = new ChampInfo(1, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo2 = new ChampInfo(2, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo3 = new ChampInfo(3, 1, new long[] {1L,2L,3L,4L});
+        ChampInfo champInfo4 = new ChampInfo(4, 1, new long[] {1L,2L,3L,4L});
 
         TeamInfo winner = new TeamInfo(3, new ChampInfo[] {champInfo, champInfo, champInfo2}, new ChampInfo[] {champInfo});
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, new ChampInfo[] {champInfo});
