@@ -22,7 +22,11 @@ public class ChampInfo {
     *  3: DAMAGE
     */
     long categoryId;
+    /* Das Talent, dass der jeweilige Champ gespielt hat. */
+    long talentId;
     /* Die ID der einzelnen Karten. Reihenfolge egal. */
-    long[] cardIds;
+    CardInfo[] deckCards;
+    /* Die gekauften Items.*/
+    ItemInfo[] itemInfos;
 
 }
