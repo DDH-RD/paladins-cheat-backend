@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.text.MessageFormat;
+import java.util.Map;
 
 @Controller(WebPath.MATCH)
 public class MatchController {
@@ -30,7 +31,7 @@ public class MatchController {
     private MatchDao matchDao;
 
     @PostMapping(WebPath.POST_MATCH_INFO)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void postMatchInfo(@PathVariable long id, @RequestBody GameInfo gameInfo) {
 
         Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH ID:{0} AND GAMEINFO:{1}", id, gameInfo));
@@ -38,6 +39,16 @@ public class MatchController {
         MatchId matchId = MatchId.of(id);
         matchMapper.map(matchId, gameInfo);
         matchDao.save(matchId, gameInfo);
+    }
+    
+    @PostMapping(WebPath.POST_MULTIPLE_MATCH_INFO)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void postMultipleMatches(Map<MatchId, GameInfo> map) {
+        
+        Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH {0} DATA.", map.size()));
+        
+        matchMapper.mapAll(map);
+        matchDao.saveMultiple(map);
     }
     
     @GetMapping(value = WebPath.GET_MATCH_IDS, produces = MediaType.APPLICATION_JSON_VALUE)
