@@ -18,6 +18,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class Database {
         String sql = "INSERT INTO Matches (match_id, GameInfo) VALUES (?, ?)";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setLong(1, id);
-            statement.setString(2, content);
+            statement.setString(2, Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8)));
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -104,7 +105,7 @@ public class Database {
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             for (Map.Entry<MatchId, GameInfo> matchDetails : matches.entrySet()) {
                 statement.setLong(1, matchDetails.getKey().getId());
-                statement.setString(2, JsonUtil.toJson(matchDetails.getValue()));
+                statement.setString(2, Base64.getEncoder().encodeToString(JsonUtil.toJson(matchDetails.getValue()).getBytes(StandardCharsets.UTF_8)));
                 statement.addBatch();
             }
             statement.executeBatch();
@@ -123,7 +124,7 @@ public class Database {
             statement.setLong(1, id);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
-                return result.getString("GameInfo");
+                return new String(Base64.getDecoder().decode(result.getString("GameInfo")));
             }
             return null;
         } catch (SQLException e) {
@@ -142,7 +143,8 @@ public class Database {
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet result = statement.executeQuery();
             while (result.next())
-                matches.put(MatchId.of(result.getLong("match_id")), JsonUtil.fromJson(result.getString("GameInfo"), GameInfo.class));
+                matches.put(MatchId.of(result.getLong("match_id")),
+                        JsonUtil.fromJson(new String(Base64.getDecoder().decode(result.getString("GameInfo"))), GameInfo.class));
             return matches;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -158,7 +160,7 @@ public class Database {
     }
 
     private void ensureTableExists() {
-        String sql = "CREATE TABLE IF NOT EXISTS Matches (match_id INT PRIMARY KEY, GameInfo VARCHAR(255));";
+        String sql = "CREATE TABLE IF NOT EXISTS Matches (match_id INT PRIMARY KEY, GameInfo VARCHAR(2000));";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.executeUpdate();
         } catch (SQLException e) {
