@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class Database {
 
-    private static final File CREDENTIALS_FILE = new File(Main.JAR_POSITION.getParent(), "database.properties");
+    private static final File CREDENTIALS_FILE = new File("database.properties");
 
     static {
 
