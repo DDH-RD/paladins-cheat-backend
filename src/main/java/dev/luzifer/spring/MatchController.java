@@ -32,6 +32,17 @@ public class MatchController {
     @Autowired
     private MatchDao matchDao;
 
+    @PostMapping(WebPath.DELETE_MATCH)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteMatch(@PathVariable long id) {
+
+        MatchId matchId = MatchId.of(id);
+        matchMapper.delete(matchId);
+        matchDao.delete(matchId);
+
+        Main.LOGGER.info(MessageFormat.format("DELETED MATCH WITH ID:{0}", id));
+    }
+
     @PostMapping(WebPath.POST_MATCH_INFO)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postMatchInfo(@PathVariable long id, @RequestBody GameInfo gameInfo) {

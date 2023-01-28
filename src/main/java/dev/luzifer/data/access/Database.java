@@ -83,6 +83,24 @@ public class Database {
         }
     }
 
+    public void delete(long id) {
+
+        if(!isConnection())
+            connect();
+
+        String sql = "DELETE FROM Matches WHERE match_id = ?;";
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+            statement.executeUpdate();
+
+            Main.LOGGER.info("DELETED MATCH WITH ID:" + id);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void insert(long id, String content) {
 
         if(!isConnection())

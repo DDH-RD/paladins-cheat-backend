@@ -13,6 +13,11 @@ public class MatchMapper implements Mapper<MatchId, GameInfo> {
     private final Map<MatchId, GameInfo> map = new HashMap<>();
 
     @Override
+    public void delete(MatchId key) {
+        map.remove(key);
+    }
+
+    @Override
     public void map(MatchId key, GameInfo value) {
         map.put(key, value);
     }

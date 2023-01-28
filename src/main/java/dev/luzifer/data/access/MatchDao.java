@@ -12,6 +12,10 @@ public class MatchDao {
 
     private final Database database = new Database();
 
+    public void delete(MatchId matchId) {
+        database.delete(matchId.getId());
+    }
+
     public void save(MatchId matchId, GameInfo gameInfo) {
         database.insert(matchId.getId(), JsonUtil.toJson(gameInfo));
     }
