@@ -28,5 +28,13 @@ public class ChampInfo {
     CardInfo[] deckCards;
     /* Die gekauften Items.*/
     ItemInfo[] itemInfos;
+    int kills;
+    int deaths;
+    int assists;
+    long damageDone;
+    long damageTaken;
+    long damageShielded; /* "migiated" */
+    long heal;
+    long selfHeal;
 
 }

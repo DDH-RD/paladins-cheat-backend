@@ -15,13 +15,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
-@Controller(WebPath.MATCH)
+@Controller()
+@RequestMapping(WebPath.MATCH)
 public class MatchController {
 
     @Autowired
@@ -34,21 +36,21 @@ public class MatchController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postMatchInfo(@PathVariable long id, @RequestBody GameInfo gameInfo) {
 
-        Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH ID:{0} AND GAMEINFO:{1}", id, gameInfo));
-
         MatchId matchId = MatchId.of(id);
         matchMapper.map(matchId, gameInfo);
         matchDao.save(matchId, gameInfo);
+
+        Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH ID:{0} AND GAMEINFO:{1}", id, gameInfo));
     }
     
     @PostMapping(WebPath.POST_MULTIPLE_MATCH_INFO)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postMultipleMatches(Map<MatchId, GameInfo> map) {
         
-        Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH {0} DATA.", map.size()));
-        
         matchMapper.mapAll(map);
         matchDao.saveMultiple(map);
+
+        Main.LOGGER.info(MessageFormat.format("RECEIVED POST REQUEST WITH {0} DATA.", map.size()));
     }
     
     @GetMapping(value = WebPath.GET_MATCH_IDS, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,9 +64,7 @@ public class MatchController {
 
     @GetMapping(value = WebPath.GET_MATCH_INFO, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<GameInfo> getMatchInfo(@PathVariable long id) {
-
         Main.LOGGER.info(MessageFormat.format("RECEIVED GET REQUEST WITH ID:{0}", id));
-
         return new ResponseEntity<>(matchMapper.getMapping(MatchId.of(id)), HttpStatus.OK);
     }
 

@@ -74,9 +74,11 @@ public class Database {
 
     public void connect() {
         try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
             this.connection = DriverManager.getConnection(url, username, new String(password));
             ensureTableExists();
-        } catch (SQLException e) {
+            Main.LOGGER.info("CONNECTED TO THE DATABASE");
+        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -88,9 +90,13 @@ public class Database {
 
         String sql = "INSERT INTO Matches (match_id, GameInfo) VALUES (?, ?)";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setLong(1, id);
             statement.setString(2, Base64.getEncoder().encodeToString(content.getBytes(StandardCharsets.UTF_8)));
             statement.executeUpdate();
+
+            Main.LOGGER.info("INSERTED DATA TO THE DATABASE");
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -109,6 +115,7 @@ public class Database {
                 statement.addBatch();
             }
             statement.executeBatch();
+            Main.LOGGER.info("INSERTED DATA INTO THE DATABASE");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -124,8 +131,10 @@ public class Database {
             statement.setLong(1, id);
             ResultSet result = statement.executeQuery();
             if (result.next()) {
+                Main.LOGGER.info("FOUND DATA FOR ID:" + id + " IN THE DATABASE");
                 return new String(Base64.getDecoder().decode(result.getString("GameInfo")));
             }
+            Main.LOGGER.info("FOUND NO DATA FOR:" + id);
             return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -145,6 +154,7 @@ public class Database {
             while (result.next())
                 matches.put(MatchId.of(result.getLong("match_id")),
                         JsonUtil.fromJson(new String(Base64.getDecoder().decode(result.getString("GameInfo"))), GameInfo.class));
+            Main.LOGGER.info("FOUND " + matches.size() + " DATA IN THE DATABASE");
             return matches;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -163,6 +173,7 @@ public class Database {
         String sql = "CREATE TABLE IF NOT EXISTS Matches (match_id INT PRIMARY KEY, GameInfo VARCHAR(2000));";
         try(PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.executeUpdate();
+            Main.LOGGER.info("CREATED TABLE Matches");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

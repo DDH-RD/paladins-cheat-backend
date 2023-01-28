@@ -22,8 +22,8 @@ public class Application {
 
     @EventListener(ApplicationStartedEvent.class)
     public void fillCacheFromDatabase() {
+        matchMapper.mapAll(matchDao.fetchAll());
         Main.LOGGER.info("FETCHED ALL DATA FROM DB");
-        matchDao.fetchAll().thenAccept(matchMapper::mapAll);
     }
     
 }

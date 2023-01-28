@@ -34,7 +34,7 @@ public class MatchMapper implements Mapper<MatchId, GameInfo> {
 
     @Override
     public GameInfo getMapping(MatchId key) {
-        return map.get(key);
+        return map.getOrDefault(key, new GameInfo("INVALID GAMEINFO", null, null, -1, -1));
     }
 
     @Override

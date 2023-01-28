@@ -6,8 +6,6 @@ import dev.luzifer.json.JsonUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 @Component("matchDao")
 public class MatchDao {
@@ -15,15 +13,15 @@ public class MatchDao {
     private final Database database = new Database();
 
     public void save(MatchId matchId, GameInfo gameInfo) {
-        CompletableFuture.runAsync(() -> database.insert(matchId.getId(), JsonUtil.toJson(gameInfo)));
+        database.insert(matchId.getId(), JsonUtil.toJson(gameInfo));
     }
 
     public void saveMultiple(Map<MatchId, GameInfo> map) {
-        CompletableFuture.runAsync(() -> database.insertMultiple(map));
+        database.insertMultiple(map);
     }
 
-    public CompletionStage<Map<MatchId, GameInfo>> fetchAll() {
-        return CompletableFuture.supplyAsync(database::getAll);
+    public Map<MatchId, GameInfo> fetchAll() {
+        return database.getAll();
     }
 
 }
