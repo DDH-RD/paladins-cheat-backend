@@ -21,8 +21,8 @@ public class GameInfo {
     TeamInfo winnerTeam;
     /* Die Informationen des Teams, welches kacke war. */
     TeamInfo loserTeam;
-    /* Wie lang das Spiel in Minuten ging */
-    int minutesPlayed;
+    /* Wie lang das Spiel in Millisekunden ging */
+    long duration;
     /* Der Zeitpunkt wann das Match stattgefunden hat in Millisekunden. */
     long timestamp;
 }
