@@ -29,7 +29,7 @@ public class EvaluationTests {
         TeamInfo winner = new TeamInfo(2, new ChampInfo[] {champInfo, champInfo, champInfo2}, null);
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, null);
         
-        matchMapper.map(MatchId.of(1), new GameInfo("xD", winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(1), new GameInfo("xD", 2, winner, loser, 12, Instant.now().toEpochMilli()));
         
         long[] expected = {1L};
         long[] actual = new ChampStatisticEvaluation(matchMapper).evaluateWingmanFor(2L);
@@ -50,8 +50,8 @@ public class EvaluationTests {
         TeamInfo winner = new TeamInfo(2, new ChampInfo[] {champInfo, champInfo, champInfo2}, null);
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, null);
         
-        matchMapper.map(MatchId.of(1), new GameInfo("xD", winner, loser, 12, Instant.now().toEpochMilli()));
-        matchMapper.map(MatchId.of(2), new GameInfo("xDD", loser, winner, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(1), new GameInfo("xD", 2, winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(2), new GameInfo("xDD", 2, loser, winner, 12, Instant.now().toEpochMilli()));
         
         long[] expected = {3L, 4L};
         long[] actual = new ChampStatisticEvaluation(matchMapper).evaluateCounterFor(1L);
@@ -77,9 +77,9 @@ public class EvaluationTests {
         TeamInfo winner = new TeamInfo(3, new ChampInfo[] {champInfo, champInfo, champInfo2}, new ChampInfo[] {champInfo});
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, new ChampInfo[] {champInfo});
 
-        matchMapper.map(MatchId.of(1), new GameInfo("ballo", winner, loser, 12, Instant.now().toEpochMilli()));
-        matchMapper.map(MatchId.of(2), new GameInfo("x", winner, loser, 12, Instant.now().toEpochMilli()));
-        matchMapper.map(MatchId.of(3), new GameInfo("D", winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(1), new GameInfo("ballo", 2, winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(2), new GameInfo("x", 2, winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(3), new GameInfo("D", 2, winner, loser, 12, Instant.now().toEpochMilli()));
 
         long[] expectedPlayed = {1L, 2L, 3L, 4L};
         long[] expectedBanned = {1L};
@@ -105,9 +105,9 @@ public class EvaluationTests {
         TeamInfo winner = new TeamInfo(3, new ChampInfo[] {champInfo, champInfo, champInfo2}, new ChampInfo[] {champInfo});
         TeamInfo loser = new TeamInfo(1, new ChampInfo[] {champInfo3, champInfo3, champInfo4}, new ChampInfo[] {champInfo});
 
-        matchMapper.map(MatchId.of(1), new GameInfo("ballo", winner, loser, 12, Instant.now().toEpochMilli()));
-        matchMapper.map(MatchId.of(2), new GameInfo("x", winner, loser, 12, Instant.now().toEpochMilli()));
-        matchMapper.map(MatchId.of(3), new GameInfo("D", winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(1), new GameInfo("ballo", 2, winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(2), new GameInfo("x", 2, winner, loser, 12, Instant.now().toEpochMilli()));
+        matchMapper.map(MatchId.of(3), new GameInfo("D", 2, winner, loser, 12, Instant.now().toEpochMilli()));
 
         long[] expectedPlayed = {1L, 2L, 3L, 4L};
         long[] expectedBanned = {1L};

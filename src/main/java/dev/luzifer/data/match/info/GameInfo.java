@@ -15,6 +15,8 @@ public class GameInfo {
 
     /* Der Name der Map auf der das Game stattgefunden hat. */
     String mapName;
+    /* Der durchschnittl. Rank in dem Match */
+    int averageRank;
     /* Die Informationen des Teams, welches gewonnen hat. */
     TeamInfo winnerTeam;
     /* Die Informationen des Teams, welches kacke war. */
