@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -56,8 +57,13 @@ public class MatchController {
     
     @PostMapping(WebPath.POST_MULTIPLE_MATCH_INFO)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void postMultipleMatches(Map<MatchId, GameInfo> map) {
-        
+    public void postMultipleMatches(GameInfo[] gameInfos) {
+
+        Map<MatchId, GameInfo> map = new HashMap<>();
+
+        for(GameInfo gameInfo : gameInfos)
+            map.put(MatchId.of(gameInfo.getId()), gameInfo);
+
         matchMapper.mapAll(map);
         matchDao.saveMultiple(map);
 

@@ -27,6 +27,7 @@ public class Main {
     private static void createSampleJsonFile() throws IOException {
 
         GameInfo gameInfo = new GameInfo(
+                1,
                 "map_name",
                 5, new long[] {1,5,2,1},
                 new TeamInfo(4,

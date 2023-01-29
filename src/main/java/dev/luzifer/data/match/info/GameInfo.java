@@ -10,9 +10,11 @@ import lombok.Value;
 @Getter
 @RequiredArgsConstructor
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"mapName", "averageRank", "bannedChamps", "winnerTeam", "loserTeam", "duration", "timestamp"})
 public class GameInfo {
 
+    /* Match-ID */
+    int id;
     /* Der Name der Map auf der das Game stattgefunden hat. */
     String mapName;
     /* Der durchschnittl. Rank in dem Match */
