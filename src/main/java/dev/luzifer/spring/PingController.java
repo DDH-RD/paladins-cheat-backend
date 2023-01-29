@@ -15,6 +15,4 @@ public class PingController {
         Main.LOGGER.info("PING RECEIVED");
         return ResponseEntity.ok("pong");
     }
-
-
 }

@@ -17,7 +17,5 @@ public class TeamInfo {
     int points; // gehört eigentlich in GameInfo aber fuck it
     /* Die Champs die von diesem Team gespielt wurden. Max. 5 */
     ChampInfo[] playedChamps;
-    /* Die Champs, die in der Vorauswahl von dem Team gebannt wurden */
-    ChampInfo[] bannedChamps;
 
 }

@@ -17,6 +17,8 @@ public class GameInfo {
     String mapName;
     /* Der durchschnittl. Rank in dem Match */
     int averageRank;
+    /* IDs gebannter Champs */
+    long[] bannedChamps;
     /* Die Informationen des Teams, welches gewonnen hat. */
     TeamInfo winnerTeam;
     /* Die Informationen des Teams, welches kacke war. */
