@@ -13,6 +13,6 @@ import lombok.Value;
 @EqualsAndHashCode
 public class MatchId {
 
-    long id;
+    int id;
 
 }

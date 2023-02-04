@@ -1,8 +1,7 @@
 package dev.luzifer.spring;
 
 import dev.luzifer.Main;
-import dev.luzifer.data.access.MatchDao;
-import dev.luzifer.data.match.MatchMapper;
+import dev.luzifer.data.access.GameDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,14 +14,10 @@ import org.springframework.context.event.EventListener;
 public class Application {
 
     @Autowired
-    private MatchMapper matchMapper;
-
-    @Autowired
-    private MatchDao matchDao;
+    private GameDao gameDao;
 
     @EventListener(ApplicationStartedEvent.class)
     public void fillCacheFromDatabase() {
-        matchMapper.mapAll(matchDao.fetchAll());
         Main.LOGGER.info("FETCHED ALL DATA FROM DB");
     }
     
