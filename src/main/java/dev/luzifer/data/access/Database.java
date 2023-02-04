@@ -197,7 +197,7 @@ public class Database {
                 "  heal BIGINT NOT NULL,\n" +
                 "  self_heal BIGINT NOT NULL,\n" +
                 "  PRIMARY KEY (id),\n" +
-                "  FOREIGN KEY (match_id) REFERENCES GameDto(id)\n" +
+                "  FOREIGN KEY (match_id) REFERENCES games(id)\n" +
                 ");";
 
         String gameTableSql = "CREATE TABLE games (\n" +
