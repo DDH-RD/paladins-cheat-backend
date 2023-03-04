@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Database {
@@ -173,6 +174,94 @@ public class Database {
             throw new RuntimeException(e);
         }
         return -1;
+    }
+
+    public GameDto[] fetchAll() {
+
+        String sql = "SELECT * FROM games";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            ResultSet resultSet = statement.executeQuery();
+            List<GameDto> games = new ArrayList<>();
+
+            while (resultSet.next()) {
+
+                int id = resultSet.getInt("id");
+
+                ChampDto[] champs = fetchChamps(id);
+                GameDto game = new GameDto(id,
+                        resultSet.getString("map_name"),
+                        resultSet.getInt("ranked"),
+                        resultSet.getInt("average_rank"),
+                        resultSet.getInt("banned_champ1"),
+                        resultSet.getInt("banned_champ2"),
+                        resultSet.getInt("banned_champ3"),
+                        resultSet.getInt("banned_champ4"),
+                        resultSet.getInt("banned_champ5"),
+                        resultSet.getInt("banned_champ6"),
+                        resultSet.getInt("team1_points"),
+                        resultSet.getInt("team2_points"),
+                        champs,
+                        resultSet.getLong("duration"),
+                        resultSet.getLong("timestamp"));
+                games.add(game);
+            }
+
+            return games.toArray(new GameDto[0]);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ChampDto[] fetchChamps(int matchId) {
+
+        String sql = "SELECT * FROM champs WHERE match_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, matchId);
+
+            ResultSet resultSet = statement.executeQuery();
+            List<ChampDto> champs = new ArrayList<>();
+
+            while (resultSet.next()) {
+
+                ChampDto champ = new ChampDto(resultSet.getInt("id"),
+                        resultSet.getInt("won"),
+                        resultSet.getInt("category_id"),
+                        resultSet.getInt("talent_id"),
+                        resultSet.getInt("deck_card1"),
+                        resultSet.getInt("deck_card2"),
+                        resultSet.getInt("deck_card3"),
+                        resultSet.getInt("deck_card4"),
+                        resultSet.getInt("deck_card5"),
+                        resultSet.getInt("deck_card1_level"),
+                        resultSet.getInt("deck_card2_level"),
+                        resultSet.getInt("deck_card3_level"),
+                        resultSet.getInt("deck_card4_level"),
+                        resultSet.getInt("deck_card5_level"),
+                        resultSet.getInt("item1"),
+                        resultSet.getInt("item2"),
+                        resultSet.getInt("item3"),
+                        resultSet.getInt("item4"),
+                        resultSet.getInt("item1_level"),
+                        resultSet.getInt("item2_level"),
+                        resultSet.getInt("item3_level"),
+                        resultSet.getInt("item4_level"),
+                        resultSet.getInt("kills"),
+                        resultSet.getInt("deaths"),
+                        resultSet.getInt("assists"),
+                        resultSet.getLong("damage_done"),
+                        resultSet.getLong("damage_taken"),
+                        resultSet.getLong("damage_shielded"),
+                        resultSet.getLong("heal"),
+                        resultSet.getLong("self_heal"));
+                champs.add(champ);
+            }
+
+            return champs.toArray(new ChampDto[0]);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void ensureTableExists() {

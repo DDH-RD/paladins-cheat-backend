@@ -10,7 +10,6 @@ import lombok.Value;
 @Value
 @Getter
 @RequiredArgsConstructor
-@NoArgsConstructor(force = true)
 @ToString
 @EqualsAndHashCode
 public class GameDto {
