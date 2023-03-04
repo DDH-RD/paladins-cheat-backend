@@ -12,13 +12,4 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = HibernateJpaAutoConfiguration.class)
 public class Application {
-
-    @Autowired
-    private GameDao gameDao;
-
-    @EventListener(ApplicationStartedEvent.class)
-    public void fillCacheFromDatabase() {
-        Main.LOGGER.info("FETCHED ALL DATA FROM DB");
-    }
-    
 }
