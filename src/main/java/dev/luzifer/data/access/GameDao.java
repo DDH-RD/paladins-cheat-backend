@@ -11,4 +11,8 @@ public class GameDao {
     public void insert(GameDto[] gameDtos) {
         database.insert(gameDtos);
     }
+
+    public int count() {
+        return database.countEntries();
+    }
 }
