@@ -1,5 +1,6 @@
 package dev.luzifer.spring;
 
+import dev.luzifer.Main;
 import dev.luzifer.WebPath;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
@@ -30,21 +31,29 @@ public class GameController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postGames(@RequestBody GameDto[] games) {
         gameDao.insert(games);
+        Main.LOGGER.info("INSERTED " + games.length + " GAMES");
     }
 
     @GetMapping(WebPath.GET_COUNT)
     public @ResponseBody ResponseEntity<Integer> count() {
+        Main.LOGGER.info("COUNTED " + gameDao.count() + " GAMES");
         return new ResponseEntity<>(gameDao.count(), HttpStatus.FOUND);
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_FOR_MAP)
     public @ResponseBody ResponseEntity<Map<ChampDto, Integer>> getBestChampForMap(@PathVariable String mapName) {
+
+        Main.LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
+
         BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
         return new ResponseEntity<>(evaluation.evaluate(), HttpStatus.FOUND);
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
     public @ResponseBody ResponseEntity<Map<ChampDto, Integer>> getBestChampOfCategoryForMap(@PathVariable String mapName, @PathVariable String champCategory) {
+
+        Main.LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
+
         BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
         return new ResponseEntity<>(evaluation.evaluate(Integer.parseInt(champCategory)), HttpStatus.FOUND);
     }

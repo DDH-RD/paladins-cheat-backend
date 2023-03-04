@@ -3,6 +3,7 @@ package dev.luzifer.data.access;
 import dev.luzifer.Main;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component("database")
 public class Database {
 
     private static final File CREDENTIALS_FILE = new File("database.properties");
@@ -141,7 +143,6 @@ public class Database {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public void connect() {
@@ -267,65 +268,59 @@ public class Database {
     private void ensureTableExists() {
 
         String champTableSql = "CREATE TABLE IF NOT EXISTS champs (\n" +
-                "  index INT NOT NULL AUTO_INCREMENT,\n" +
-                "  id INT NOT NULL,\n" +
-                "  match_id INT NOT NULL,\n" +
-                "  won INT NOT NULL,\n" +
-                "  category_id INT NOT NULL,\n" +
-                "  talent_id INT NOT NULL,\n" +
-                "  deck_card1 INT NOT NULL,\n" +
-                "  deck_card2 INT NOT NULL,\n" +
-                "  deck_card3 INT NOT NULL,\n" +
-                "  deck_card4 INT NOT NULL,\n" +
-                "  deck_card5 INT NOT NULL,\n" +
-                "  deck_card1_level INT NOT NULL,\n" +
-                "  deck_card2_level INT NOT NULL,\n" +
-                "  deck_card3_level INT NOT NULL,\n" +
-                "  deck_card4_level INT NOT NULL,\n" +
-                "  deck_card5_level INT NOT NULL,\n" +
-                "  item1 INT NOT NULL,\n" +
-                "  item2 INT NOT NULL,\n" +
-                "  item3 INT NOT NULL,\n" +
-                "  item4 INT NOT NULL,\n" +
-                "  item1Level INT NOT NULL,\n" +
-                "  item2Level INT NOT NULL,\n" +
-                "  item3Level INT NOT NULL,\n" +
-                "  item4Level INT NOT NULL,\n" +
-                "  kills INT NOT NULL,\n" +
-                "  deaths INT NOT NULL,\n" +
-                "  assists INT NOT NULL,\n" +
-                "  damage_done BIGINT NOT NULL,\n" +
-                "  damage_taken BIGINT NOT NULL,\n" +
-                "  damage_shielded BIGINT NOT NULL,\n" +
-                "  heal BIGINT NOT NULL,\n" +
-                "  self_heal BIGINT NOT NULL,\n" +
-                "  PRIMARY KEY (id),\n" +
+                "  hurensohn INTEGER NOT NULL AUTO_INCREMENT,\n" +
+                "  id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  match_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  won INTEGER NOT NULL DEFAULT 0,\n" +
+                "  category_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  talent_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card1 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card2 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card3 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card4 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card5 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card1_level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card2_level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card3_level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card4_level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deck_card5_level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item1 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item2 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item3 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item4 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item1Level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item2Level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item3Level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  item4Level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  kills INTEGER NOT NULL DEFAULT 0,\n" +
+                "  deaths INTEGER NOT NULL DEFAULT 0,\n" +
+                "  assists INTEGER NOT NULL DEFAULT 0,\n" +
+                "  damage_done BIGINT NOT NULL DEFAULT 0,\n" +
+                "  damage_taken BIGINT NOT NULL DEFAULT 0,\n" +
+                "  damage_shielded BIGINT NOT NULL DEFAULT 0,\n" +
+                "  heal BIGINT NOT NULL DEFAULT 0,\n" +
+                "  self_heal BIGINT NOT NULL DEFAULT 0,\n" +
+                "  PRIMARY KEY (hurensohn),\n" +
                 "  FOREIGN KEY (match_id) REFERENCES games(id)\n" +
                 ");";
 
         String gameTableSql = "CREATE TABLE IF NOT EXISTS games (\n" +
-                "  id INT NOT NULL,\n" +
-                "  map_name VARCHAR(255) NOT NULL,\n" +
-                "  ranked INT NOT NULL,\n" +
-                "  average_rank INT NOT NULL,\n" +
-                "  banned_champ1 INT NOT NULL,\n" +
-                "  banned_champ2 INT NOT NULL,\n" +
-                "  banned_champ3 INT NOT NULL,\n" +
-                "  banned_champ4 INT NOT NULL,\n" +
-                "  banned_champ5 INT NOT NULL,\n" +
-                "  banned_champ6 INT NOT NULL,\n" +
-                "  team1_points INT NOT NULL,\n" +
-                "  team2_points INT NOT NULL,\n" +
-                "  duration BIGINT NOT NULL,\n" +
-                "  timestamp BIGINT NOT NULL,\n" +
+                "  id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  map_name VARCHAR(255) NOT NULL DEFAULT 'INVALID',\n" +
+                "  ranked INTEGER NOT NULL DEFAULT 0,\n" +
+                "  average_rank INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ1 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ2 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ3 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ4 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ5 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ6 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  team1_points INTEGER NOT NULL DEFAULT 0,\n" +
+                "  team2_points INTEGER NOT NULL DEFAULT 0,\n" +
+                "  duration BIGINT NOT NULL DEFAULT 0,\n" +
+                "  timestamp BIGINT NOT NULL DEFAULT 0,\n" +
                 "  PRIMARY KEY (id)\n" +
                 ");";
-        try(PreparedStatement statement = connection.prepareStatement(champTableSql)) {
-            statement.executeUpdate();
-            Main.LOGGER.info("CREATED TABLE champs");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         try(PreparedStatement statement = connection.prepareStatement(gameTableSql)) {
             statement.executeUpdate();
@@ -333,6 +328,12 @@ public class Database {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
 
+        try(PreparedStatement statement = connection.prepareStatement(champTableSql)) {
+            statement.executeUpdate();
+            Main.LOGGER.info("CREATED TABLE champs");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
