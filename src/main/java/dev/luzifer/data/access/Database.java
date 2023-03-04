@@ -177,7 +177,7 @@ public class Database {
 
     private void ensureTableExists() {
 
-        String champTableSql = "CREATE TABLE IF NOT EXIST champs (\n" +
+        String champTableSql = "CREATE TABLE IF NOT EXISTS champs (\n" +
                 "  index INT NOT NULL AUTO_INCREMENT,\n" +
                 "  id INT NOT NULL,\n" +
                 "  match_id INT NOT NULL,\n" +
@@ -214,7 +214,7 @@ public class Database {
                 "  FOREIGN KEY (match_id) REFERENCES games(id)\n" +
                 ");";
 
-        String gameTableSql = "CREATE TABLE games (\n" +
+        String gameTableSql = "CREATE TABLE IF NOT EXISTS games (\n" +
                 "  id INT NOT NULL,\n" +
                 "  map_name VARCHAR(255) NOT NULL,\n" +
                 "  ranked INT NOT NULL,\n" +
