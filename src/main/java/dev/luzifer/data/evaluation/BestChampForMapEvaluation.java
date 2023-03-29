@@ -16,15 +16,15 @@ public class BestChampForMapEvaluation {
     private final String mapName;
     private final GameDao gameDao;
 
-    public Map<ChampDto, Integer> evaluate() {
+    public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
     }
 
-    public Map<ChampDto, Integer> evaluate(int champCategory) {
+    public Map<Integer, Integer> evaluate(int champCategory) {
 
         Map<GameDto, ChampDto[]> gamesWithChamps = preparation(champCategory);
 
-        Map<ChampDto, Integer> champPoints = new HashMap<>();
+        Map<Integer, Integer> champPoints = new HashMap<>();
         for (Map.Entry<GameDto, ChampDto[]> entry : gamesWithChamps.entrySet()) {
 
             ChampDto[] champs = entry.getValue();
@@ -38,9 +38,9 @@ public class BestChampForMapEvaluation {
                     points = Math.max(game.getTeam1Points(), game.getTeam2Points());
 
                 if (champPoints.containsKey(champ)) {
-                    champPoints.put(champ, champPoints.get(champ) + points);
+                    champPoints.put(champ.getId(), champPoints.get(champ) + points);
                 } else {
-                    champPoints.put(champ, points);
+                    champPoints.put(champ.getId(), points);
                 }
             }
         }

@@ -41,7 +41,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_FOR_MAP)
-    public @ResponseBody ResponseEntity<Map<ChampDto, Integer>> getBestChampForMap(@PathVariable String mapName) {
+    public @ResponseBody ResponseEntity<Map<Integer, Integer>> getBestChampForMap(@PathVariable String mapName) {
 
         Main.LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
@@ -51,7 +51,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
-    public @ResponseBody ResponseEntity<Map<ChampDto, Integer>> getBestChampOfCategoryForMap(@PathVariable String mapName, @PathVariable String champCategory) {
+    public @ResponseBody ResponseEntity<Map<Integer, Integer>> getBestChampOfCategoryForMap(@PathVariable String mapName, @PathVariable String champCategory) {
 
         Main.LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
