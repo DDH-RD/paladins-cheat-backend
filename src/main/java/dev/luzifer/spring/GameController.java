@@ -44,6 +44,7 @@ public class GameController {
     public @ResponseBody ResponseEntity<Map<ChampDto, Integer>> getBestChampForMap(@PathVariable String mapName) {
 
         Main.LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
+        mapName = mapName.replace("_", " ");
 
         BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
         return new ResponseEntity<>(evaluation.evaluate(), HttpStatus.FOUND);
@@ -53,6 +54,7 @@ public class GameController {
     public @ResponseBody ResponseEntity<Map<ChampDto, Integer>> getBestChampOfCategoryForMap(@PathVariable String mapName, @PathVariable String champCategory) {
 
         Main.LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
+        mapName = mapName.replace("_", " ");
 
         BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
         return new ResponseEntity<>(evaluation.evaluate(Integer.parseInt(champCategory)), HttpStatus.FOUND);

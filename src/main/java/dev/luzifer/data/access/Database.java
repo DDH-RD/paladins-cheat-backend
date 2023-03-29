@@ -165,6 +165,10 @@ public class Database {
     }
 
     public int countEntries() {
+
+        if(!isConnection())
+            connect();
+
         String sql = "SELECT COUNT(*) FROM games";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
@@ -178,6 +182,9 @@ public class Database {
     }
 
     public GameDto[] fetchAll() {
+
+        if(!isConnection())
+            connect();
 
         String sql = "SELECT * FROM games";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -321,6 +328,9 @@ public class Database {
                 "  timestamp BIGINT NOT NULL DEFAULT 0,\n" +
                 "  PRIMARY KEY (id)\n" +
                 ");";
+
+        if(!isConnection())
+            connect();
 
         try(PreparedStatement statement = connection.prepareStatement(gameTableSql)) {
             statement.executeUpdate();
