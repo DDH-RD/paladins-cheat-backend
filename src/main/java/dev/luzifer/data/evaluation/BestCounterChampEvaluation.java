@@ -11,19 +11,21 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class BestChampForMapEvaluation {
+public class BestCounterChampEvaluation {
 
-    private final String mapName;
+    private final int champId;
     private final GameDao gameDao;
 
-    public Map<Integer, Integer> evaluate() {
+    public int evaluate() {
         return evaluate(-1);
     }
 
-    public Map<Integer, Integer> evaluate(int champCategory) {
+    public int evaluate(int champCategory) {
 
+       // see what champs are played against the given champ
         Map<GameDto, ChampDto[]> gamesWithChamps = preparation(champCategory);
 
+        // count the points for each champ but only the enemy team
         Map<Integer, Integer> champPoints = new HashMap<>();
         for (Map.Entry<GameDto, ChampDto[]> entry : gamesWithChamps.entrySet()) {
 
@@ -45,33 +47,49 @@ public class BestChampForMapEvaluation {
             }
         }
 
-        return champPoints;
+        // find the champ with the most points
+        int bestChampId = -1;
+        int bestChampPoints = -1;
+        for (Map.Entry<Integer, Integer> entry : champPoints.entrySet()) {
+            if (entry.getValue() > bestChampPoints) {
+                bestChampId = entry.getKey();
+                bestChampPoints = entry.getValue();
+            }
+        }
+
+        return bestChampId;
     }
 
     private Map<GameDto, ChampDto[]> preparation(int champCategory) {
 
         GameDto[] games = gameDao.fetchMatches();
-
-        List<GameDto> gamesForMap = new ArrayList<>();
+        List<GameDto> gamesWithChamp = new ArrayList<>();
         for (GameDto game : games) {
-            if (game.getMapName().equals(mapName)) {
-                gamesForMap.add(game);
+            for(ChampDto champ : game.getChamps()) {
+                if(champ.getId() == champId) {
+                    gamesWithChamp.add(game);
+                    break;
+                }
             }
         }
 
         Map<GameDto, ChampDto[]> gamesWithChamps = new HashMap<>();
-        for (GameDto game : gamesForMap) {
-            ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());
-            List<ChampDto> champsForCategory = new ArrayList<>();
-            for (ChampDto champ : champs) {
-                if (champCategory == -1 || champ.getCategoryId() == champCategory) { // -1 = all champs
-                    champsForCategory.add(champ);
+        for (GameDto game : gamesWithChamp) {
+            List<ChampDto> champs = new ArrayList<>();
+            for (ChampDto champ : game.getChamps()) {
+                if (champ.getId() != champId && (champCategory == -1 || champ.getCategoryId() == champCategory)) {
+                    for(ChampDto enemyChamp : game.getChamps()) {
+                        if(enemyChamp.getId() == champId) {
+                            if(enemyChamp.getWon() != champ.getWon())
+                                champs.add(champ);
+                            break;
+                        }
+                    }
                 }
             }
-            gamesWithChamps.put(game, champsForCategory.toArray(new ChampDto[0]));
+            gamesWithChamps.put(game, champs.toArray(new ChampDto[0]));
         }
 
         return gamesWithChamps;
     }
-
 }

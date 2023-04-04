@@ -4,7 +4,7 @@ import dev.luzifer.Main;
 import dev.luzifer.WebPath;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
-import dev.luzifer.data.match.info.ChampDto;
+import dev.luzifer.data.evaluation.BestCounterChampEvaluation;
 import dev.luzifer.data.match.info.GameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,5 +58,23 @@ public class GameController {
 
         BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
         return new ResponseEntity<>(evaluation.evaluate(Integer.parseInt(champCategory)), HttpStatus.FOUND);
+    }
+
+    @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
+    public @ResponseBody ResponseEntity<Integer> getBestCounterChampForChamp(@PathVariable int champId) {
+
+        Main.LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
+
+        BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao);
+        return new ResponseEntity<>(evaluation.evaluate(), HttpStatus.FOUND);
+    }
+
+    @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
+    public @ResponseBody ResponseEntity<Integer> getBestCounterChampOfCategoryForChamp(@PathVariable int champId, @PathVariable int champCategory) {
+
+        Main.LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
+
+        BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao);
+        return new ResponseEntity<>(evaluation.evaluate(champCategory), HttpStatus.FOUND);
     }
 }
