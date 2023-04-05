@@ -37,4 +37,8 @@ public class GameDto {
     long duration;
     /* Der Zeitpunkt wann das Match stattgefunden hat in Millisekunden. */
     long timestamp;
+    /* Die Season in der das Match stattegefunden hat.
+    *  Example: Season 5, Split 1 = 5.1
+    * */
+    double season;
 }
