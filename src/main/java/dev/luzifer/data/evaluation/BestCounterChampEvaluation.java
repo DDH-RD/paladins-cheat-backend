@@ -6,7 +6,9 @@ import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -49,39 +51,35 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private Map<GameDto, ChampDto[]> preparation(int champCategory) {
 
-        GameDto[] games = gameDao.fetchMatches();
-
-        Map<GameDto, ChampDto[]> map = new HashMap<>();
-        for (GameDto game : games) {
-            ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());
-            for (ChampDto champ : champs) {
-                if (champ.getId() == champId) {
-                    map.put(game, champs);
-                    break;
-                }
-            }
-        }
-
         Map<GameDto, ChampDto[]> resultMap = new HashMap<>();
-        for(Map.Entry<GameDto, ChampDto[]> entry : map.entrySet()) {
-            GameDto game = entry.getKey();
-            ChampDto[] champs = entry.getValue();
 
+        GameDto[] games = gameDao.fetchMatches();
+        for(GameDto game : games) {
+            ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());
+            boolean contains = false;
+            int won = -1;
             for(ChampDto champ : champs) {
                 if(champ.getId() == champId) {
-                    ChampDto[] enemyChamps = new ChampDto[5];
-                    int index = 0;
-                    for(ChampDto enemyChamp : champs) {
-                        if(index >= 5) break;
-                        if(enemyChamp.getWon() != champ.getWon() && (champCategory == -1 || enemyChamp.getCategoryId() == champCategory)) {
-                            enemyChamps[index] = enemyChamp;
-                            index++;
-                        }
-                    }
-                    resultMap.put(game, enemyChamps);
+                    contains = true;
+                    won = champ.getWon();
                     break;
                 }
             }
+
+            if(!contains)
+                continue;
+
+            List<ChampDto> enemyChamps = new ArrayList<>();
+            for(ChampDto enemyChamp : champs) {
+                if(enemyChamp.getWon() != won && (champCategory == -1 || enemyChamp.getCategoryId() == champCategory)) {
+                    enemyChamps.add(enemyChamp);
+                }
+            }
+
+            if(enemyChamps.isEmpty())
+                continue;
+
+            resultMap.put(game, enemyChamps.toArray(new ChampDto[0]));
         }
 
         return resultMap;

@@ -33,13 +33,11 @@ public class GameController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postGames(@RequestBody GameDto[] games) {
         WallHack.submitTask(() -> gameDao.insert(games));
-        Main.LOGGER.info("INSERTED " + games.length + " GAMES");
     }
 
     @GetMapping(WebPath.GET_COUNT)
     public @ResponseBody ResponseEntity<Integer> count() {
         int count = gameDao.count();
-        Main.LOGGER.info("COUNTED " + count + " GAMES");
         return new ResponseEntity<>(count, HttpStatus.FOUND);
     }
 
@@ -54,13 +52,13 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
-    public @ResponseBody ResponseEntity<Map<Integer, Integer>> getBestChampOfCategoryForMap(@PathVariable String mapName, @PathVariable String champCategory) {
+    public @ResponseBody ResponseEntity<Map<Integer, Integer>> getBestChampOfCategoryForMap(@PathVariable String mapName, @PathVariable int champCategory) {
 
         Main.LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
         BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
-        return new ResponseEntity<>(evaluation.evaluate(Integer.parseInt(champCategory)), HttpStatus.FOUND);
+        return new ResponseEntity<>(evaluation.evaluate(champCategory), HttpStatus.FOUND);
     }
 
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)

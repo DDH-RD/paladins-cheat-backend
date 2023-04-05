@@ -1,5 +1,6 @@
 package dev.luzifer.data.access;
 
+import dev.luzifer.Main;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
 import org.springframework.stereotype.Component;
@@ -11,17 +12,24 @@ public class GameDao {
 
     public void insert(GameDto[] gameDtos) {
         database.insert(gameDtos);
+        Main.LOGGER.info("INSERTED " + gameDtos.length + " GAMES");
     }
 
     public int count() {
-        return database.countEntries();
+        int count = database.countEntries();
+        Main.LOGGER.info("COUNTED " + count + " GAMES");
+        return count;
     }
 
     public GameDto[] fetchMatches() {
-        return database.fetchAll();
+        GameDto[] matches = database.fetchAll();
+        Main.LOGGER.info("FETCHED " + matches.length + " GAMES");
+        return matches;
     }
 
     public ChampDto[] fetchChampsForMatch(int matchId) {
-        return database.fetchChamps(matchId);
+        ChampDto[] champs = database.fetchChamps(matchId);
+        Main.LOGGER.info("FETCHED " + champs.length + " CHAMPS FOR MATCH " + matchId);
+        return champs;
     }
 }
