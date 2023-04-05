@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class BestCounterChampEvaluation {
+public class BestCounterChampEvaluation implements Evaluation<Integer> {
 
     private final int champId;
     private final GameDao gameDao;
 
-    public int evaluate() {
+    public Integer evaluate() {
         return evaluate(-1);
     }
 
-    public int evaluate(int champCategory) {
+    public Integer evaluate(int champCategory) {
 
        // see what champs are played against the given champ
         Map<GameDto, ChampDto[]> gamesWithChamps = preparation(champCategory);

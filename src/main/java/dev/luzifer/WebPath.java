@@ -13,4 +13,5 @@ public class WebPath {
     public static final String GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP = GET + "/bestChampOfCategoryForMap/{mapName}/{champCategory}";
     public static final String GET_BEST_COUNTER_CHAMP_FOR_CHAMP = GET + "/bestCounterChampForChamp/{champId}";
     public static final String GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP = GET + "/bestCounterChampOfCategoryForChamp/{champId}/{champCategory}";
+    public static final String GET_BEST_BAN_FOR_MAP = GET + "/bestBanForMap/{mapName}";
 }

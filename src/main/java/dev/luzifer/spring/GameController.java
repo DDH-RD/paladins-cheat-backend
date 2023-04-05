@@ -77,4 +77,14 @@ public class GameController {
         BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao);
         return new ResponseEntity<>(evaluation.evaluate(champCategory), HttpStatus.FOUND);
     }
+
+    @GetMapping(WebPath.GET_BEST_BAN_FOR_MAP)
+    public @ResponseBody ResponseEntity<Map<Integer, Integer>> getBestBanForMap(@PathVariable String mapName) {
+
+        Main.LOGGER.info("EVALUATED BEST BANS FOR MAP " + mapName);
+        mapName = mapName.replace("_", " ");
+
+        BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
+        return new ResponseEntity<>(evaluation.evaluate(), HttpStatus.FOUND);
+    }
 }
