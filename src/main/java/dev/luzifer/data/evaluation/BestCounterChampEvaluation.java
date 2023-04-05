@@ -1,5 +1,6 @@
 package dev.luzifer.data.evaluation;
 
+import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
@@ -11,16 +12,16 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class BestCounterChampEvaluation implements Evaluation<Integer> {
+public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integer>> {
 
     private final int champId;
     private final GameDao gameDao;
 
-    public Integer evaluate() {
+    public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
     }
 
-    public Integer evaluate(int champCategory) {
+    public Map<Integer, Integer> evaluate(int champCategory) {
 
        // see what champs are played against the given champ
         Map<GameDto, ChampDto[]> gamesWithChamps = preparation(champCategory);
@@ -47,17 +48,7 @@ public class BestCounterChampEvaluation implements Evaluation<Integer> {
             }
         }
 
-        // find the champ with the most points
-        int bestChampId = -1;
-        int bestChampPoints = -1;
-        for (Map.Entry<Integer, Integer> entry : champPoints.entrySet()) {
-            if (entry.getValue() > bestChampPoints) {
-                bestChampId = entry.getKey();
-                bestChampPoints = entry.getValue();
-            }
-        }
-
-        return bestChampId;
+        return MapUtil.sortByValue(champPoints);
     }
 
     private Map<GameDto, ChampDto[]> preparation(int champCategory) {
@@ -77,14 +68,15 @@ public class BestCounterChampEvaluation implements Evaluation<Integer> {
         for (GameDto game : gamesWithChamp) {
             List<ChampDto> champs = new ArrayList<>();
             for (ChampDto champ : game.getChamps()) {
-                if (champ.getId() != champId && (champCategory == -1 || champ.getCategoryId() == champCategory)) {
+                if (champ.getId() == champId) {
                     for(ChampDto enemyChamp : game.getChamps()) {
-                        if(enemyChamp.getId() == champId) {
-                            if(enemyChamp.getWon() != champ.getWon())
-                                champs.add(champ);
+                        if(enemyChamp.getWon() != champ.getWon() && (champCategory == -1 || enemyChamp.getCategoryId() == champCategory)) {
+                            champs.add(enemyChamp);
                             break;
                         }
                     }
+                    if(game.getRanked() == 1)
+                        break;
                 }
             }
             gamesWithChamps.put(game, champs.toArray(new ChampDto[0]));

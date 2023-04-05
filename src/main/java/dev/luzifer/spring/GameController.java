@@ -3,6 +3,7 @@ package dev.luzifer.spring;
 import dev.luzifer.Main;
 import dev.luzifer.WebPath;
 import dev.luzifer.data.access.GameDao;
+import dev.luzifer.data.evaluation.BestBanForMapEvaluation;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
 import dev.luzifer.data.evaluation.BestCounterChampEvaluation;
 import dev.luzifer.data.match.info.GameDto;
@@ -61,7 +62,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
-    public @ResponseBody ResponseEntity<Integer> getBestCounterChampForChamp(@PathVariable int champId) {
+    public @ResponseBody ResponseEntity<Map<Integer, Integer>> getBestCounterChampForChamp(@PathVariable int champId) {
 
         Main.LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
 
@@ -70,7 +71,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
-    public @ResponseBody ResponseEntity<Integer> getBestCounterChampOfCategoryForChamp(@PathVariable int champId, @PathVariable int champCategory) {
+    public @ResponseBody ResponseEntity<Map<Integer, Integer>> getBestCounterChampOfCategoryForChamp(@PathVariable int champId, @PathVariable int champCategory) {
 
         Main.LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
 
@@ -84,7 +85,7 @@ public class GameController {
         Main.LOGGER.info("EVALUATED BEST BANS FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
-        BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(mapName, gameDao);
+        BestBanForMapEvaluation evaluation = new BestBanForMapEvaluation(mapName, gameDao);
         return new ResponseEntity<>(evaluation.evaluate(), HttpStatus.FOUND);
     }
 }
