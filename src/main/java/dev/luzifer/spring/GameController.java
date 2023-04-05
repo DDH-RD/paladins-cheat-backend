@@ -2,6 +2,7 @@ package dev.luzifer.spring;
 
 import dev.luzifer.Main;
 import dev.luzifer.WebPath;
+import dev.luzifer.data.WallHack;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.evaluation.BestBanForMapEvaluation;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
@@ -31,14 +32,15 @@ public class GameController {
     @PostMapping(WebPath.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postGames(@RequestBody GameDto[] games) {
-        gameDao.insert(games);
+        WallHack.submitTask(() -> gameDao.insert(games));
         Main.LOGGER.info("INSERTED " + games.length + " GAMES");
     }
 
     @GetMapping(WebPath.GET_COUNT)
     public @ResponseBody ResponseEntity<Integer> count() {
-        Main.LOGGER.info("COUNTED " + gameDao.count() + " GAMES");
-        return new ResponseEntity<>(gameDao.count(), HttpStatus.FOUND);
+        int count = gameDao.count();
+        Main.LOGGER.info("COUNTED " + count + " GAMES");
+        return new ResponseEntity<>(count, HttpStatus.FOUND);
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_FOR_MAP)
