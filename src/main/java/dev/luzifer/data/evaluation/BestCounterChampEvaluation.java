@@ -34,17 +34,14 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
             GameDto game = entry.getKey();
 
             for (ChampDto champ : champs) {
-                int points;
-                if(champ.getWon() == 0)
-                    points = Math.min(game.getTeam1Points(), game.getTeam2Points());
-                else
-                    points = Math.max(game.getTeam1Points(), game.getTeam2Points());
+                int points = champ.getWon() == 0 ?
+                        Math.min(game.getTeam1Points(), game.getTeam2Points()) :
+                        Math.max(game.getTeam1Points(), game.getTeam2Points());
 
-                if (champPoints.containsKey(champ.getId())) {
+                if (champPoints.containsKey(champ.getId()))
                     champPoints.put(champ.getId(), champPoints.get(champ.getId()) + points);
-                } else {
+                else
                     champPoints.put(champ.getId(), points);
-                }
             }
         }
 

@@ -12,10 +12,6 @@ import lombok.Value;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * In Paladins you can have 5 cards per deck with a total of 15 given points. Each card can only have up to 5 points.
- * This evaluation will calculate the best deck for a given champion.
- */
 @RequiredArgsConstructor
 public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integer>> {
 
@@ -39,20 +35,27 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
     }
 
     private Map<CardMeter, Integer> weightCardsByMatchOutcome(Map<GameDto, Map<ChampDto, CardMeter[]>> cardsForGame) {
+
         Map<CardMeter, Integer> cardPoints = new HashMap<>();
         for (Map.Entry<GameDto, Map<ChampDto, CardMeter[]>> entry : cardsForGame.entrySet()) {
+
             GameDto game = entry.getKey();
             Map<ChampDto, CardMeter[]> champCards = entry.getValue();
+
             for (Map.Entry<ChampDto, CardMeter[]> champCardEntry : champCards.entrySet()) {
+
                 ChampDto champ = champCardEntry.getKey();
                 CardMeter[] cards = champCardEntry.getValue();
+
                 for (CardMeter card : cards) {
-                    int points = champ.getWon() == 0 ? Math.min(game.getTeam1Points(), game.getTeam2Points()) : Math.max(game.getTeam1Points(), game.getTeam2Points());
-                    if (cardPoints.containsKey(card)) {
+                    int points = champ.getWon() == 0 ?
+                            Math.min(game.getTeam1Points(), game.getTeam2Points()) :
+                            Math.max(game.getTeam1Points(), game.getTeam2Points());
+
+                    if (cardPoints.containsKey(card))
                         cardPoints.put(card, cardPoints.get(card) + points);
-                    } else {
+                    else
                         cardPoints.put(card, points);
-                    }
                 }
             }
         }
@@ -60,16 +63,20 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
     }
 
     private Map<Integer, Integer> calculateThePerfectDeck(Map<CardMeter, Integer> cardsWeightMap, Map<CardMeter, Double> averagePointsMap) {
-        Map<Integer, Integer> perfectDeck = new HashMap<>();
-        double remainingPoints = 15.0;
 
+        Map<Integer, Integer> perfectDeck = new HashMap<>();
+
+        double remainingPoints = 15.0;
         while (!cardsWeightMap.isEmpty() && remainingPoints > 0) {
+
             CardMeter bestCard = null;
             double bestScore = Double.NEGATIVE_INFINITY;
 
             for (Map.Entry<CardMeter, Double> entry : averagePointsMap.entrySet()) {
+
                 CardMeter card = entry.getKey();
                 double averagePoints = entry.getValue();
+
                 if (cardsWeightMap.containsKey(card)) {
                     double score = (cardsWeightMap.get(card) * averagePoints) / card.getPoints();
                     if (score > bestScore) {
@@ -82,6 +89,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
             if (bestCard != null) {
                 int pointsToAdd = Math.min(bestCard.getPoints(), (int) Math.floor(remainingPoints));
                 perfectDeck.put(bestCard.getCardId(), pointsToAdd);
+
                 remainingPoints -= pointsToAdd;
                 cardsWeightMap.remove(bestCard);
             } else {
@@ -93,9 +101,10 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
     }
 
     private Map<CardMeter, Double> calculateAveragePointsForEachCard(CardMeter[] cards) {
-        Map<CardMeter, Double> averagePointsMap = new HashMap<>();
 
+        Map<CardMeter, Double> averagePointsMap = new HashMap<>();
         Map<CardMeter, Integer> totalPointsMap = new HashMap<>();
+
         for (CardMeter card : cards) {
             if (totalPointsMap.containsKey(card)) {
                 totalPointsMap.put(card, totalPointsMap.get(card) + card.getPoints());
@@ -107,6 +116,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
         for (Map.Entry<CardMeter, Integer> entry : totalPointsMap.entrySet()) {
             CardMeter card = entry.getKey();
             int totalPoints = entry.getValue();
+
             double averagePoints = ((double) totalPoints) / cards.length;
             averagePointsMap.put(card, averagePoints);
         }
@@ -115,8 +125,10 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
     }
 
     private Map<GameDto, Map<ChampDto, CardMeter[]>> preparation() {
+
         GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
         Map<GameDto, Map<ChampDto, CardMeter[]>> resultMap = new HashMap<>();
+
         for(GameDto game : games) {
             for(ChampDto champ : game.getChamps()) {
                 if(champ.getId() == champId) {
@@ -132,6 +144,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
                 }
             }
         }
+
         return resultMap;
     }
 

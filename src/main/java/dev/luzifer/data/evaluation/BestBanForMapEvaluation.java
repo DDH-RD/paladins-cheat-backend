@@ -47,11 +47,10 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
         Map<Integer, Integer> bannedChamps = new HashMap<>();
         for (Integer[] banned : bannedChampsForMap) {
             for (Integer ban : banned) {
-                if (bannedChamps.containsKey(ban)) {
+                if (bannedChamps.containsKey(ban))
                     bannedChamps.put(ban, bannedChamps.get(ban) + 1);
-                } else {
+                else
                     bannedChamps.put(ban, 1);
-                }
             }
         }
 

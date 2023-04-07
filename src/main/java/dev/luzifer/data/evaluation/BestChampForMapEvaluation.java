@@ -34,17 +34,14 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
             GameDto game = entry.getKey();
 
             for (ChampDto champ : champs) {
-                int points;
-                if(champ.getWon() == 0)
-                    points = Math.min(game.getTeam1Points(), game.getTeam2Points());
-                else
-                    points = Math.max(game.getTeam1Points(), game.getTeam2Points());
+                int points = champ.getWon() == 0 ?
+                        Math.min(game.getTeam1Points(), game.getTeam2Points()) :
+                        Math.max(game.getTeam1Points(), game.getTeam2Points());
 
-                if (champPoints.containsKey(champ.getId())) {
+                if (champPoints.containsKey(champ.getId()))
                     champPoints.put(champ.getId(), champPoints.get(champ.getId()) + points);
-                } else {
+                else
                     champPoints.put(champ.getId(), points);
-                }
             }
         }
 
@@ -52,7 +49,9 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
     }
 
     private Map<GameDto, ChampDto[]> preparation(int champCategory) {
+
         List<GameDto> gamesForMap = new ArrayList<>(List.of(gameDao.fetchMatchesOnMap(matchType, mapName)));
+
         Map<GameDto, ChampDto[]> gamesWithChamps = new HashMap<>();
         for (GameDto game : gamesForMap) {
             List<ChampDto> champsForCategory = new ArrayList<>();

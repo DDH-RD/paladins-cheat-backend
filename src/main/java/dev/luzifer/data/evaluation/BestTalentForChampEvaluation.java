@@ -29,13 +29,14 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
             ChampDto champDto = entry.getValue();
 
             int talentId = champDto.getTalentId();
-            int pointsToAdd = champDto.getWon() == 0 ? Math.min(game.getTeam1Points(), game.getTeam2Points()) : Math.max(game.getTeam1Points(), game.getTeam2Points());
+            int pointsToAdd = champDto.getWon() == 0 ?
+                    Math.min(game.getTeam1Points(), game.getTeam2Points()) :
+                    Math.max(game.getTeam1Points(), game.getTeam2Points());
 
-            if(map.containsKey(talentId)) {
+            if(map.containsKey(talentId))
                 map.put(talentId, map.get(talentId) + pointsToAdd);
-            } else {
+            else
                 map.put(talentId, pointsToAdd);
-            }
         }
 
         return MapUtil.sortByValue(map);
@@ -47,7 +48,9 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
     }
 
     private Map<GameDto, ChampDto> preparation() {
+
         Map<GameDto, ChampDto> champs = new HashMap<>();
+
         GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
         for(GameDto game : games) {
             for(ChampDto champ : game.getChamps()) {
@@ -57,6 +60,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
                 }
             }
         }
+
         return champs;
     }
 }
