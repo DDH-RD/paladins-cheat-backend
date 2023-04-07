@@ -136,7 +136,7 @@ public class Database {
                 }
                 gamesStatement.executeBatch();
                 champStatement.executeBatch();
-                Main.LOGGER.info("INSERTED A BATCH WITH " + games.length + " (+x10 CHAMPS)ENTRIES INTO THE DATABASE");
+                Main.DATABASE_LOGGER.info("INSERTED A BATCH WITH " + games.length + " ENTRIES INTO THE DATABASE");
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -151,7 +151,7 @@ public class Database {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             this.connection = DriverManager.getConnection(url, username, new String(password));
             ensureTableExists();
-            Main.LOGGER.info("CONNECTED TO THE DATABASE");
+            Main.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -178,6 +178,7 @@ public class Database {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+                Main.DATABASE_LOGGER.info("COUNTED " + resultSet.getInt(1) + " ENTRIES IN THE DATABASE");
                 return resultSet.getInt(1);
             }
         } catch (SQLException e) {
@@ -223,7 +224,7 @@ public class Database {
 
                 games.add(game);
             }
-
+            Main.DATABASE_LOGGER.info("FETCHED " + games.size() + " GAMES FROM THE DATABASE");
             return games.toArray(new GameDto[0]);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -274,7 +275,6 @@ public class Database {
                         resultSet.getLong("self_heal"));
                 champs.add(champ);
             }
-
             return champs.toArray(new ChampDto[0]);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -344,14 +344,14 @@ public class Database {
 
         try(PreparedStatement statement = connection.prepareStatement(gameTableSql)) {
             statement.executeUpdate();
-            Main.LOGGER.info("CREATED TABLE games");
+            Main.DATABASE_LOGGER.info("CREATED TABLE games");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         try(PreparedStatement statement = connection.prepareStatement(champTableSql)) {
             statement.executeUpdate();
-            Main.LOGGER.info("CREATED TABLE champs");
+            Main.DATABASE_LOGGER.info("CREATED TABLE champs");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

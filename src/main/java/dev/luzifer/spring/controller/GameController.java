@@ -42,7 +42,7 @@ public class GameController {
                     TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<>(10000),
                     new ThreadFactoryBuilder()
-                            .setUncaughtExceptionHandler((t, e) -> Main.LOGGER.log(Level.SEVERE, "Uncaught exception in thread " + t.getName(), e))
+                            .setUncaughtExceptionHandler((t, e) -> Main.REST_LOGGER.log(Level.SEVERE, "Uncaught exception in thread " + t.getName(), e))
                             .setDaemon(true)
                             .setNameFormat("Paladins Task-%d")
                             .build(),
@@ -68,7 +68,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_CHAMP_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@RequestParam(required = false) boolean rankedOnly, @PathVariable String mapName) {
 
-        Main.LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
+        Main.REST_LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
@@ -84,7 +84,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@RequestParam(required = false) boolean rankedOnly, @PathVariable String mapName, @PathVariable int champCategory) {
 
-        Main.LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
+        Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
@@ -100,7 +100,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@RequestParam(required = false) boolean rankedOnly, @PathVariable int champId) {
 
-        Main.LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
+        Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -114,7 +114,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@RequestParam(required = false) boolean rankedOnly, @PathVariable int champId, @PathVariable int champCategory) {
 
-        Main.LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
+        Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -128,7 +128,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_BAN_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@RequestParam(required = false) boolean rankedOnly, @PathVariable String mapName) {
 
-        Main.LOGGER.info("EVALUATED BEST BAN FOR MAP " + mapName);
+        Main.REST_LOGGER.info("EVALUATED BEST BAN FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();

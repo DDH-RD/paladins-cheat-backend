@@ -12,7 +12,7 @@ public class PingController {
 
     @GetMapping("ping")
     public ResponseEntity<String> ping() {
-        Main.LOGGER.info("PING RECEIVED");
+        Main.REST_LOGGER.info("PING RECEIVED");
         return ResponseEntity.ok("pong");
     }
 }

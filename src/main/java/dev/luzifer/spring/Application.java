@@ -17,6 +17,6 @@ public class Application {
     @EventListener(ApplicationReadyEvent.class)
     public void connectToDatabase() {
         database.connect();
-        Main.LOGGER.info("CONNECTED TO DATABASE");
+        Main.REST_LOGGER.info("CONNECTED TO DATABASE");
     }
 }
