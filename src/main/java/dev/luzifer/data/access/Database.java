@@ -201,10 +201,10 @@ public class Database {
         String sql = "SELECT * FROM games WHERE id IN (SELECT game_id FROM champs WHERE champ_id = ?)";
         switch (matchType) {
             case RANKED:
-                sql += " WHERE ranked = 1";
+                sql += " AND ranked = 1";
                 break;
             case CASUAL:
-                sql += " WHERE ranked = 0";
+                sql += " AND ranked = 0";
                 break;
         }
 
@@ -250,10 +250,10 @@ public class Database {
         String sql = "SELECT * FROM games WHERE map_name = ?";
         switch (matchType) {
             case RANKED:
-                sql += " WHERE ranked = 1";
+                sql += " AND ranked = 1";
                 break;
             case CASUAL:
-                sql += " WHERE ranked = 0";
+                sql += " AND ranked = 0";
                 break;
         }
 
