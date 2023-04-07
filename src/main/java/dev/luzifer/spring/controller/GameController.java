@@ -1,4 +1,4 @@
-package dev.luzifer.spring;
+package dev.luzifer.spring.controller;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.luzifer.Main;

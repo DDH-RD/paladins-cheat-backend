@@ -1,4 +1,4 @@
-package dev.luzifer.spring;
+package dev.luzifer.spring.controller;
 
 import dev.luzifer.Main;
 import org.springframework.http.ResponseEntity;
