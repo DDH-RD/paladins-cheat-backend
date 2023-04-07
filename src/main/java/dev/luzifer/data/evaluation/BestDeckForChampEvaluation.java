@@ -17,14 +17,14 @@ import java.util.Map;
  * This evaluation will calculate the best deck for a given champion.
  */
 @RequiredArgsConstructor
-public class BestDeckForChampEvaluation implements Evaluation<Map<BestDeckForChampEvaluation.CardMeter, Integer>> {
+public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integer>> {
 
     private final int champId;
     private final GameDao gameDao;
     private final GameController.MatchType matchType;
 
     @Override
-    public Map<CardMeter, Integer> evaluate() {
+    public Map<Integer, Integer> evaluate() {
 
         Map<GameDto, Map<ChampDto, CardMeter[]>> cardsForGame = preparation();
         Map<CardMeter, Double> averagePointsMap = calculateAveragePointsForEachCard(cardsForGame.values().iterator().next().values().iterator().next());
@@ -34,7 +34,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<BestDeckForCha
     }
 
     @Override
-    public Map<CardMeter, Integer> evaluate(int champCategory) {
+    public Map<Integer, Integer> evaluate(int champCategory) {
         throw new UnsupportedOperationException("This evaluation does not support this method");
     }
 
@@ -59,8 +59,8 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<BestDeckForCha
         return cardPoints;
     }
 
-    private Map<CardMeter, Integer> calculateThePerfectDeck(Map<CardMeter, Integer> cardsWeightMap, Map<CardMeter, Double> averagePointsMap) {
-        Map<CardMeter, Integer> perfectDeck = new HashMap<>();
+    private Map<Integer, Integer> calculateThePerfectDeck(Map<CardMeter, Integer> cardsWeightMap, Map<CardMeter, Double> averagePointsMap) {
+        Map<Integer, Integer> perfectDeck = new HashMap<>();
         double remainingPoints = 15.0;
 
         while (!cardsWeightMap.isEmpty() && remainingPoints > 0) {
@@ -81,7 +81,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<BestDeckForCha
 
             if (bestCard != null) {
                 int pointsToAdd = Math.min(bestCard.getPoints(), (int) Math.floor(remainingPoints));
-                perfectDeck.put(bestCard, pointsToAdd);
+                perfectDeck.put(bestCard.getCardId(), pointsToAdd);
                 remainingPoints -= pointsToAdd;
                 cardsWeightMap.remove(bestCard);
             } else {

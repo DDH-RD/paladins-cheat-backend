@@ -158,11 +158,11 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_DECK_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<BestDeckForChampEvaluation.CardMeter, Integer>>> getBestDeckForChamp(@RequestParam(required = false) String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@RequestParam(required = false) String matchType, @PathVariable int champId) {
 
         Main.REST_LOGGER.info("EVALUATED BEST DECK FOR CHAMP " + champId);
 
-        DeferredResult<ResponseEntity<Map<BestDeckForChampEvaluation.CardMeter, Integer>>> deferredResult = new DeferredResult<>();
+        DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
                     BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
                     return evaluation.evaluate();
