@@ -4,6 +4,7 @@ import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
 
     private final String mapName;
     private final GameDao gameDao;
-    private final boolean ranked;
+    private final GameController.MatchType matchType;
 
     public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
@@ -51,7 +52,7 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
     }
 
     private Map<GameDto, ChampDto[]> preparation(int champCategory) {
-        List<GameDto> gamesForMap = new ArrayList<>(List.of(gameDao.fetchMatchesOnMap(ranked, mapName)));
+        List<GameDto> gamesForMap = new ArrayList<>(List.of(gameDao.fetchMatchesOnMap(matchType, mapName)));
         Map<GameDto, ChampDto[]> gamesWithChamps = new HashMap<>();
         for (GameDto game : gamesForMap) {
             ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());

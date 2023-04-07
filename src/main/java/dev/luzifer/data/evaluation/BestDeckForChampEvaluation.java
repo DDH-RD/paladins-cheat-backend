@@ -3,6 +3,7 @@ package dev.luzifer.data.evaluation;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.spring.controller.GameController;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<BestDeckForCha
 
     private final int champId;
     private final GameDao gameDao;
-    private final boolean ranked;
+    private final GameController.MatchType matchType;
 
     @Override
     public Map<CardMeter, Integer> evaluate() {
@@ -114,7 +115,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<BestDeckForCha
     }
 
     private Map<GameDto, Map<ChampDto, CardMeter[]>> preparation() {
-        GameDto[] games = gameDao.fetchMatchesWithChamp(ranked, champId);
+        GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
         Map<GameDto, Map<ChampDto, CardMeter[]>> resultMap = new HashMap<>();
         for(GameDto game : games) {
             ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());

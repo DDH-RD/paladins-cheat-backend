@@ -3,6 +3,7 @@ package dev.luzifer.data.access;
 import dev.luzifer.Main;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.spring.controller.GameController;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -165,14 +166,19 @@ public class Database {
         }
     }
 
-    public int countEntries(boolean ranked) {
+    public int countEntries(GameController.MatchType matchType) {
 
         if(!isConnection())
             connect();
 
         String sql = "SELECT COUNT(*) FROM games";
-        if (ranked) {
-            sql += " WHERE ranked = 1";
+        switch (matchType) {
+            case RANKED:
+                sql += " WHERE ranked = 1";
+                break;
+            case CASUAL:
+                sql += " WHERE ranked = 0";
+                break;
         }
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -187,14 +193,19 @@ public class Database {
         return -1;
     }
 
-    public GameDto[] fetchGamesWithChamp(boolean isRanked, int champId) {
+    public GameDto[] fetchGamesWithChamp(GameController.MatchType matchType, int champId) {
         if(!isConnection()) {
             connect();
         }
 
         String sql = "SELECT * FROM games WHERE id IN (SELECT game_id FROM champs WHERE champ_id = ?)";
-        if (isRanked) {
-            sql += " AND ranked = 1";
+        switch (matchType) {
+            case RANKED:
+                sql += " WHERE ranked = 1";
+                break;
+            case CASUAL:
+                sql += " WHERE ranked = 0";
+                break;
         }
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -231,14 +242,19 @@ public class Database {
         }
     }
 
-    public GameDto[] fetchGamesOnMap(boolean isRanked, String mapName) {
+    public GameDto[] fetchGamesOnMap(GameController.MatchType matchType, String mapName) {
         if (!isConnection()) {
             connect();
         }
 
         String sql = "SELECT * FROM games WHERE map_name = ?";
-        if (isRanked) {
-            sql += " AND ranked = 1";
+        switch (matchType) {
+            case RANKED:
+                sql += " WHERE ranked = 1";
+                break;
+            case CASUAL:
+                sql += " WHERE ranked = 0";
+                break;
         }
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -275,14 +291,19 @@ public class Database {
         }
     }
 
-    public GameDto[] fetchGames(boolean isRanked) {
+    public GameDto[] fetchGames(GameController.MatchType matchType) {
         if (!isConnection()) {
             connect();
         }
 
         String sql = "SELECT * FROM games";
-        if (isRanked) {
-            sql += " WHERE ranked = 1";
+        switch (matchType) {
+            case RANKED:
+                sql += " WHERE ranked = 1";
+                break;
+            case CASUAL:
+                sql += " WHERE ranked = 0";
+                break;
         }
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {

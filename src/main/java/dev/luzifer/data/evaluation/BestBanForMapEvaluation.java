@@ -3,6 +3,7 @@ package dev.luzifer.data.evaluation;
 import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private final String mapName;
     private final GameDao gameDao;
-    private final boolean ranked;
+    private final GameController.MatchType matchType;
 
     public Map<Integer, Integer> evaluate() {
         return MapUtil.sortByValue(preparation());
@@ -28,7 +29,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private Map<Integer, Integer> preparation() {
 
-        GameDto[] games = gameDao.fetchMatchesOnMap(ranked, mapName);
+        GameDto[] games = gameDao.fetchMatchesOnMap(matchType, mapName);
 
         List<Integer[]> bannedChampsForMap = new ArrayList<>();
         for (GameDto game : games) {

@@ -4,6 +4,7 @@ import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
@@ -14,7 +15,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
 
     private final int champId;
     private final GameDao gameDao;
-    private final boolean ranked;
+    private final GameController.MatchType matchType;
 
     @Override
     public Map<Integer, Integer> evaluate() {
@@ -47,7 +48,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
 
     private Map<GameDto, ChampDto> preparation() {
         Map<GameDto, ChampDto> champs = new HashMap<>();
-        GameDto[] games = gameDao.fetchMatchesWithChamp(ranked, champId);
+        GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
         for(GameDto game : games) {
             ChampDto[] fetchedChamps = gameDao.fetchChampsForMatch(game.getId());
             for(ChampDto champ : fetchedChamps) {
