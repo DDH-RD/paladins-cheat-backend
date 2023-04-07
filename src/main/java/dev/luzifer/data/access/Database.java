@@ -170,7 +170,11 @@ public class Database {
         if(!isConnection())
             connect();
 
-        String sql = "SELECT COUNT(*) FROM games WHERE ranked = " + (ranked ? 1 : 0) + "";
+        String sql = "SELECT COUNT(*) FROM games";
+        if (ranked) {
+            sql += " WHERE ranked = 1";
+        }
+
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -190,8 +194,6 @@ public class Database {
         String sql = "SELECT * FROM games";
         if (isRanked) {
             sql += " WHERE ranked = 1";
-        } else {
-            sql += " WHERE ranked = 0";
         }
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
