@@ -21,6 +21,14 @@ public class GameDao {
         return database.fetchGames(ranked);
     }
 
+    public GameDto[] fetchMatchesOnMap(boolean ranked, String mapName) {
+        return database.fetchGamesOnMap(ranked, mapName);
+    }
+
+    public GameDto[] fetchMatchesWithChamp(boolean ranked, int champId) {
+        return database.fetchGamesWithChamp(ranked, champId);
+    }
+
     public ChampDto[] fetchChampsForMatch(int matchId) {
         return database.fetchChamps(matchId);
     }

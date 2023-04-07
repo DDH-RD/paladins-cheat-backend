@@ -187,6 +187,94 @@ public class Database {
         return -1;
     }
 
+    public GameDto[] fetchGamesWithChamp(boolean isRanked, int champId) {
+        if(!isConnection()) {
+            connect();
+        }
+
+        String sql = "SELECT * FROM games WHERE id IN (SELECT game_id FROM champs WHERE champ_id = ?)";
+        if (isRanked) {
+            sql += " AND ranked = 1";
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, champId);
+            ResultSet resultSet = statement.executeQuery();
+            List<GameDto> games = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                ChampDto[] champs = fetchChamps(id);
+
+                GameDto game = new GameDto(id,
+                        resultSet.getString("map_name"),
+                        resultSet.getInt("ranked"),
+                        resultSet.getInt("average_rank"),
+                        resultSet.getInt("banned_champ1"),
+                        resultSet.getInt("banned_champ2"),
+                        resultSet.getInt("banned_champ3"),
+                        resultSet.getInt("banned_champ4"),
+                        resultSet.getInt("banned_champ5"),
+                        resultSet.getInt("banned_champ6"),
+                        resultSet.getInt("team1_points"),
+                        resultSet.getInt("team2_points"),
+                        champs,
+                        resultSet.getLong("duration"),
+                        resultSet.getLong("timestamp"),
+                        resultSet.getDouble("season"));
+                games.add(game);
+            }
+            Main.DATABASE_LOGGER.info("FETCHED " + games.size() + " GAMES WITH CHAMP " + champId + " FROM THE DATABASE");
+            return games.toArray(new GameDto[0]);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public GameDto[] fetchGamesOnMap(boolean isRanked, String mapName) {
+        if (!isConnection()) {
+            connect();
+        }
+
+        String sql = "SELECT * FROM games WHERE map_name = ?";
+        if (isRanked) {
+            sql += " AND ranked = 1";
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, mapName);
+            ResultSet resultSet = statement.executeQuery();
+            List<GameDto> games = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                ChampDto[] champs = fetchChamps(id);
+
+                GameDto game = new GameDto(id,
+                        resultSet.getString("map_name"),
+                        resultSet.getInt("ranked"),
+                        resultSet.getInt("average_rank"),
+                        resultSet.getInt("banned_champ1"),
+                        resultSet.getInt("banned_champ2"),
+                        resultSet.getInt("banned_champ3"),
+                        resultSet.getInt("banned_champ4"),
+                        resultSet.getInt("banned_champ5"),
+                        resultSet.getInt("banned_champ6"),
+                        resultSet.getInt("team1_points"),
+                        resultSet.getInt("team2_points"),
+                        champs,
+                        resultSet.getLong("duration"),
+                        resultSet.getLong("timestamp"),
+                        resultSet.getDouble("season"));
+                games.add(game);
+            }
+            Main.DATABASE_LOGGER.info("FETCHED " + games.size() + " GAMES FROM THE DATABASE");
+            return games.toArray(new GameDto[0]);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public GameDto[] fetchGames(boolean isRanked) {
         if (!isConnection()) {
             connect();

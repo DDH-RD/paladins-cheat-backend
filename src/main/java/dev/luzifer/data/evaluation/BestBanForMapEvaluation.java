@@ -28,21 +28,19 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private Map<Integer, Integer> preparation() {
 
-        GameDto[] games = gameDao.fetchMatches(ranked);
+        GameDto[] games = gameDao.fetchMatchesOnMap(ranked, mapName);
 
         List<Integer[]> bannedChampsForMap = new ArrayList<>();
         for (GameDto game : games) {
-            if (game.getMapName().equals(mapName)) {
-                int ban1 = game.getBannedChamp1();
-                int ban2 = game.getBannedChamp2();
-                int ban3 = game.getBannedChamp3();
-                int ban4 = game.getBannedChamp4();
-                int ban5 = game.getBannedChamp5();
-                int ban6 = game.getBannedChamp6();
+            int ban1 = game.getBannedChamp1();
+            int ban2 = game.getBannedChamp2();
+            int ban3 = game.getBannedChamp3();
+            int ban4 = game.getBannedChamp4();
+            int ban5 = game.getBannedChamp5();
+            int ban6 = game.getBannedChamp6();
 
-                Integer[] banned = new Integer[] {ban1, ban2, ban3, ban4, ban5, ban6};
-                bannedChampsForMap.add(banned);
-            }
+            Integer[] banned = new Integer[] {ban1, ban2, ban3, ban4, ban5, ban6};
+            bannedChampsForMap.add(banned);
         }
 
         Map<Integer, Integer> bannedChamps = new HashMap<>();

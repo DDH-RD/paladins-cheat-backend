@@ -7,6 +7,7 @@ import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.evaluation.BestBanForMapEvaluation;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
 import dev.luzifer.data.evaluation.BestCounterChampEvaluation;
+import dev.luzifer.data.evaluation.BestTalentForChampEvaluation;
 import dev.luzifer.data.match.info.GameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -135,6 +136,20 @@ public class GameController {
         String finalMapName = mapName;
         CompletableFuture.supplyAsync(() -> {
                     BestBanForMapEvaluation evaluation = new BestBanForMapEvaluation(finalMapName, gameDao, rankedOnly);
+                    return evaluation.evaluate();
+                }, TASK_EXECUTOR)
+                .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
+        return deferredResult;
+    }
+
+    @GetMapping(WebPath.GET_BEST_TALENT_FOR_CHAMP)
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@RequestParam(required = false) boolean rankedOnly, @PathVariable int champId) {
+
+        Main.REST_LOGGER.info("EVALUATED BEST TALENT FOR CHAMP " + champId);
+
+        DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
+        CompletableFuture.supplyAsync(() -> {
+                    BestTalentForChampEvaluation evaluation = new BestTalentForChampEvaluation(champId, gameDao, rankedOnly);
                     return evaluation.evaluate();
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
