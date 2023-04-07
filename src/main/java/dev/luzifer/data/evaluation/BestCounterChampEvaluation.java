@@ -57,11 +57,10 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
         GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
         for(GameDto game : games) {
-            ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());
             List<ChampDto> enemyChamps = new ArrayList<>();
-            for(ChampDto champ : champs) {
+            for(ChampDto champ : game.getChamps()) {
                 if(champ.getId() == champId) {
-                    for(ChampDto enemyChamp : champs) {
+                    for(ChampDto enemyChamp : game.getChamps()) {
                         if(enemyChamp.getWon() != champ.getWon() && (champCategory == -1 || enemyChamp.getCategoryId() == champCategory)) {
                             enemyChamps.add(enemyChamp);
                         }

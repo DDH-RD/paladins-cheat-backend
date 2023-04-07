@@ -7,10 +7,9 @@ import java.util.Map;
 
 public class MapUtil {
 
-    // if this doesn't work its chatgpts fault, not mine
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
-        list.sort(Map.Entry.comparingByValue());
+        list.sort(Map.Entry.<K, V>comparingByValue().reversed());
 
         Map<K, V> result = new LinkedHashMap<>();
         for (Map.Entry<K, V> entry : list) {

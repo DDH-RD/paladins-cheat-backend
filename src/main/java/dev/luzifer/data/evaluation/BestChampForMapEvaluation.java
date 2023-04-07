@@ -55,9 +55,8 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
         List<GameDto> gamesForMap = new ArrayList<>(List.of(gameDao.fetchMatchesOnMap(matchType, mapName)));
         Map<GameDto, ChampDto[]> gamesWithChamps = new HashMap<>();
         for (GameDto game : gamesForMap) {
-            ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());
             List<ChampDto> champsForCategory = new ArrayList<>();
-            for (ChampDto champ : champs) {
+            for (ChampDto champ : game.getChamps()) {
                 if (champCategory == -1 || champ.getCategoryId() == champCategory) { // -1 = all champs
                     champsForCategory.add(champ);
                 }

@@ -198,7 +198,7 @@ public class Database {
             connect();
         }
 
-        String sql = "SELECT * FROM games WHERE id IN (SELECT game_id FROM champs WHERE champ_id = ?)";
+        String sql = "SELECT * FROM games WHERE id IN (SELECT match_id FROM champs WHERE id = ?)";
         switch (matchType) {
             case RANKED:
                 sql += " AND ranked = 1";

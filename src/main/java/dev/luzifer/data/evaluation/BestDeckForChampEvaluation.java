@@ -118,8 +118,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<BestDeckForCha
         GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
         Map<GameDto, Map<ChampDto, CardMeter[]>> resultMap = new HashMap<>();
         for(GameDto game : games) {
-            ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());
-            for(ChampDto champ : champs) {
+            for(ChampDto champ : game.getChamps()) {
                 if(champ.getId() == champId) {
                     Map<ChampDto, CardMeter[]> cardMap = new HashMap<>();
                     CardMeter card1 = new CardMeter(champ.getDeckCard1(), champ.getDeckCard1Level());
