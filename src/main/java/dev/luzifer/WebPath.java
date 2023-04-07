@@ -15,4 +15,5 @@ public class WebPath {
     public static final String GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP = GET + "/bestCounterChampOfCategoryForChamp/{champId}/{champCategory}";
     public static final String GET_BEST_BAN_FOR_MAP = GET + "/bestBanForMap/{mapName}";
     public static final String GET_BEST_TALENT_FOR_CHAMP = GET + "/bestTalentForChamp/{champId}";
+    public static final String GET_BEST_DECK_FOR_CHAMP = GET + "/bestDeckForChamp/{champId}";
 }

@@ -7,6 +7,7 @@ import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.evaluation.BestBanForMapEvaluation;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
 import dev.luzifer.data.evaluation.BestCounterChampEvaluation;
+import dev.luzifer.data.evaluation.BestDeckForChampEvaluation;
 import dev.luzifer.data.evaluation.BestTalentForChampEvaluation;
 import dev.luzifer.data.match.info.GameDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,6 +151,20 @@ public class GameController {
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
                     BestTalentForChampEvaluation evaluation = new BestTalentForChampEvaluation(champId, gameDao, rankedOnly);
+                    return evaluation.evaluate();
+                }, TASK_EXECUTOR)
+                .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
+        return deferredResult;
+    }
+
+    @GetMapping(WebPath.GET_BEST_DECK_FOR_CHAMP)
+    public @ResponseBody DeferredResult<ResponseEntity<Map<BestDeckForChampEvaluation.CardMeter, Integer>>> getBestDeckForChamp(@RequestParam(required = false) boolean rankedOnly, @PathVariable int champId) {
+
+        Main.REST_LOGGER.info("EVALUATED BEST DECK FOR CHAMP " + champId);
+
+        DeferredResult<ResponseEntity<Map<BestDeckForChampEvaluation.CardMeter, Integer>>> deferredResult = new DeferredResult<>();
+        CompletableFuture.supplyAsync(() -> {
+                    BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, rankedOnly);
                     return evaluation.evaluate();
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
