@@ -16,6 +16,7 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
 
     private final String mapName;
     private final GameDao gameDao;
+    private final boolean ranked;
 
     public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
@@ -51,7 +52,7 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
 
     private Map<GameDto, ChampDto[]> preparation(int champCategory) {
 
-        GameDto[] games = gameDao.fetchMatches();
+        GameDto[] games = gameDao.fetchMatches(ranked);
 
         List<GameDto> gamesForMap = new ArrayList<>();
         for (GameDto game : games) {

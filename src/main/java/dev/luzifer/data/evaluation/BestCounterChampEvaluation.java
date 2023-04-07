@@ -16,6 +16,7 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private final int champId;
     private final GameDao gameDao;
+    private final boolean ranked;
 
     public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
@@ -53,7 +54,7 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
         Map<GameDto, ChampDto[]> resultMap = new HashMap<>();
 
-        GameDto[] games = gameDao.fetchMatches();
+        GameDto[] games = gameDao.fetchMatches(ranked);
         for(GameDto game : games) {
             ChampDto[] champs = gameDao.fetchChampsForMatch(game.getId());
             boolean contains = false;

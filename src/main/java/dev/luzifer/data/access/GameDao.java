@@ -15,14 +15,14 @@ public class GameDao {
         Main.LOGGER.info("INSERTED " + gameDtos.length + " GAMES");
     }
 
-    public int count() {
-        int count = database.countEntries();
+    public int count(boolean ranked) {
+        int count = database.countEntries(ranked);
         Main.LOGGER.info("COUNTED " + count + " GAMES");
         return count;
     }
 
-    public GameDto[] fetchMatches() {
-        GameDto[] matches = database.fetchAll();
+    public GameDto[] fetchMatches(boolean ranked) {
+        GameDto[] matches = database.fetchGames(ranked);
         Main.LOGGER.info("FETCHED " + matches.length + " GAMES");
         return matches;
     }

@@ -165,12 +165,12 @@ public class Database {
         }
     }
 
-    public int countEntries() {
+    public int countEntries(boolean ranked) {
 
         if(!isConnection())
             connect();
 
-        String sql = "SELECT COUNT(*) FROM games";
+        String sql = "SELECT COUNT(*) FROM games WHERE ranked = " + (ranked ? 1 : 0) + "";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -182,22 +182,26 @@ public class Database {
         return -1;
     }
 
-    public GameDto[] fetchAll() {
-
-        if(!isConnection())
+    public GameDto[] fetchGames(boolean isRanked) {
+        if (!isConnection()) {
             connect();
+        }
 
         String sql = "SELECT * FROM games";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        if (isRanked) {
+            sql += " WHERE ranked = 1";
+        } else {
+            sql += " WHERE ranked = 0";
+        }
 
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
             List<GameDto> games = new ArrayList<>();
 
             while (resultSet.next()) {
-
                 int id = resultSet.getInt("id");
-
                 ChampDto[] champs = fetchChamps(id);
+
                 GameDto game = new GameDto(id,
                         resultSet.getString("map_name"),
                         resultSet.getInt("ranked"),
@@ -214,6 +218,7 @@ public class Database {
                         resultSet.getLong("duration"),
                         resultSet.getLong("timestamp"),
                         resultSet.getDouble("season"));
+
                 games.add(game);
             }
 

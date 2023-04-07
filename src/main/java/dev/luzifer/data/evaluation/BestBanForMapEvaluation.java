@@ -15,6 +15,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private final String mapName;
     private final GameDao gameDao;
+    private final boolean ranked;
 
     public Map<Integer, Integer> evaluate() {
         return MapUtil.sortByValue(preparation());
@@ -27,7 +28,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private Map<Integer, Integer> preparation() {
 
-        GameDto[] games = gameDao.fetchMatches();
+        GameDto[] games = gameDao.fetchMatches(ranked);
 
         List<Integer[]> bannedChampsForMap = new ArrayList<>();
         for (GameDto game : games) {
