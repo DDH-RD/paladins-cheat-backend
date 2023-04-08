@@ -5,6 +5,7 @@ import dev.luzifer.Main;
 import dev.luzifer.WebPath;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.evaluation.BestBanForMapEvaluation;
+import dev.luzifer.data.evaluation.BestChampEvaluation;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
 import dev.luzifer.data.evaluation.BestCounterChampEvaluation;
 import dev.luzifer.data.evaluation.BestDeckForChampEvaluation;
@@ -166,6 +167,34 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
                     return evaluation.evaluate();
+                }, TASK_EXECUTOR)
+                .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
+        return deferredResult;
+    }
+
+    @GetMapping(WebPath.GET_BEST_CHAMP)
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@RequestParam(required = false) String matchType) {
+
+        Main.REST_LOGGER.info("EVALUATED BEST CHAMP");
+
+        DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
+        CompletableFuture.supplyAsync(() -> {
+                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, MatchType.valueOf(matchType));
+                    return evaluation.evaluate();
+                }, TASK_EXECUTOR)
+                .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
+        return deferredResult;
+    }
+
+    @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY)
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@RequestParam(required = false) String matchType, @PathVariable int champCategory) {
+
+        Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory);
+
+        DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
+        CompletableFuture.supplyAsync(() -> {
+                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, MatchType.valueOf(matchType));
+                    return evaluation.evaluate(champCategory);
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
