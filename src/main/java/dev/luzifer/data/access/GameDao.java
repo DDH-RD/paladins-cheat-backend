@@ -18,6 +18,18 @@ public class GameDao {
         return database.countEntries(matchType);
     }
 
+    public int countMap(GameController.MatchType matchType, String mapName) {
+        return database.countEntriesOnMap(mapName, matchType);
+    }
+
+    public int countChamp(GameController.MatchType matchType, int champId) {
+        return database.countEntriesWithChamp(champId, matchType);
+    }
+
+    public int countChampOnMap(GameController.MatchType matchType, int champId, String mapName) {
+        return database.countEntriesWithChampOnMap(champId, mapName, matchType);
+    }
+
     public GameDto[] fetchMatches(GameController.MatchType matchType) {
         return database.fetchGames(matchType);
     }

@@ -166,6 +166,88 @@ public class Database {
         }
     }
 
+    public int countEntriesOnMap(String mapName, GameController.MatchType matchType) {
+        if(!isConnection())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM games WHERE map_name = ?";
+        switch (matchType) {
+            case RANKED:
+                sql += " AND ranked = 1";
+                break;
+            case CASUAL:
+                sql += " AND ranked = 0";
+                break;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, mapName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Main.DATABASE_LOGGER.info("COUNTED " + resultSet.getInt(1) + " ENTRIES ON MAP " + mapName + " IN THE DATABASE");
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    public int countEntriesWithChamp(int champId, GameController.MatchType matchType) {
+        if(!isConnection())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM games WHERE id IN (SELECT game_id FROM champs WHERE champ_id = ?)";
+        switch (matchType) {
+            case RANKED:
+                sql += " AND ranked = 1";
+                break;
+            case CASUAL:
+                sql += " AND ranked = 0";
+                break;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, champId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Main.DATABASE_LOGGER.info("COUNTED " + resultSet.getInt(1) + " ENTRIES WITH CHAMP " + champId + " IN THE DATABASE");
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    public int countEntriesWithChampOnMap(int champId, String mapName, GameController.MatchType matchType) {
+        if(!isConnection())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM games WHERE map_name = ? AND id IN (SELECT game_id FROM champs WHERE champ_id = ?)";
+        switch (matchType) {
+            case RANKED:
+                sql += " AND ranked = 1";
+                break;
+            case CASUAL:
+                sql += " AND ranked = 0";
+                break;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, mapName);
+            statement.setInt(2, champId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Main.DATABASE_LOGGER.info("COUNTED " + resultSet.getInt(1) + " ENTRIES WITH CHAMP " + champId + " ON MAP " + mapName + " IN THE DATABASE");
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
     public int countEntries(GameController.MatchType matchType) {
 
         if(!isConnection())

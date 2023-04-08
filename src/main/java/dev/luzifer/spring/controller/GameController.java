@@ -31,7 +31,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 @RestController
 @RequestMapping(WebPath.GAME)
@@ -45,7 +44,7 @@ public class GameController {
                     TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<>(10000),
                     new ThreadFactoryBuilder()
-                            .setUncaughtExceptionHandler((t, e) -> Main.REST_LOGGER.log(Level.SEVERE, "Uncaught exception in thread " + t.getName(), e))
+                            .setUncaughtExceptionHandler((t, e) -> e.printStackTrace())
                             .setDaemon(true)
                             .setNameFormat("Paladins Task-%d")
                             .build(),
@@ -64,6 +63,34 @@ public class GameController {
     public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@RequestParam(required = false) String matchType) {
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> gameDao.count(MatchType.valueOf(matchType)), TASK_EXECUTOR)
+                .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
+        return deferredResult;
+    }
+
+    @GetMapping(WebPath.GET_COUNT_ON_MAP)
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMap(@RequestParam(required = false) String matchType, @PathVariable String mapName) {
+        mapName = mapName.replace("_", " ");
+        DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
+        String finalMapName = mapName;
+        CompletableFuture.supplyAsync(() -> gameDao.countMap(MatchType.valueOf(matchType), finalMapName), TASK_EXECUTOR)
+                .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
+        return deferredResult;
+    }
+
+    @GetMapping(WebPath.GET_COUNT_ON_CHAMP)
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countChamp(@RequestParam(required = false) String matchType, @PathVariable int champId) {
+        DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
+        CompletableFuture.supplyAsync(() -> gameDao.countChamp(MatchType.valueOf(matchType), champId), TASK_EXECUTOR)
+                .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
+        return deferredResult;
+    }
+
+    @GetMapping(WebPath.GET_COUNT_ON_MAP_AND_CHAMP)
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMapAndChamp(@RequestParam(required = false) String matchType, @PathVariable String mapName, @PathVariable int champId) {
+        mapName = mapName.replace("_", " ");
+        DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
+        String finalMapName = mapName;
+        CompletableFuture.supplyAsync(() -> gameDao.countChampOnMap(MatchType.valueOf(matchType), champId, finalMapName), TASK_EXECUTOR)
                 .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -199,7 +226,7 @@ public class GameController {
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
-    
+
     public enum MatchType {
         ALL,
         RANKED, 
