@@ -1,5 +1,6 @@
 package dev.luzifer.data.evaluation;
 
+import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
@@ -45,7 +46,7 @@ public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
             }
         }
 
-        return champPoints;
+        return MapUtil.sortByValue(champPoints);
     }
 
     private Map<GameDto, ChampDto[]> preparation(int champCategory) {

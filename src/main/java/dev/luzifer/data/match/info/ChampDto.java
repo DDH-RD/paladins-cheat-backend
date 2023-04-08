@@ -15,6 +15,14 @@ public class ChampDto {
 
     /* Die ID des Champs */
     int id;
+    /* player specific data */
+    int playerId;
+    String playerName;
+    String region;
+    int platformId;
+    int leagueTier;
+    int leaguePoints;
+    int champLevel;
     /* 0 = false, 1 = true */
     int won;
     /* Die ID der Champ-Category
@@ -24,6 +32,8 @@ public class ChampDto {
      *  3: DAMAGE
      */
     int categoryId;
+    /* credits */
+    int goldEarned;
     /* Das Talent, dass der jeweilige Champ gespielt hat. */
     int talentId;
     /* Die IDs der einzelnen Karten. */
@@ -49,6 +59,7 @@ public class ChampDto {
     int item3Level;
     int item4Level;
     /* Game stats. */
+    int killingSpree;
     int kills;
     int deaths;
     int assists;

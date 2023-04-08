@@ -79,7 +79,7 @@ public class Database {
 
         String sql = "INSERT IGNORE INTO games (id, map_name, ranked, average_rank, banned_champ1, banned_champ2, banned_champ3, banned_champ4, banned_champ5, banned_champ6, team1_points, team2_points, duration, timestamp, season) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement champStatement = connection.prepareStatement(
-                     "INSERT IGNORE INTO champs (id, match_id, won, category_id, talent_id, deck_card1, deck_card2, deck_card3, deck_card4, deck_card5, deck_card1_level, deck_card2_level, deck_card3_level, deck_card4_level, deck_card5_level, item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, kills, deaths, assists, damage_done, damage_taken, damage_shielded, heal, self_heal) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
+                     "INSERT IGNORE INTO champs (id, match_id, player_id, player_name, region, platform_id, league_tier, league_points, champ_level, won, category_id, gold_earned, talent_id, deck_card1, deck_card2, deck_card3, deck_card4, deck_card5, deck_card1_level, deck_card2_level, deck_card3_level, deck_card4_level, deck_card5_level, item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, killing_spree, kills, deaths, assists, damage_done, damage_taken, damage_shielded, heal, self_heal) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
 
             try (PreparedStatement gamesStatement = connection.prepareStatement(sql)) {
                 for(GameDto gameDto : games) {
@@ -100,38 +100,47 @@ public class Database {
                     gamesStatement.setDouble(15, gameDto.getSeason());
                     gamesStatement.addBatch();
 
-                    for(ChampDto champ : gameDto.getChamps()) {
+                    for (ChampDto champ : gameDto.getChamps()) {
                         champStatement.setInt(1, champ.getId());
                         champStatement.setInt(2, gameDto.getId());
-                        champStatement.setInt(3, champ.getWon());
-                        champStatement.setInt(4, champ.getCategoryId());
-                        champStatement.setInt(5, champ.getTalentId());
-                        champStatement.setInt(6, champ.getDeckCard1());
-                        champStatement.setInt(7, champ.getDeckCard2());
-                        champStatement.setInt(8, champ.getDeckCard3());
-                        champStatement.setInt(9, champ.getDeckCard4());
-                        champStatement.setInt(10, champ.getDeckCard5());
-                        champStatement.setInt(11, champ.getDeckCard1Level());
-                        champStatement.setInt(12, champ.getDeckCard2Level());
-                        champStatement.setInt(13, champ.getDeckCard3Level());
-                        champStatement.setInt(14, champ.getDeckCard4Level());
-                        champStatement.setInt(15, champ.getDeckCard5Level());
-                        champStatement.setInt(16, champ.getItem1());
-                        champStatement.setInt(17, champ.getItem2());
-                        champStatement.setInt(18, champ.getItem3());
-                        champStatement.setInt(19, champ.getItem4());
-                        champStatement.setInt(20, champ.getItem1Level());
-                        champStatement.setInt(21, champ.getItem2Level());
-                        champStatement.setInt(22, champ.getItem3Level());
-                        champStatement.setInt(23, champ.getItem4Level());
-                        champStatement.setInt(24, champ.getKills());
-                        champStatement.setInt(25, champ.getDeaths());
-                        champStatement.setInt(26, champ.getAssists());
-                        champStatement.setLong(27, champ.getDamageDone());
-                        champStatement.setLong(28, champ.getDamageTaken());
-                        champStatement.setLong(29, champ.getDamageShielded());
-                        champStatement.setLong(30, champ.getHeal());
-                        champStatement.setLong(31, champ.getSelfHeal());
+                        champStatement.setInt(3, champ.getPlayerId());
+                        champStatement.setString(4, champ.getPlayerName());
+                        champStatement.setString(5, champ.getRegion());
+                        champStatement.setInt(6, champ.getPlatformId());
+                        champStatement.setInt(7, champ.getLeagueTier());
+                        champStatement.setInt(8, champ.getLeaguePoints());
+                        champStatement.setInt(9, champ.getChampLevel());
+                        champStatement.setInt(10, champ.getWon());
+                        champStatement.setInt(11, champ.getCategoryId());
+                        champStatement.setLong(12, champ.getGoldEarned());
+                        champStatement.setInt(13, champ.getTalentId());
+                        champStatement.setInt(14, champ.getDeckCard1());
+                        champStatement.setInt(15, champ.getDeckCard2());
+                        champStatement.setInt(16, champ.getDeckCard3());
+                        champStatement.setInt(17, champ.getDeckCard4());
+                        champStatement.setInt(18, champ.getDeckCard5());
+                        champStatement.setInt(19, champ.getDeckCard1Level());
+                        champStatement.setInt(20, champ.getDeckCard2Level());
+                        champStatement.setInt(21, champ.getDeckCard3Level());
+                        champStatement.setInt(22, champ.getDeckCard4Level());
+                        champStatement.setInt(23, champ.getDeckCard5Level());
+                        champStatement.setInt(24, champ.getItem1());
+                        champStatement.setInt(25, champ.getItem2());
+                        champStatement.setInt(26, champ.getItem3());
+                        champStatement.setInt(27, champ.getItem4());
+                        champStatement.setInt(28, champ.getItem1Level());
+                        champStatement.setInt(29, champ.getItem2Level());
+                        champStatement.setInt(30, champ.getItem3Level());
+                        champStatement.setInt(31, champ.getItem4Level());
+                        champStatement.setInt(32, champ.getKillingSpree());
+                        champStatement.setInt(33, champ.getKills());
+                        champStatement.setInt(34, champ.getDeaths());
+                        champStatement.setInt(35, champ.getAssists());
+                        champStatement.setLong(36, champ.getDamageDone());
+                        champStatement.setLong(37, champ.getDamageTaken());
+                        champStatement.setLong(38, champ.getDamageShielded());
+                        champStatement.setLong(39, champ.getHeal());
+                        champStatement.setLong(40, champ.getSelfHeal());
                         champStatement.addBatch();
                     }
                 }
@@ -435,8 +444,16 @@ public class Database {
             while (resultSet.next()) {
 
                 ChampDto champ = new ChampDto(resultSet.getInt("id"),
+                        resultSet.getInt("player_id"),
+                        resultSet.getString("player_name"),
+                        resultSet.getString("region"),
+                        resultSet.getInt("platform_id"),
+                        resultSet.getInt("league_tier"),
+                        resultSet.getInt("league_points"),
+                        resultSet.getInt("champ_level"),
                         resultSet.getInt("won"),
                         resultSet.getInt("category_id"),
+                        resultSet.getInt("gold_earned"),
                         resultSet.getInt("talent_id"),
                         resultSet.getInt("deck_card1"),
                         resultSet.getInt("deck_card2"),
@@ -456,6 +473,7 @@ public class Database {
                         resultSet.getInt("item2Level"),
                         resultSet.getInt("item3Level"),
                         resultSet.getInt("item4Level"),
+                        resultSet.getInt("killing_spree"),
                         resultSet.getInt("kills"),
                         resultSet.getInt("deaths"),
                         resultSet.getInt("assists"),
@@ -478,8 +496,16 @@ public class Database {
                 "  hurensohn INTEGER NOT NULL AUTO_INCREMENT,\n" +
                 "  id INTEGER NOT NULL DEFAULT 0,\n" +
                 "  match_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  player_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  player_name VARCHAR(255) NOT NULL DEFAULT '',\n" +
+                "  region VARCHAR(255) NOT NULL DEFAULT '',\n" +
+                "  platform_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  league_tier INTEGER NOT NULL DEFAULT 0,\n" +
+                "  league_points INTEGER NOT NULL DEFAULT 0,\n" +
+                "  champ_level INTEGER NOT NULL DEFAULT 0,\n" +
                 "  won INTEGER NOT NULL DEFAULT 0,\n" +
                 "  category_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  gold_earned INTEGER NOT NULL DEFAULT 0,\n" +
                 "  talent_id INTEGER NOT NULL DEFAULT 0,\n" +
                 "  deck_card1 INTEGER NOT NULL DEFAULT 0,\n" +
                 "  deck_card2 INTEGER NOT NULL DEFAULT 0,\n" +
@@ -499,6 +525,7 @@ public class Database {
                 "  item2Level INTEGER NOT NULL DEFAULT 0,\n" +
                 "  item3Level INTEGER NOT NULL DEFAULT 0,\n" +
                 "  item4Level INTEGER NOT NULL DEFAULT 0,\n" +
+                "  killing_spree INTEGER NOT NULL DEFAULT 0,\n" +
                 "  kills INTEGER NOT NULL DEFAULT 0,\n" +
                 "  deaths INTEGER NOT NULL DEFAULT 0,\n" +
                 "  assists INTEGER NOT NULL DEFAULT 0,\n" +

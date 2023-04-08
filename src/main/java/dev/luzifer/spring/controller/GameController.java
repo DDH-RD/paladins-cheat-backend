@@ -60,7 +60,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_COUNT)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@RequestParam(required = false) String matchType) {
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@RequestParam String matchType) {
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> gameDao.count(MatchType.valueOf(matchType)), TASK_EXECUTOR)
                 .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
@@ -68,7 +68,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_COUNT_ON_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMap(@RequestParam(required = false) String matchType, @PathVariable String mapName) {
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMap(@RequestParam String matchType, @PathVariable String mapName) {
         mapName = mapName.replace("_", " ");
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
         String finalMapName = mapName;
@@ -78,7 +78,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_COUNT_ON_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countChamp(@RequestParam(required = false) String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countChamp(@RequestParam String matchType, @PathVariable int champId) {
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> gameDao.countChamp(MatchType.valueOf(matchType), champId), TASK_EXECUTOR)
                 .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
@@ -86,7 +86,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_COUNT_ON_MAP_AND_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMapAndChamp(@RequestParam(required = false) String matchType, @PathVariable String mapName, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMapAndChamp(@RequestParam String matchType, @PathVariable String mapName, @PathVariable int champId) {
         mapName = mapName.replace("_", " ");
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
         String finalMapName = mapName;
@@ -96,7 +96,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@RequestParam(required = false) String matchType, @PathVariable String mapName) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@RequestParam String matchType, @PathVariable String mapName) {
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
@@ -112,7 +112,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@RequestParam(required = false) String matchType, @PathVariable String mapName, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@RequestParam String matchType, @PathVariable String mapName, @PathVariable int champCategory) {
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
@@ -128,7 +128,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@RequestParam(required = false) String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@RequestParam String matchType, @PathVariable int champId) {
 
         Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
 
@@ -142,7 +142,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@RequestParam(required = false) String matchType, @PathVariable int champId, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@RequestParam String matchType, @PathVariable int champId, @PathVariable int champCategory) {
 
         Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
 
@@ -156,7 +156,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_BAN_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@RequestParam(required = false) String matchType, @PathVariable String mapName) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@RequestParam String matchType, @PathVariable String mapName) {
 
         Main.REST_LOGGER.info("EVALUATED BEST BAN FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
@@ -172,7 +172,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_TALENT_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@RequestParam(required = false) String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@RequestParam String matchType, @PathVariable int champId) {
 
         Main.REST_LOGGER.info("EVALUATED BEST TALENT FOR CHAMP " + champId);
 
@@ -186,7 +186,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_DECK_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@RequestParam(required = false) String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@RequestParam String matchType, @PathVariable int champId) {
 
         Main.REST_LOGGER.info("EVALUATED BEST DECK FOR CHAMP " + champId);
 
@@ -200,7 +200,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@RequestParam(required = false) String matchType) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@RequestParam String matchType) {
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP");
 
@@ -214,7 +214,7 @@ public class GameController {
     }
 
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@RequestParam(required = false) String matchType, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@RequestParam String matchType, @PathVariable int champCategory) {
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory);
 
