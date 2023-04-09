@@ -54,7 +54,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
         GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
         for(GameDto game : games) {
             for(ChampDto champ : game.getChamps()) {
-                if(champ.getId() == champId) {
+                if(champ.getChamp_id() == champId) {
                     champs.put(game, champ);
                     break;
                 }

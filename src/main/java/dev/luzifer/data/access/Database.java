@@ -1,6 +1,7 @@
 package dev.luzifer.data.access;
 
 import dev.luzifer.Main;
+import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.data.match.info.ChampDto;
 import dev.luzifer.data.match.info.GameDto;
 import dev.luzifer.spring.controller.GameController;
@@ -101,7 +102,7 @@ public class Database {
                     gamesStatement.addBatch();
 
                     for (ChampDto champ : gameDto.getChamps()) {
-                        champStatement.setInt(1, champ.getId());
+                        champStatement.setInt(1, champ.getChamp_id());
                         champStatement.setInt(2, gameDto.getId());
                         champStatement.setInt(3, champ.getPlayerId());
                         champStatement.setString(4, champ.getPlayerName());
@@ -164,6 +165,162 @@ public class Database {
             Main.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void migrate() {
+
+        if(!isConnection())
+            connect();
+
+        // fetch all games
+        GameDto[] games = fetchGames(GameController.MatchType.ALL);
+
+        // push it up
+        int index = 0;
+        for(GameDto gameDto : games) {
+            ChampData[] champData = constructChampData(gameDto);
+            insertChampData(champData);
+
+            Main.DATABASE_LOGGER.info("MIGRATED GAME " + gameDto.getId() + " [" + index++ + "/" + games.length + " (" + (index / games.length) * 100 + "%)]");
+        }
+
+        Main.DATABASE_LOGGER.info("MIGRATED " + games.length + " GAMES TO THE NEW DATABASE");
+    }
+
+    private ChampData[] constructChampData(GameDto gameDto) {
+        ChampData[] champData = new ChampData[10];
+        int index = 0;
+        for (ChampDto champDto : gameDto.getChamps()) {
+            champData[index] = new ChampData(
+                    gameDto.getId(),
+                    gameDto.getMapName(),
+                    gameDto.getRanked(),
+                    gameDto.getAverageRank(),
+                    gameDto.getBannedChamp1(),
+                    gameDto.getBannedChamp2(),
+                    gameDto.getBannedChamp3(),
+                    gameDto.getBannedChamp4(),
+                    gameDto.getBannedChamp5(),
+                    gameDto.getBannedChamp6(),
+                    gameDto.getTeam1Points(),
+                    gameDto.getTeam2Points(),
+                    gameDto.getDuration(),
+                    gameDto.getTimestamp(),
+                    gameDto.getSeason(),
+                    champDto.getChamp_id(),
+                    champDto.getPlayerId(),
+                    champDto.getPlayerName(),
+                    champDto.getRegion(),
+                    champDto.getPlatformId(),
+                    champDto.getLeagueTier(),
+                    champDto.getLeaguePoints(),
+                    champDto.getChampLevel(),
+                    champDto.getWon(),
+                    champDto.getCategoryId(),
+                    champDto.getGoldEarned(),
+                    champDto.getTalentId(),
+                    champDto.getDeckCard1(),
+                    champDto.getDeckCard2(),
+                    champDto.getDeckCard3(),
+                    champDto.getDeckCard4(),
+                    champDto.getDeckCard5(),
+                    champDto.getDeckCard1Level(),
+                    champDto.getDeckCard2Level(),
+                    champDto.getDeckCard3Level(),
+                    champDto.getDeckCard4Level(),
+                    champDto.getDeckCard5Level(),
+                    champDto.getItem1(),
+                    champDto.getItem2(),
+                    champDto.getItem3(),
+                    champDto.getItem4(),
+                    champDto.getItem1Level(),
+                    champDto.getItem2Level(),
+                    champDto.getItem3Level(),
+                    champDto.getItem4Level(),
+                    champDto.getKillingSpree(),
+                    champDto.getKills(),
+                    champDto.getDeaths(),
+                    champDto.getAssists(),
+                    champDto.getDamageDone(),
+                    champDto.getDamageTaken(),
+                    champDto.getDamageShielded(),
+                    champDto.getHeal(),
+                    champDto.getSelfHeal()
+            );
+        }
+        return champData;
+    }
+
+    public void insertChampData(ChampData[] champData) {
+        if(!isConnection())
+            connect();
+
+        ensureTableExists();
+        String sql = "INSERT INTO champdata (champ_id, match_id, map_name, ranked, average_rank, banned_champ1, banned_champ2, banned_champ3, banned_champ4, banned_champ5, banned_champ6, team1_points, team2_points, duration, timestamp, season, player_id, player_name, region, platform_id, league_tier, league_points, champ_level, won, category_id, gold_earned, talent_id, deck_card1, deck_card2, deck_card3, deck_card4, deck_card5, deck_card1_level, deck_card2_level, deck_card3_level, deck_card4_level, deck_card5_level, item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, killing_spree, kills, deaths, assists, damage_done, damage_taken, damage_shielded, heal, self_heal)\n" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (ChampData data : champData) {
+                statement.setInt(1, data.getChampId());
+                statement.setLong(2, data.getMatchId());
+                statement.setString(3, data.getMapName());
+                statement.setInt(4, data.getRanked());
+                statement.setInt(5, data.getAverageRank());
+                statement.setInt(6, data.getBannedChamp1());
+                statement.setInt(7, data.getBannedChamp2());
+                statement.setInt(8, data.getBannedChamp3());
+                statement.setInt(9, data.getBannedChamp4());
+                statement.setInt(10, data.getBannedChamp5());
+                statement.setInt(11, data.getBannedChamp6());
+                statement.setInt(12, data.getTeam1Points());
+                statement.setInt(13, data.getTeam2Points());
+                statement.setLong(14, data.getDuration());
+                statement.setLong(15, data.getTimestamp());
+                statement.setDouble(16, data.getSeason());
+                statement.setInt(17, data.getPlayerId());
+                statement.setString(18, data.getPlayerName());
+                statement.setString(19, data.getRegion());
+                statement.setInt(20, data.getPlatformId());
+                statement.setInt(21, data.getLeagueTier());
+                statement.setInt(22, data.getLeaguePoints());
+                statement.setInt(23, data.getChampLevel());
+                statement.setInt(24, data.getWon());
+                statement.setInt(25, data.getCategoryId());
+                statement.setInt(26, data.getGoldEarned());
+                statement.setInt(27, data.getTalentId());
+                statement.setInt(28, data.getDeckCard1());
+                statement.setInt(29, data.getDeckCard2());
+                statement.setInt(30, data.getDeckCard3());
+                statement.setInt(31, data.getDeckCard4());
+                statement.setInt(32, data.getDeckCard5());
+                statement.setInt(33, data.getDeckCard1Level());
+                statement.setInt(34, data.getDeckCard2Level());
+                statement.setInt(35, data.getDeckCard3Level());
+                statement.setInt(36, data.getDeckCard4Level());
+                statement.setInt(37, data.getDeckCard5Level());
+                statement.setInt(38, data.getItem1());
+                statement.setInt(39, data.getItem2());
+                statement.setInt(40, data.getItem3());
+                statement.setInt(41, data.getItem4());
+                statement.setInt(42, data.getItem1Level());
+                statement.setInt(43, data.getItem2Level());
+                statement.setInt(44, data.getItem3Level());
+                statement.setInt(45, data.getItem4Level());
+                statement.setInt(46, data.getKillingSpree());
+                statement.setInt(47, data.getKills());
+                statement.setInt(48, data.getDeaths());
+                statement.setInt(49, data.getAssists());
+                statement.setLong(50, data.getDamageDone());
+                statement.setLong(51, data.getDamageTaken());
+                statement.setLong(52, data.getDamageShielded());
+                statement.setLong(53, data.getHeal());
+                statement.setLong(54, data.getSelfHeal());
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        } catch (SQLException e) {
+            throw new IllegalStateException("Failed to insert champ data", e);
         }
     }
 
@@ -492,13 +649,27 @@ public class Database {
 
     private void ensureTableExists() {
 
-        String champTableSql = "CREATE TABLE IF NOT EXISTS champs (\n" +
+        String champDataTableSql = "CREATE TABLE IF NOT EXISTS champdata (\n" +
                 "  hurensohn INTEGER NOT NULL AUTO_INCREMENT,\n" +
-                "  id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  champ_id INTEGER NOT NULL DEFAULT 0,\n" +
                 "  match_id INTEGER NOT NULL DEFAULT 0,\n" +
+                "  map_name VARCHAR(255) NOT NULL DEFAULT 'INVALID',\n" +
+                "  ranked INTEGER NOT NULL DEFAULT 0,\n" +
+                "  average_rank INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ1 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ2 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ3 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ4 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ5 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  banned_champ6 INTEGER NOT NULL DEFAULT 0,\n" +
+                "  team1_points INTEGER NOT NULL DEFAULT 0,\n" +
+                "  team2_points INTEGER NOT NULL DEFAULT 0,\n" +
+                "  duration BIGINT NOT NULL DEFAULT 0,\n" +
+                "  timestamp BIGINT NOT NULL DEFAULT 0,\n" +
+                "  season DOUBLE NOT NULL DEFAULT 0.0,\n" +
                 "  player_id INTEGER NOT NULL DEFAULT 0,\n" +
-                "  player_name VARCHAR(255) NOT NULL DEFAULT '',\n" +
-                "  region VARCHAR(255) NOT NULL DEFAULT '',\n" +
+                "  player_name VARCHAR(255) NOT NULL DEFAULT 'INVALID',\n" +
+                "  region VARCHAR(255) NOT NULL DEFAULT 'INVALID',\n" +
                 "  platform_id INTEGER NOT NULL DEFAULT 0,\n" +
                 "  league_tier INTEGER NOT NULL DEFAULT 0,\n" +
                 "  league_points INTEGER NOT NULL DEFAULT 0,\n" +
@@ -535,41 +706,14 @@ public class Database {
                 "  heal BIGINT NOT NULL DEFAULT 0,\n" +
                 "  self_heal BIGINT NOT NULL DEFAULT 0,\n" +
                 "  PRIMARY KEY (hurensohn),\n" +
-                "  FOREIGN KEY (match_id) REFERENCES games(id)\n" +
-                ");";
-
-        String gameTableSql = "CREATE TABLE IF NOT EXISTS games (\n" +
-                "  id INTEGER NOT NULL DEFAULT 0,\n" +
-                "  map_name VARCHAR(255) NOT NULL DEFAULT 'INVALID',\n" +
-                "  ranked INTEGER NOT NULL DEFAULT 0,\n" +
-                "  average_rank INTEGER NOT NULL DEFAULT 0,\n" +
-                "  banned_champ1 INTEGER NOT NULL DEFAULT 0,\n" +
-                "  banned_champ2 INTEGER NOT NULL DEFAULT 0,\n" +
-                "  banned_champ3 INTEGER NOT NULL DEFAULT 0,\n" +
-                "  banned_champ4 INTEGER NOT NULL DEFAULT 0,\n" +
-                "  banned_champ5 INTEGER NOT NULL DEFAULT 0,\n" +
-                "  banned_champ6 INTEGER NOT NULL DEFAULT 0,\n" +
-                "  team1_points INTEGER NOT NULL DEFAULT 0,\n" +
-                "  team2_points INTEGER NOT NULL DEFAULT 0,\n" +
-                "  duration BIGINT NOT NULL DEFAULT 0,\n" +
-                "  timestamp BIGINT NOT NULL DEFAULT 0,\n" +
-                "  season DOUBLE NOT NULL DEFAULT 0.0,\n" +
-                "  PRIMARY KEY (id)\n" +
                 ");";
 
         if(!isConnection())
             connect();
 
-        try(PreparedStatement statement = connection.prepareStatement(gameTableSql)) {
+        try(PreparedStatement statement = connection.prepareStatement(champDataTableSql)) {
             statement.executeUpdate();
-            Main.DATABASE_LOGGER.info("CREATED TABLE games");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        try(PreparedStatement statement = connection.prepareStatement(champTableSql)) {
-            statement.executeUpdate();
-            Main.DATABASE_LOGGER.info("CREATED TABLE champs");
+            Main.DATABASE_LOGGER.info("CREATED TABLE champdata");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

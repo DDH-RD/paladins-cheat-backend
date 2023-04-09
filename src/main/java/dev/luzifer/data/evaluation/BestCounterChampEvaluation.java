@@ -38,10 +38,10 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
                         Math.min(game.getTeam1Points(), game.getTeam2Points()) :
                         Math.max(game.getTeam1Points(), game.getTeam2Points());
 
-                if (champPoints.containsKey(champ.getId()))
-                    champPoints.put(champ.getId(), champPoints.get(champ.getId()) + points);
+                if (champPoints.containsKey(champ.getChamp_id()))
+                    champPoints.put(champ.getChamp_id(), champPoints.get(champ.getChamp_id()) + points);
                 else
-                    champPoints.put(champ.getId(), points);
+                    champPoints.put(champ.getChamp_id(), points);
             }
         }
 
@@ -56,7 +56,7 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
         for(GameDto game : games) {
             List<ChampDto> enemyChamps = new ArrayList<>();
             for(ChampDto champ : game.getChamps()) {
-                if(champ.getId() == champId) {
+                if(champ.getChamp_id() == champId) {
                     for(ChampDto enemyChamp : game.getChamps()) {
                         if(enemyChamp.getWon() != champ.getWon() && (champCategory == -1 || enemyChamp.getCategoryId() == champCategory)) {
                             enemyChamps.add(enemyChamp);

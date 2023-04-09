@@ -131,7 +131,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
 
         for(GameDto game : games) {
             for(ChampDto champ : game.getChamps()) {
-                if(champ.getId() == champId) {
+                if(champ.getChamp_id() == champId) {
                     Map<ChampDto, CardMeter[]> cardMap = new HashMap<>();
                     CardMeter card1 = new CardMeter(champ.getDeckCard1(), champ.getDeckCard1Level());
                     CardMeter card2 = new CardMeter(champ.getDeckCard2(), champ.getDeckCard2Level());

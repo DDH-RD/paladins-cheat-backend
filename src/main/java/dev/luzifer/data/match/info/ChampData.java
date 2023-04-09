@@ -11,10 +11,36 @@ import lombok.Value;
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class ChampDto {
+public class ChampData {
 
+    /* Match Stats*/
+    int matchId;
+    /* Der Name der Map auf der das Game stattgefunden hat. */
+    String mapName;
+    /* 0 = false, 1 = true*/
+    int ranked;
+    /* Der durchschnittl. Rank in dem Match */
+    int averageRank;
+    /* IDs gebannter Champs */
+    int bannedChamp1;
+    int bannedChamp2;
+    int bannedChamp3;
+    int bannedChamp4;
+    int bannedChamp5;
+    int bannedChamp6;
+    /* Punktestand der Teams */
+    int team1Points;
+    int team2Points;
+    /* Wie lang das Spiel in Millisekunden ging */
+    long duration;
+    /* Der Zeitpunkt wann das Match stattgefunden hat in Millisekunden. */
+    long timestamp;
+    /* Die Season in der das Match stattegefunden hat.
+     *  Example: Season 5, Split 1 = 5.1
+     */
+    double season;
     /* Die ID des Champs */
-    int champ_id;
+    int champId;
     /* player specific data */
     int playerId;
     String playerName;

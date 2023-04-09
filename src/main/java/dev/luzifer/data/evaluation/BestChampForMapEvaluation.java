@@ -38,10 +38,10 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
                         Math.min(game.getTeam1Points(), game.getTeam2Points()) :
                         Math.max(game.getTeam1Points(), game.getTeam2Points());
 
-                if (champPoints.containsKey(champ.getId()))
-                    champPoints.put(champ.getId(), champPoints.get(champ.getId()) + points);
+                if (champPoints.containsKey(champ.getChamp_id()))
+                    champPoints.put(champ.getChamp_id(), champPoints.get(champ.getChamp_id()) + points);
                 else
-                    champPoints.put(champ.getId(), points);
+                    champPoints.put(champ.getChamp_id(), points);
             }
         }
 
