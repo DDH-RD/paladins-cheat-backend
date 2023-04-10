@@ -26,52 +26,7 @@ import java.util.List;
 @Component("database")
 public class Database {
 
-    private static final File CREDENTIALS_FILE = new File("database.properties");
-
-    static {
-
-        if(!CREDENTIALS_FILE.exists()) {
-
-            try {
-                CREDENTIALS_FILE.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            try(InputStream input = Main.class.getClassLoader().getResourceAsStream("database.properties")) {
-
-                InputStreamReader streamReader = new InputStreamReader(input, StandardCharsets.UTF_8);
-                BufferedReader reader = new BufferedReader(streamReader);
-
-                try(FileWriter fileWriter = new FileWriter(CREDENTIALS_FILE)) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (String line; (line = reader.readLine()) != null;) {
-                        stringBuilder.append(line).append("\n");
-                    }
-                    fileWriter.write(stringBuilder.toString());
-                }
-            } catch(Exception ignored) {
-            }
-        }
-    }
-
-    private final String url;
-    private final String username;
-    private final byte[] password;
-
     private Connection connection;
-
-    Database() {
-        try {
-            List<String> lines = Files.readAllLines(CREDENTIALS_FILE.toPath());
-
-            this.url = lines.get(0).split("url:")[1];
-            this.username = lines.get(1).split("username:")[1];
-            this.password = lines.get(2).split("password:")[1].getBytes(StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public void insert(GameDto[] games) {
 
@@ -160,7 +115,10 @@ public class Database {
     public void connect() {
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            this.connection = DriverManager.getConnection(url, username, new String(password));
+            this.connection = DriverManager.getConnection(
+                    Main.getDatabaseUrl(),
+                    Main.getDatabaseUsername(),
+                    String.copyValueOf(Main.getDatabasePassword()));
             ensureTableExists();
             Main.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
