@@ -44,7 +44,6 @@ public class Database {
         if(!isConnected())
             connect();
 
-        ensureTableExists();
         String sql = "INSERT IGNORE INTO champdata (champ_id, match_id, map_name, ranked, average_rank, banned_champ1, banned_champ2, banned_champ3, banned_champ4, banned_champ5, banned_champ6, team1_points, team2_points, duration, timestamp, season, player_id, player_name, region, platform_id, league_tier, league_points, champ_level, won, category_id, gold_earned, talent_id, deck_card1, deck_card2, deck_card3, deck_card4, deck_card5, deck_card1_level, deck_card2_level, deck_card3_level, deck_card4_level, deck_card5_level, item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, killing_spree, kills, deaths, assists, damage_done, damage_taken, damage_shielded, heal, self_heal)\n" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
@@ -426,7 +425,7 @@ public class Database {
                 "  damage_shielded BIGINT NOT NULL DEFAULT 0,\n" +
                 "  heal BIGINT NOT NULL DEFAULT 0,\n" +
                 "  self_heal BIGINT NOT NULL DEFAULT 0,\n" +
-                "  PRIMARY KEY (hurensohn),\n" +
+                "  PRIMARY KEY (hurensohn)\n" +
                 ");";
 
         if(!isConnected())

@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping(WebPath.API_KEY + WebPath.GAME)
+@RequestMapping(WebPath.GAME)
 public class GameController {
 
     private static final Executor TASK_EXECUTOR =
