@@ -1,15 +1,16 @@
 package dev.luzifer.data.evaluation;
 
 import dev.luzifer.data.access.GameDao;
-import dev.luzifer.data.match.info.ChampDto;
-import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
     @Override
     public Map<Integer, Integer> evaluate() {
 
-        Map<GameDto, Map<ChampDto, CardMeter[]>> cardsForGame = preparation();
-        Map<CardMeter, Double> averagePointsMap = calculateAveragePointsForEachCard(cardsForGame.values().iterator().next().values().iterator().next());
+        Map<ChampData, CardMeter[]> cardsForGame = preparation();
+        Map<CardMeter, Double> averagePointsMap = calculateAveragePointsForEachCard(cardsForGame.values());
         Map<CardMeter, Integer> weightedPointsMap = weightCardsByMatchOutcome(cardsForGame);
 
         return calculateThePerfectDeck(weightedPointsMap, averagePointsMap);
@@ -34,29 +35,22 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
         throw new UnsupportedOperationException("This evaluation does not support this method");
     }
 
-    private Map<CardMeter, Integer> weightCardsByMatchOutcome(Map<GameDto, Map<ChampDto, CardMeter[]>> cardsForGame) {
-
+    private Map<CardMeter, Integer> weightCardsByMatchOutcome(Map<ChampData, CardMeter[]> cardsForGame) {
         Map<CardMeter, Integer> cardPoints = new HashMap<>();
-        for (Map.Entry<GameDto, Map<ChampDto, CardMeter[]>> entry : cardsForGame.entrySet()) {
+        for (Map.Entry<ChampData, CardMeter[]> entry : cardsForGame.entrySet()) {
 
-            GameDto game = entry.getKey();
-            Map<ChampDto, CardMeter[]> champCards = entry.getValue();
+            ChampData champData = entry.getKey();
+            CardMeter[] champCards = entry.getValue();
 
-            for (Map.Entry<ChampDto, CardMeter[]> champCardEntry : champCards.entrySet()) {
+            for (CardMeter cardMeter : champCards) {
+                int points = champData.getWon() == 0 ?
+                        Math.min(champData.getTeam1Points(), champData.getTeam2Points()) :
+                        Math.max(champData.getTeam1Points(), champData.getTeam2Points());
 
-                ChampDto champ = champCardEntry.getKey();
-                CardMeter[] cards = champCardEntry.getValue();
-
-                for (CardMeter card : cards) {
-                    int points = champ.getWon() == 0 ?
-                            Math.min(game.getTeam1Points(), game.getTeam2Points()) :
-                            Math.max(game.getTeam1Points(), game.getTeam2Points());
-
-                    if (cardPoints.containsKey(card))
-                        cardPoints.put(card, cardPoints.get(card) + points);
-                    else
-                        cardPoints.put(card, points);
-                }
+                if (cardPoints.containsKey(cardMeter))
+                    cardPoints.put(cardMeter, cardPoints.get(cardMeter) + points);
+                else
+                    cardPoints.put(cardMeter, points);
             }
         }
         return cardPoints;
@@ -100,16 +94,18 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
         return perfectDeck;
     }
 
-    private Map<CardMeter, Double> calculateAveragePointsForEachCard(CardMeter[] cards) {
+    private Map<CardMeter, Double> calculateAveragePointsForEachCard(Collection<CardMeter[]> cards) {
 
         Map<CardMeter, Double> averagePointsMap = new HashMap<>();
         Map<CardMeter, Integer> totalPointsMap = new HashMap<>();
 
-        for (CardMeter card : cards) {
-            if (totalPointsMap.containsKey(card)) {
-                totalPointsMap.put(card, totalPointsMap.get(card) + card.getPoints());
-            } else {
-                totalPointsMap.put(card, card.getPoints());
+        for (CardMeter[] card : cards) {
+            for(CardMeter cardMeter : card) {
+                if (totalPointsMap.containsKey(cardMeter)) {
+                    totalPointsMap.put(cardMeter, totalPointsMap.get(cardMeter) + cardMeter.getPoints());
+                } else {
+                    totalPointsMap.put(cardMeter, cardMeter.getPoints());
+                }
             }
         }
 
@@ -117,35 +113,28 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
             CardMeter card = entry.getKey();
             int totalPoints = entry.getValue();
 
-            double averagePoints = ((double) totalPoints) / cards.length;
-            averagePointsMap.put(card, averagePoints);
+            averagePointsMap.put(card, (double) totalPoints / cards.size());
         }
 
         return averagePointsMap;
     }
 
-    private Map<GameDto, Map<ChampDto, CardMeter[]>> preparation() {
+    private Map<ChampData, CardMeter[]> preparation() {
 
-        GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
-        Map<GameDto, Map<ChampDto, CardMeter[]>> resultMap = new HashMap<>();
+        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(matchType, champId);
 
-        for(GameDto game : games) {
-            for(ChampDto champ : game.getChamps()) {
-                if(champ.getChamp_id() == champId) {
-                    Map<ChampDto, CardMeter[]> cardMap = new HashMap<>();
-                    CardMeter card1 = new CardMeter(champ.getDeckCard1(), champ.getDeckCard1Level());
-                    CardMeter card2 = new CardMeter(champ.getDeckCard2(), champ.getDeckCard2Level());
-                    CardMeter card3 = new CardMeter(champ.getDeckCard3(), champ.getDeckCard3Level());
-                    CardMeter card4 = new CardMeter(champ.getDeckCard4(), champ.getDeckCard4Level());
-                    CardMeter card5 = new CardMeter(champ.getDeckCard5(), champ.getDeckCard5Level());
-                    CardMeter[] cards = new CardMeter[] {card1, card2, card3, card4, card5};
-                    cardMap.put(champ, cards);
-                    resultMap.put(game, cardMap);
-                }
-            }
+        Map<ChampData, CardMeter[]> cardMap = new HashMap<>();
+        for(ChampData champData : champDataList) {
+            CardMeter card1 = new CardMeter(champData.getDeckCard1(), champData.getDeckCard1Level());
+            CardMeter card2 = new CardMeter(champData.getDeckCard2(), champData.getDeckCard2Level());
+            CardMeter card3 = new CardMeter(champData.getDeckCard3(), champData.getDeckCard3Level());
+            CardMeter card4 = new CardMeter(champData.getDeckCard4(), champData.getDeckCard4Level());
+            CardMeter card5 = new CardMeter(champData.getDeckCard5(), champData.getDeckCard5Level());
+            CardMeter[] cards = new CardMeter[] {card1, card2, card3, card4, card5};
+            cardMap.put(champData, cards);
         }
 
-        return resultMap;
+        return cardMap;
     }
 
     @Value

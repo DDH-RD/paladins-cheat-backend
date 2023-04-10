@@ -2,11 +2,10 @@ package dev.luzifer.data.evaluation;
 
 import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
-import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,23 +28,22 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private Map<Integer, Integer> preparation() {
 
-        GameDto[] games = gameDao.fetchMatchesOnMap(matchType, mapName);
+        Map<Integer, Integer[]> bannedChampsForMatch = new HashMap<>();
+        List<ChampData> champDataList = gameDao.fetchChampDataForMap(matchType, mapName);
 
-        List<Integer[]> bannedChampsForMap = new ArrayList<>();
-        for (GameDto game : games) {
-            int ban1 = game.getBannedChamp1();
-            int ban2 = game.getBannedChamp2();
-            int ban3 = game.getBannedChamp3();
-            int ban4 = game.getBannedChamp4();
-            int ban5 = game.getBannedChamp5();
-            int ban6 = game.getBannedChamp6();
-
-            Integer[] banned = new Integer[] {ban1, ban2, ban3, ban4, ban5, ban6};
-            bannedChampsForMap.add(banned);
+        for(ChampData champData : champDataList) {
+            int matchId = champData.getMatchId();
+            bannedChampsForMatch.computeIfAbsent(matchId, k -> new Integer[] {
+                    champData.getBannedChamp1(),
+                    champData.getBannedChamp2(),
+                    champData.getBannedChamp3(),
+                    champData.getBannedChamp4(),
+                    champData.getBannedChamp5(),
+                    champData.getBannedChamp6()});
         }
 
         Map<Integer, Integer> bannedChamps = new HashMap<>();
-        for (Integer[] banned : bannedChampsForMap) {
+        for (Integer[] banned : bannedChampsForMatch.values()) {
             for (Integer ban : banned) {
                 if (bannedChamps.containsKey(ban))
                     bannedChamps.put(ban, bannedChamps.get(ban) + 1);

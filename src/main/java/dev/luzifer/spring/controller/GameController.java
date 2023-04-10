@@ -10,7 +10,7 @@ import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
 import dev.luzifer.data.evaluation.BestCounterChampEvaluation;
 import dev.luzifer.data.evaluation.BestDeckForChampEvaluation;
 import dev.luzifer.data.evaluation.BestTalentForChampEvaluation;
-import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.data.match.info.ChampData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,12 +61,12 @@ public class GameController {
 
     @PostMapping(WebPath.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void postGames(@PathVariable String apiKey, @RequestBody GameDto[] games) {
+    public void postGames(@PathVariable String apiKey, @RequestBody ChampData[] champData) {
 
         if(couldNotVerifyApiKey(apiKey))
             return;
 
-        TASK_EXECUTOR.execute(() -> gameDao.insert(games));
+        TASK_EXECUTOR.execute(() -> gameDao.insertChampData(champData));
     }
 
     @GetMapping(WebPath.GET_COUNT)
@@ -77,46 +77,6 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> gameDao.count(MatchType.valueOf(matchType)), TASK_EXECUTOR)
-                .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
-        return deferredResult;
-    }
-
-    @GetMapping(WebPath.GET_COUNT_ON_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
-
-        if(couldNotVerifyApiKey(apiKey))
-            return UNAUTHORIZED_RESULT;
-
-        mapName = mapName.replace("_", " ");
-        DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
-        String finalMapName = mapName;
-        CompletableFuture.supplyAsync(() -> gameDao.countMap(MatchType.valueOf(matchType), finalMapName), TASK_EXECUTOR)
-                .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
-        return deferredResult;
-    }
-
-    @GetMapping(WebPath.GET_COUNT_ON_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
-
-        if(couldNotVerifyApiKey(apiKey))
-            return UNAUTHORIZED_RESULT;
-
-        DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
-        CompletableFuture.supplyAsync(() -> gameDao.countChamp(MatchType.valueOf(matchType), champId), TASK_EXECUTOR)
-                .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
-        return deferredResult;
-    }
-
-    @GetMapping(WebPath.GET_COUNT_ON_MAP_AND_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMapAndChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName, @PathVariable int champId) {
-
-        if(couldNotVerifyApiKey(apiKey))
-            return UNAUTHORIZED_RESULT;
-
-        mapName = mapName.replace("_", " ");
-        DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
-        String finalMapName = mapName;
-        CompletableFuture.supplyAsync(() -> gameDao.countChampOnMap(MatchType.valueOf(matchType), champId, finalMapName), TASK_EXECUTOR)
                 .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
         return deferredResult;
     }

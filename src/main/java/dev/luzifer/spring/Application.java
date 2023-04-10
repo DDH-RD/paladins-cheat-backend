@@ -29,13 +29,8 @@ public class Application {
 
     @EventListener(ApplicationReadyEvent.class)
     public void connectToDatabase() {
-
         database.connect();
         Main.DATABASE_LOGGER.info("CONNECTED TO DATABASE");
-
-        Main.DATABASE_LOGGER.info("BEGINNING WITH DATABASE MIGRATION");
-        database.migrate();
-        Main.DATABASE_LOGGER.info("DATABASE MIGRATION FINISHED");
     }
 
     @EventListener(ApplicationStartedEvent.class)

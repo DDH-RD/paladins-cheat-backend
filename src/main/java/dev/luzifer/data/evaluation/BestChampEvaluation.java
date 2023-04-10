@@ -2,15 +2,15 @@ package dev.luzifer.data.evaluation;
 
 import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
-import dev.luzifer.data.match.info.ChampDto;
-import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
@@ -26,40 +26,27 @@ public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
     @Override
     public Map<Integer, Integer> evaluate(int champCategory) {
 
-        Map<GameDto, ChampDto[]> gamesWithChamps = preparation(champCategory);
-
+        Set<ChampData> champDataSet = preparation(champCategory);
         Map<Integer, Integer> champPoints = new HashMap<>();
-        for (Map.Entry<GameDto, ChampDto[]> entry : gamesWithChamps.entrySet()) {
 
-            ChampDto[] champs = entry.getValue();
-            GameDto game = entry.getKey();
+        for (ChampData champData : champDataSet) {
+            int points = champData.getWon() == 0 ?
+                    Math.min(champData.getTeam1Points(), champData.getTeam2Points()) :
+                    Math.max(champData.getTeam1Points(), champData.getTeam2Points());
 
-            for (ChampDto champ : champs) {
-                int points = champ.getWon() == 0 ?
-                        Math.min(game.getTeam1Points(), game.getTeam2Points()) :
-                        Math.max(game.getTeam1Points(), game.getTeam2Points());
-
-                if (champPoints.containsKey(champ.getChamp_id()))
-                    champPoints.put(champ.getChamp_id(), champPoints.get(champ.getChamp_id()) + points);
-                else
-                    champPoints.put(champ.getChamp_id(), points);
-            }
+            if (champPoints.containsKey(champData.getChampId()))
+                champPoints.put(champData.getChampId(), champPoints.get(champData.getChampId()) + points);
+            else
+                champPoints.put(champData.getChampId(), points);
         }
 
         return MapUtil.sortByValue(champPoints);
     }
 
-    private Map<GameDto, ChampDto[]> preparation(int champCategory) {
-        Map<GameDto, ChampDto[]> gamesWithChamps = new HashMap<>();
-        for (GameDto game : gameDao.fetchMatches(matchType)) {
-            List<ChampDto> champsForCategory = new ArrayList<>();
-            for (ChampDto champ : game.getChamps()) {
-                if (champCategory == -1 || champ.getCategoryId() == champCategory) {
-                    champsForCategory.add(champ);
-                }
-            }
-            gamesWithChamps.put(game, champsForCategory.toArray(new ChampDto[0]));
-        }
-        return gamesWithChamps;
+    private Set<ChampData> preparation(int champCategory) {
+        if(champCategory == -1)
+            return new HashSet<>(gameDao.fetchAllChampData(matchType));
+        else
+            return new HashSet<>(gameDao.fetchChampDataForCategory(matchType, champCategory));
     }
 }

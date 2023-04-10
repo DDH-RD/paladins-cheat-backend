@@ -2,17 +2,21 @@ package dev.luzifer.data.evaluation;
 
 import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
-import dev.luzifer.data.match.info.ChampDto;
-import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+/**
+ * @deprecated Poor performance
+ */
 @RequiredArgsConstructor
+@Deprecated
 public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integer>> {
 
     private final int champId;
@@ -25,49 +29,38 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
     public Map<Integer, Integer> evaluate(int champCategory) {
 
-        Map<GameDto, ChampDto[]> gamesWithChamps = preparation(champCategory);
-
+        Set<ChampData> champDataSet = preparation(champCategory);
         Map<Integer, Integer> champPoints = new HashMap<>();
-        for (Map.Entry<GameDto, ChampDto[]> entry : gamesWithChamps.entrySet()) {
 
-            ChampDto[] champs = entry.getValue();
-            GameDto game = entry.getKey();
+        for (ChampData champData : champDataSet) {
+            int points = champData.getWon() == 0 ?
+                    Math.min(champData.getTeam1Points(), champData.getTeam2Points()) :
+                    Math.max(champData.getTeam1Points(), champData.getTeam2Points());
 
-            for (ChampDto champ : champs) {
-                int points = champ.getWon() == 0 ?
-                        Math.min(game.getTeam1Points(), game.getTeam2Points()) :
-                        Math.max(game.getTeam1Points(), game.getTeam2Points());
-
-                if (champPoints.containsKey(champ.getChamp_id()))
-                    champPoints.put(champ.getChamp_id(), champPoints.get(champ.getChamp_id()) + points);
-                else
-                    champPoints.put(champ.getChamp_id(), points);
-            }
+            if (champPoints.containsKey(champData.getChampId()))
+                champPoints.put(champData.getChampId(), champPoints.get(champData.getChampId()) + points);
+            else
+                champPoints.put(champData.getChampId(), points);
         }
 
         return MapUtil.sortByValue(champPoints);
     }
 
-    private Map<GameDto, ChampDto[]> preparation(int champCategory) {
+    private Set<ChampData> preparation(int champCategory) {
 
-        Map<GameDto, ChampDto[]> resultMap = new HashMap<>();
+        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(matchType, champId);
+        Set<ChampData> champDataListExtended = new HashSet<>();
 
-        GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
-        for(GameDto game : games) {
-            List<ChampDto> enemyChamps = new ArrayList<>();
-            for(ChampDto champ : game.getChamps()) {
-                if(champ.getChamp_id() == champId) {
-                    for(ChampDto enemyChamp : game.getChamps()) {
-                        if(enemyChamp.getWon() != champ.getWon() && (champCategory == -1 || enemyChamp.getCategoryId() == champCategory)) {
-                            enemyChamps.add(enemyChamp);
-                        }
-                    }
-                    break;
-                }
-            }
-            resultMap.put(game, enemyChamps.toArray(new ChampDto[0]));
+        for(ChampData champData : champDataList) {
+            List<ChampData> champDataInMatch;
+            if(champCategory == -1)
+                champDataInMatch = gameDao.fetchChampDataForMatch(matchType, champData.getMatchId());
+            else
+                champDataInMatch = gameDao.fetchChampDataForMatchOfCategory(matchType, champData.getMatchId(), champCategory);
+            champDataInMatch.removeIf(cd -> champData.getWon() == cd.getWon());
+            champDataListExtended.addAll(champDataInMatch);
         }
 
-        return resultMap;
+        return new HashSet<>(champDataListExtended);
     }
 }

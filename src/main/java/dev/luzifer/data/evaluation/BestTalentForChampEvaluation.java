@@ -2,13 +2,14 @@ package dev.luzifer.data.evaluation;
 
 import dev.luzifer.MapUtil;
 import dev.luzifer.data.access.GameDao;
-import dev.luzifer.data.match.info.ChampDto;
-import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Integer>> {
@@ -20,18 +21,15 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
     @Override
     public Map<Integer, Integer> evaluate() {
 
-        Map<GameDto, ChampDto> champs = preparation();
+        Set<ChampData> champs = preparation();
         Map<Integer, Integer> map = new HashMap<>();
 
-        for(Map.Entry<GameDto, ChampDto> entry : champs.entrySet()) {
+        for(ChampData champData : champs) {
 
-            GameDto game = entry.getKey();
-            ChampDto champDto = entry.getValue();
-
-            int talentId = champDto.getTalentId();
-            int pointsToAdd = champDto.getWon() == 0 ?
-                    Math.min(game.getTeam1Points(), game.getTeam2Points()) :
-                    Math.max(game.getTeam1Points(), game.getTeam2Points());
+            int talentId = champData.getTalentId();
+            int pointsToAdd = champData.getWon() == 0 ?
+                    Math.min(champData.getTeam1Points(), champData.getTeam2Points()) :
+                    Math.max(champData.getTeam1Points(), champData.getTeam2Points());
 
             if(map.containsKey(talentId))
                 map.put(talentId, map.get(talentId) + pointsToAdd);
@@ -47,20 +45,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
         throw new UnsupportedOperationException("There is no category for this evaluation");
     }
 
-    private Map<GameDto, ChampDto> preparation() {
-
-        Map<GameDto, ChampDto> champs = new HashMap<>();
-
-        GameDto[] games = gameDao.fetchMatchesWithChamp(matchType, champId);
-        for(GameDto game : games) {
-            for(ChampDto champ : game.getChamps()) {
-                if(champ.getChamp_id() == champId) {
-                    champs.put(game, champ);
-                    break;
-                }
-            }
-        }
-
-        return champs;
+    private Set<ChampData> preparation() {
+        return new HashSet<>(gameDao.fetchChampDataForChamp(matchType, champId));
     }
 }

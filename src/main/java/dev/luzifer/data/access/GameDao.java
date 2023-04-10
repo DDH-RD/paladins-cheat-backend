@@ -1,48 +1,49 @@
 package dev.luzifer.data.access;
 
-import dev.luzifer.data.match.info.ChampDto;
-import dev.luzifer.data.match.info.GameDto;
+import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component("gameDao")
 public class GameDao {
 
     private final Database database = new Database();
 
-    public void insert(GameDto[] gameDtos) {
-        database.insert(gameDtos);
+    public void insertChampData(ChampData[] champData) {
+        database.insertChampData(champData);
     }
 
     public int count(GameController.MatchType matchType) {
         return database.countEntries(matchType);
     }
 
-    public int countMap(GameController.MatchType matchType, String mapName) {
-        return database.countEntriesOnMap(mapName, matchType);
+    public List<ChampData> fetchAllChampData(GameController.MatchType matchType) {
+        return database.fetchAllChampData(matchType);
     }
 
-    public int countChamp(GameController.MatchType matchType, int champId) {
-        return database.countEntriesWithChamp(champId, matchType);
+    public List<ChampData> fetchChampDataForMatch(GameController.MatchType matchType, int matchId) {
+        return database.fetchChampDataForMatch(matchType, matchId);
     }
 
-    public int countChampOnMap(GameController.MatchType matchType, int champId, String mapName) {
-        return database.countEntriesWithChampOnMap(champId, mapName, matchType);
+    public List<ChampData> fetchChampDataForMatchOfCategory(GameController.MatchType matchType, int matchId, int categoryId) {
+        return database.fetchChampDataForMatchOfCategory(matchType, matchId, categoryId);
     }
 
-    public GameDto[] fetchMatches(GameController.MatchType matchType) {
-        return database.fetchGames(matchType);
+    public List<ChampData> fetchChampDataForChamp(GameController.MatchType matchType, int champId) {
+        return database.fetchChampDataForChamp(matchType, champId);
     }
 
-    public GameDto[] fetchMatchesOnMap(GameController.MatchType matchType, String mapName) {
-        return database.fetchGamesOnMap(matchType, mapName);
+    public List<ChampData> fetchChampDataForMap(GameController.MatchType matchType, String mapName) {
+        return database.fetchChampDataForMap(matchType, mapName);
     }
 
-    public GameDto[] fetchMatchesWithChamp(GameController.MatchType matchType, int champId) {
-        return database.fetchGamesWithChamp(matchType, champId);
+    public List<ChampData> fetchChampDataForCategory(GameController.MatchType matchType, int categoryId) {
+        return database.fetchChampDataForCategory(matchType, categoryId);
     }
 
-    public ChampDto[] fetchChampsForMatch(int matchId) {
-        return database.fetchChamps(matchId);
+    public List<ChampData> fetchChampDataForMapOfCategory(GameController.MatchType matchType, String mapName, int categoryId) {
+        return database.fetchChampDataForMapOfCategory(matchType, mapName, categoryId);
     }
 }
