@@ -7,9 +7,8 @@ import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RequiredArgsConstructor
 public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Integer>> {
@@ -21,7 +20,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
     @Override
     public Map<Integer, Integer> evaluate() {
 
-        Set<ChampData> champs = preparation();
+        List<ChampData> champs = preparation();
         Map<Integer, Integer> map = new HashMap<>();
 
         for(ChampData champData : champs) {
@@ -45,7 +44,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
         throw new UnsupportedOperationException("There is no category for this evaluation");
     }
 
-    private Set<ChampData> preparation() {
-        return new HashSet<>(gameDao.fetchChampDataForChamp(matchType, champId));
+    private List<ChampData> preparation() {
+        return gameDao.fetchChampDataForChamp(matchType, champId);
     }
 }
