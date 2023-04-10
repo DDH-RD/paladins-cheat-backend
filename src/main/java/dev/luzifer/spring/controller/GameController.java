@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping(WebPath.GAME)
+@RequestMapping(WebPath.API_KEY + WebPath.GAME)
 public class GameController {
 
     private static final Executor TASK_EXECUTOR =
@@ -63,7 +63,7 @@ public class GameController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postGames(@PathVariable String apiKey, @RequestBody GameDto[] games) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return;
 
         TASK_EXECUTOR.execute(() -> gameDao.insert(games));
@@ -72,7 +72,7 @@ public class GameController {
     @GetMapping(WebPath.GET_COUNT)
     public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@PathVariable String apiKey, @RequestParam String matchType) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
@@ -84,7 +84,7 @@ public class GameController {
     @GetMapping(WebPath.GET_COUNT_ON_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         mapName = mapName.replace("_", " ");
@@ -98,7 +98,7 @@ public class GameController {
     @GetMapping(WebPath.GET_COUNT_ON_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Integer>> countChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
@@ -110,7 +110,7 @@ public class GameController {
     @GetMapping(WebPath.GET_COUNT_ON_MAP_AND_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Integer>> countMapAndChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName, @PathVariable int champId) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         mapName = mapName.replace("_", " ");
@@ -124,7 +124,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_CHAMP_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
@@ -143,7 +143,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName, @PathVariable int champCategory) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
@@ -162,7 +162,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
@@ -179,7 +179,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId, @PathVariable int champCategory) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
@@ -196,7 +196,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_BAN_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST BAN FOR MAP " + mapName);
@@ -215,7 +215,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_TALENT_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST TALENT FOR CHAMP " + champId);
@@ -232,7 +232,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_DECK_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST DECK FOR CHAMP " + champId);
@@ -249,7 +249,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@PathVariable String apiKey, @RequestParam String matchType) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP");
@@ -266,7 +266,7 @@ public class GameController {
     @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champCategory) {
 
-        if(!couldVerifyApiKey(apiKey))
+        if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
         Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory);
@@ -280,8 +280,8 @@ public class GameController {
         return deferredResult;
     }
 
-    private boolean couldVerifyApiKey(String key) {
-        return Main.getApiKey().equals(key);
+    private boolean couldNotVerifyApiKey(String key) {
+        return !Main.getApiKey().equals(key);
     }
 
     public enum MatchType {

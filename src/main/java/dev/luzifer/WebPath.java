@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class WebPath {
 
-    public static final String API_KEY = "{apiKey}"; // api key
+    public static final String API_KEY = "/{apiKey}"; // api key
     public static final String GAME = "/game"; // main path
     public static final String POST = "/post"; // posting GameDto[]
     public static final String GET = "/get"; // get path
