@@ -54,9 +54,9 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
         for(ChampData champData : champDataList) {
             List<ChampData> champDataInMatch;
             if(champCategory == -1)
-                champDataInMatch = gameDao.fetchChampDataForMatch(matchType, champData.getMatchId());
+                champDataInMatch = gameDao.fetchChampDataForMatch(champData.getMatchId());
             else
-                champDataInMatch = gameDao.fetchChampDataForMatchOfCategory(matchType, champData.getMatchId(), champCategory);
+                champDataInMatch = gameDao.fetchChampDataForMatchOfCategory(champData.getMatchId(), champCategory);
             champDataInMatch.removeIf(cd -> champData.getWon() == cd.getWon());
             champDataListExtended.addAll(champDataInMatch);
         }

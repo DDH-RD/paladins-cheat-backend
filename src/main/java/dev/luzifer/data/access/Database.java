@@ -4,6 +4,7 @@ import dev.luzifer.Main;
 import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +14,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+Es gibt mehrere Ansätze, um das Out-of-Memory-Problem zu lösen und die Leistung Ihres Codes zu verbessern. Hier sind einige Vorschläge:
+
+Paginierung: Statt alle Einträge auf einmal abzurufen, können Sie die Datenbankabfrage paginieren, um nur eine begrenzte Anzahl von Einträgen auf einmal abzurufen. Zum Beispiel können Sie eine Abfrage mit LIMIT und OFFSET verwenden, um nur 1000 Einträge auf einmal abzurufen, und dann den Offset schrittweise erhöhen, um die restlichen Einträge zu erhalten.
+
+Verwendung von Streams: Sie können die Verwendung von Streams in Ihrem Code erwägen, um die Effizienz zu verbessern. Statt alle Einträge in eine Liste zu laden, können Sie einen Stream von ResultSet-Objekten erstellen und dann eine Map- oder Filteroperation auf dem Stream ausführen, um nur die benötigten Daten zu extrahieren.
+
+Verwendung von Caching: Sie können ein Caching-System implementieren, um bereits abgerufene Daten im Arbeitsspeicher zu speichern. Dadurch können Sie den Bedarf an ständigen Datenbankabfragen reduzieren und die Leistung verbessern.
+
+Verwendung von limitierten Ressourcen: Sie können auch die zugewiesenen Ressourcen für den Java-Prozess erhöhen. Statt den Java-Prozess mit der Standardeinstellung auszuführen, können Sie die Heap-Größe und andere Ressourcenlimits erhöhen, um die Leistung zu verbessern.
+
+Verwendung von Indizes: Wenn die Datenbanktabelle eine große Anzahl von Einträgen enthält, kann das Erstellen von Indizes auf bestimmten Spalten die Abfrageleistung verbessern.
+
+Beachten Sie, dass die tatsächliche Optimierungsmethode von mehreren Faktoren abhängt, einschließlich der Größe der Datenbank, der Anzahl der Abfragen und der verfügbaren Ressourcen. Sie sollten möglicherweise mehrere Methoden kombinieren oder experimentieren, um die beste Lösung für Ihr Szenario zu finden.
+ */
 @Component("database")
 public class Database {
 
@@ -46,6 +62,9 @@ public class Database {
 
         String sql = "INSERT IGNORE INTO champdata (champ_id, match_id, map_name, ranked, average_rank, banned_champ1, banned_champ2, banned_champ3, banned_champ4, banned_champ5, banned_champ6, team1_points, team2_points, duration, timestamp, season, player_id, player_name, region, platform_id, league_tier, league_points, champ_level, won, category_id, gold_earned, talent_id, deck_card1, deck_card2, deck_card3, deck_card4, deck_card5, deck_card1_level, deck_card2_level, deck_card3_level, deck_card4_level, deck_card5_level, item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, killing_spree, kills, deaths, assists, damage_done, damage_taken, damage_shielded, heal, self_heal)\n" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (ChampData data : champData) {
@@ -106,7 +125,8 @@ public class Database {
                 statement.addBatch();
             }
             statement.executeBatch();
-            Main.DATABASE_LOGGER.info("INSERTED " + champData.length + " ENTRIES INTO THE DATABASE");
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("INSERTING " + champData.length + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to insert champ data", e);
         }
@@ -127,10 +147,14 @@ public class Database {
                 break;
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                Main.DATABASE_LOGGER.info("COUNT " + resultSet.getInt(1) + " ENTRIES IN THE DATABASE");
+                stopWatch.stop();
+                Main.DATABASE_LOGGER.info("COUNT " + resultSet.getInt(1) + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
                 return resultSet.getInt(1);
             }
         } catch (SQLException e) {
@@ -141,7 +165,7 @@ public class Database {
 
     public List<ChampData> fetchAllChampData(GameController.MatchType matchType) {
 
-        List<ChampData> data = new ArrayList<>();
+        List<ChampData> data = new ArrayList<>(countEntries(matchType));
 
         String sql = "SELECT * FROM champdata";
         switch (matchType) {
@@ -149,12 +173,16 @@ public class Database {
             case CASUAL -> sql += " WHERE ranked = 0";
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
-                Main.DATABASE_LOGGER.info("FETCHED " + data.size() + " ENTRIES FROM THE DATABASE");
             }
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -162,23 +190,24 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForMatch(GameController.MatchType matchType, int matchId) {
+    public List<ChampData> fetchChampDataForMatch(int matchId) {
 
-        List<ChampData> data = new ArrayList<>();
+        List<ChampData> data = new ArrayList<>(countEntriesForMatch(matchId));
 
         String sql = "SELECT * FROM champdata WHERE match_id = ?";
-        switch (matchType) {
-            case RANKED -> sql += " AND ranked = 1";
-            case CASUAL -> sql += " AND ranked = 0";
-        }
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, matchId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
-                Main.DATABASE_LOGGER.info("FETCHED " + data.size() + " ENTRIES FROM THE DATABASE");
             }
+
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -186,15 +215,14 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForMatchOfCategory(GameController.MatchType matchType, int matchId, int categoryId) {
+    public List<ChampData> fetchChampDataForMatchOfCategory(int matchId, int categoryId) {
 
-        List<ChampData> data = new ArrayList<>();
+        List<ChampData> data = new ArrayList<>(countEntriesForMatchAndCategory(matchId, categoryId));
 
         String sql = "SELECT * FROM champdata WHERE match_id = ? AND category_id = ?";
-        switch (matchType) {
-            case RANKED -> sql += " AND ranked = 1";
-            case CASUAL -> sql += " AND ranked = 0";
-        }
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, matchId);
@@ -202,8 +230,9 @@ public class Database {
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
-                Main.DATABASE_LOGGER.info("FETCHED " + data.size() + " ENTRIES FROM THE DATABASE");
             }
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -213,7 +242,7 @@ public class Database {
 
     public List<ChampData> fetchChampDataForChamp(GameController.MatchType matchType, int champId) {
 
-        List<ChampData> data = new ArrayList<>();
+        List<ChampData> data = new ArrayList<>(countEntriesForChampId(matchType, champId));
 
         String sql = "SELECT * FROM champdata WHERE champ_id = ?";
         switch (matchType) {
@@ -221,13 +250,17 @@ public class Database {
             case CASUAL -> sql += " AND ranked = 0";
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, champId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
-                Main.DATABASE_LOGGER.info("FETCHED " + data.size() + " ENTRIES FROM THE DATABASE");
             }
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -237,7 +270,7 @@ public class Database {
 
     public List<ChampData> fetchChampDataForMap(GameController.MatchType matchType, String mapName) {
 
-        List<ChampData> data = new ArrayList<>();
+        List<ChampData> data = new ArrayList<>(countEntriesForMap(matchType, mapName));
 
         String sql = "SELECT * FROM champdata WHERE map_name = ?";
         switch (matchType) {
@@ -245,13 +278,17 @@ public class Database {
             case CASUAL -> sql += " AND ranked = 0";
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, mapName);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
-                Main.DATABASE_LOGGER.info("FETCHED " + data.size() + " ENTRIES FROM THE DATABASE");
             }
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -261,7 +298,7 @@ public class Database {
 
     public List<ChampData> fetchChampDataForCategory(GameController.MatchType matchType, int categoryId) {
 
-        List<ChampData> data = new ArrayList<>();
+        List<ChampData> data = new ArrayList<>(countEntriesForCategory(matchType, categoryId));
 
         String sql = "SELECT * FROM champdata WHERE category_id = ?";
         switch (matchType) {
@@ -269,13 +306,17 @@ public class Database {
             case CASUAL -> sql += " AND ranked = 0";
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, categoryId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
-                Main.DATABASE_LOGGER.info("FETCHED " + data.size() + " ENTRIES FROM THE DATABASE");
             }
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -285,7 +326,7 @@ public class Database {
 
     public List<ChampData> fetchChampDataForMapOfCategory(GameController.MatchType matchType, String mapName, int categoryId) {
 
-        List<ChampData> data = new ArrayList<>();
+        List<ChampData> data = new ArrayList<>(countEntriesForMapAndCategory(matchType, mapName, categoryId));
 
         String sql = "SELECT * FROM champdata WHERE map_name = ? AND category_id = ?";
         switch (matchType) {
@@ -293,14 +334,18 @@ public class Database {
             case CASUAL -> sql += " AND ranked = 0";
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, mapName);
             preparedStatement.setInt(2, categoryId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
-                Main.DATABASE_LOGGER.info("FETCHED " + data.size() + " ENTRIES FROM THE DATABASE");
             }
+            stopWatch.stop();
+            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -314,14 +359,14 @@ public class Database {
                 resultSet.getString("map_name"),
                 resultSet.getInt("ranked"),
                 resultSet.getInt("average_rank"),
-                resultSet.getInt("banned_champ_1"),
-                resultSet.getInt("banned_champ_2"),
-                resultSet.getInt("banned_champ_3"),
-                resultSet.getInt("banned_champ_4"),
-                resultSet.getInt("banned_champ_5"),
-                resultSet.getInt("banned_champ_6"),
-                resultSet.getInt("team_1_points"),
-                resultSet.getInt("team_2_points"),
+                resultSet.getInt("banned_champ1"),
+                resultSet.getInt("banned_champ2"),
+                resultSet.getInt("banned_champ3"),
+                resultSet.getInt("banned_champ4"),
+                resultSet.getInt("banned_champ5"),
+                resultSet.getInt("banned_champ6"),
+                resultSet.getInt("team1_points"),
+                resultSet.getInt("team2_points"),
                 resultSet.getLong("duration"),
                 resultSet.getLong("timestamp"),
                 resultSet.getDouble("season"),
@@ -337,24 +382,24 @@ public class Database {
                 resultSet.getInt("category_id"),
                 resultSet.getInt("gold_earned"),
                 resultSet.getInt("talent_id"),
-                resultSet.getInt("deck_card_1"),
-                resultSet.getInt("deck_card_2"),
-                resultSet.getInt("deck_card_3"),
-                resultSet.getInt("deck_card_4"),
-                resultSet.getInt("deck_card_5"),
-                resultSet.getInt("deck_card_1_level"),
-                resultSet.getInt("deck_card_2_level"),
-                resultSet.getInt("deck_card_3_level"),
-                resultSet.getInt("deck_card_4_level"),
-                resultSet.getInt("deck_card_5_level"),
-                resultSet.getInt("item_1"),
-                resultSet.getInt("item_2"),
-                resultSet.getInt("item_3"),
-                resultSet.getInt("item_4"),
-                resultSet.getInt("item_1_level"),
-                resultSet.getInt("item_2_level"),
-                resultSet.getInt("item_3_level"),
-                resultSet.getInt("item_4_level"),
+                resultSet.getInt("deck_card1"),
+                resultSet.getInt("deck_card2"),
+                resultSet.getInt("deck_card3"),
+                resultSet.getInt("deck_card4"),
+                resultSet.getInt("deck_card5"),
+                resultSet.getInt("deck_card1_level"),
+                resultSet.getInt("deck_card2_level"),
+                resultSet.getInt("deck_card3_level"),
+                resultSet.getInt("deck_card4_level"),
+                resultSet.getInt("deck_card5_level"),
+                resultSet.getInt("item1"),
+                resultSet.getInt("item2"),
+                resultSet.getInt("item3"),
+                resultSet.getInt("item4"),
+                resultSet.getInt("item1Level"),
+                resultSet.getInt("item2Level"),
+                resultSet.getInt("item3Level"),
+                resultSet.getInt("item4Level"),
                 resultSet.getInt("killing_spree"),
                 resultSet.getInt("kills"),
                 resultSet.getInt("deaths"),
@@ -437,5 +482,154 @@ public class Database {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    private int countEntriesForMatch(int matchId) {
+
+        if(!isConnected())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM champdata WHERE match_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, matchId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    private int countEntriesForMatchAndCategory(int matchId, int categoryId) {
+
+        if(!isConnected())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM champdata WHERE match_id = ? AND category_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, matchId);
+            statement.setInt(2, categoryId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    private int countEntriesForMap(GameController.MatchType matchType, String mapName) {
+
+        if(!isConnected())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM champdata WHERE map_name = ?";
+        switch (matchType) {
+            case RANKED:
+                sql += " AND ranked = 1";
+                break;
+            case CASUAL:
+                sql += " AND ranked = 0";
+                break;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, mapName);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    private int countEntriesForCategory(GameController.MatchType matchType, int categoryId) {
+
+        if(!isConnected())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM champdata WHERE category_id = ?";
+        switch (matchType) {
+            case RANKED:
+                sql += " AND ranked = 1";
+                break;
+            case CASUAL:
+                sql += " AND ranked = 0";
+                break;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, categoryId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    private int countEntriesForMapAndCategory(GameController.MatchType matchType, String mapName, int categoryId) {
+
+        if(!isConnected())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM champdata WHERE map_name = ? AND category_id = ?";
+        switch (matchType) {
+            case RANKED:
+                sql += " AND ranked = 1";
+                break;
+            case CASUAL:
+                sql += " AND ranked = 0";
+                break;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, mapName);
+            statement.setInt(2, categoryId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    private int countEntriesForChampId(GameController.MatchType matchType, int champId) {
+
+        if(!isConnected())
+            connect();
+
+        String sql = "SELECT COUNT(*) FROM champdata WHERE champ_id = ?";
+        switch (matchType) {
+            case RANKED:
+                sql += " AND ranked = 1";
+                break;
+            case CASUAL:
+                sql += " AND ranked = 0";
+                break;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, champId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
     }
 }

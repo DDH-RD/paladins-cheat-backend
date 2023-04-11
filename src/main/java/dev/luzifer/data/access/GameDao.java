@@ -23,12 +23,12 @@ public class GameDao {
         return database.fetchAllChampData(matchType);
     }
 
-    public List<ChampData> fetchChampDataForMatch(GameController.MatchType matchType, int matchId) {
-        return database.fetchChampDataForMatch(matchType, matchId);
+    public List<ChampData> fetchChampDataForMatch(int matchId) {
+        return database.fetchChampDataForMatch(matchId);
     }
 
-    public List<ChampData> fetchChampDataForMatchOfCategory(GameController.MatchType matchType, int matchId, int categoryId) {
-        return database.fetchChampDataForMatchOfCategory(matchType, matchId, categoryId);
+    public List<ChampData> fetchChampDataForMatchOfCategory(int matchId, int categoryId) {
+        return database.fetchChampDataForMatchOfCategory(matchId, categoryId);
     }
 
     public List<ChampData> fetchChampDataForChamp(GameController.MatchType matchType, int champId) {
