@@ -29,7 +29,7 @@
                     <finalName>paladins-webservice</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>dev.luzifer.Main</mainClass>
+                            <mainClass>dev.luzifer.Webservice</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

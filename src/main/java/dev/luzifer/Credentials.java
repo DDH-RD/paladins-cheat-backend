@@ -53,7 +53,7 @@ public class Credentials {
                 throw new RuntimeException(e);
             }
 
-            try(InputStream input = Main.class.getClassLoader().getResourceAsStream("webservice.properties")) {
+            try(InputStream input = Webservice.class.getClassLoader().getResourceAsStream("webservice.properties")) {
 
                 InputStreamReader streamReader = new InputStreamReader(input, StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(streamReader);

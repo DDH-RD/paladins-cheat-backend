@@ -1,8 +1,8 @@
 package dev.luzifer.spring.controller;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import dev.luzifer.Main;
-import dev.luzifer.WebPath;
+import dev.luzifer.Webservice;
+import dev.luzifer.spring.ApplicationAccessPoint;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.evaluation.BestBanForMapEvaluation;
 import dev.luzifer.data.evaluation.BestChampEvaluation;
@@ -34,7 +34,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping(WebPath.GAME)
+@RequestMapping(ApplicationAccessPoint.GAME)
 public class GameController {
 
     private static final Executor TASK_EXECUTOR =
@@ -60,7 +60,7 @@ public class GameController {
     @Autowired
     private GameDao gameDao;
 
-    @PostMapping(WebPath.POST)
+    @PostMapping(ApplicationAccessPoint.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postGames(@PathVariable String apiKey, @RequestBody ChampData[] champData) {
 
@@ -70,7 +70,7 @@ public class GameController {
         TASK_EXECUTOR.execute(() -> gameDao.insertChampData(champData));
     }
 
-    @GetMapping(WebPath.GET_COUNT)
+    @GetMapping(ApplicationAccessPoint.GET_COUNT)
     public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@PathVariable String apiKey, @RequestParam String matchType) {
 
         if(couldNotVerifyApiKey(apiKey))
@@ -82,20 +82,20 @@ public class GameController {
                     stopWatch.start();
                     int count = gameDao.count(MatchType.valueOf(matchType));
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF COUNT: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF COUNT: " + stopWatch.getTotalTimeMillis() + "ms");
                     return count;
             }, TASK_EXECUTOR)
                 .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_CHAMP_FOR_MAP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
+        Webservice.REST_LOGGER.info("EVALUATED BEST CHAMP FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
@@ -106,20 +106,20 @@ public class GameController {
                     BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
+        Webservice.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory + " FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
@@ -130,20 +130,20 @@ public class GameController {
                     BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
+        Webservice.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP FOR CHAMP " + champId);
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -152,20 +152,20 @@ public class GameController {
                     BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
+        Webservice.REST_LOGGER.info("EVALUATED BEST COUNTER CHAMP OF CATEGORY " + champCategory + " FOR CHAMP " + champId);
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -174,20 +174,20 @@ public class GameController {
                     BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_BAN_FOR_MAP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_BAN_FOR_MAP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST BAN FOR MAP " + mapName);
+        Webservice.REST_LOGGER.info("EVALUATED BEST BAN FOR MAP " + mapName);
         mapName = mapName.replace("_", " ");
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
@@ -198,20 +198,20 @@ public class GameController {
                     BestBanForMapEvaluation evaluation = new BestBanForMapEvaluation(finalMapName, gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_TALENT_FOR_CHAMP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_TALENT_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST TALENT FOR CHAMP " + champId);
+        Webservice.REST_LOGGER.info("EVALUATED BEST TALENT FOR CHAMP " + champId);
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -220,20 +220,20 @@ public class GameController {
                     BestTalentForChampEvaluation evaluation = new BestTalentForChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_DECK_FOR_CHAMP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_DECK_FOR_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST DECK FOR CHAMP " + champId);
+        Webservice.REST_LOGGER.info("EVALUATED BEST DECK FOR CHAMP " + champId);
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -242,20 +242,20 @@ public class GameController {
                     BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_CHAMP)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@PathVariable String apiKey, @RequestParam String matchType) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST CHAMP");
+        Webservice.REST_LOGGER.info("EVALUATED BEST CHAMP");
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -264,20 +264,20 @@ public class GameController {
                     BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
-    @GetMapping(WebPath.GET_BEST_CHAMP_OF_CATEGORY)
+    @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_OF_CATEGORY)
     public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
 
-        Main.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory);
+        Webservice.REST_LOGGER.info("EVALUATED BEST CHAMP OF CATEGORY " + champCategory);
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
@@ -286,7 +286,7 @@ public class GameController {
                     BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, MatchType.valueOf(matchType));
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
                     stopWatch.stop();
-                    Main.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
+                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
                 }, TASK_EXECUTOR)
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
@@ -294,7 +294,7 @@ public class GameController {
     }
 
     private boolean couldNotVerifyApiKey(String key) {
-        return !Main.getApiKey().equals(key);
+        return !Webservice.getApiKey().equals(key);
     }
 
     public enum MatchType {

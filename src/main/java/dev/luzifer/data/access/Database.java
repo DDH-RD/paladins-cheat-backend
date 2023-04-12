@@ -1,6 +1,6 @@
 package dev.luzifer.data.access;
 
-import dev.luzifer.Main;
+import dev.luzifer.Webservice;
 import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
 import org.springframework.stereotype.Component;
@@ -38,11 +38,11 @@ public class Database {
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             this.connection = DriverManager.getConnection(
-                    Main.getDatabaseUrl(),
-                    Main.getDatabaseUsername(),
-                    String.copyValueOf(Main.getDatabasePassword()));
+                    Webservice.getDatabaseUrl(),
+                    Webservice.getDatabaseUsername(),
+                    String.copyValueOf(Webservice.getDatabasePassword()));
             ensureTableExists();
-            Main.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
+            Webservice.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -126,7 +126,7 @@ public class Database {
             }
             statement.executeBatch();
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("INSERTING " + champData.length + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("INSERTING " + champData.length + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to insert champ data", e);
         }
@@ -154,7 +154,7 @@ public class Database {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 stopWatch.stop();
-                Main.DATABASE_LOGGER.info("COUNT " + resultSet.getInt(1) + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+                Webservice.DATABASE_LOGGER.info("COUNT " + resultSet.getInt(1) + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
                 return resultSet.getInt(1);
             }
         } catch (SQLException e) {
@@ -182,7 +182,7 @@ public class Database {
                 data.add(constructChampDataFromResultSet(resultSet));
             }
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -207,7 +207,7 @@ public class Database {
             }
 
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -232,7 +232,7 @@ public class Database {
                 data.add(constructChampDataFromResultSet(resultSet));
             }
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -260,7 +260,7 @@ public class Database {
                 data.add(constructChampDataFromResultSet(resultSet));
             }
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -288,7 +288,7 @@ public class Database {
                 data.add(constructChampDataFromResultSet(resultSet));
             }
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -316,7 +316,7 @@ public class Database {
                 data.add(constructChampDataFromResultSet(resultSet));
             }
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -345,7 +345,7 @@ public class Database {
                 data.add(constructChampDataFromResultSet(resultSet));
             }
             stopWatch.stop();
-            Main.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -478,7 +478,7 @@ public class Database {
 
         try(PreparedStatement statement = connection.prepareStatement(champDataTableSql)) {
             statement.executeUpdate();
-            Main.DATABASE_LOGGER.info("CREATED TABLE champdata");
+            Webservice.DATABASE_LOGGER.info("CREATED TABLE champdata");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

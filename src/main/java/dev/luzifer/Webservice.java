@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 import java.util.logging.Logger;
 
 @UtilityClass
-public class Main {
+public class Webservice {
 
     public static final Logger REST_LOGGER = Logger.getLogger("Paladins-REST");
     public static final Logger DATABASE_LOGGER = Logger.getLogger("Paladins-Database");
