@@ -1,4 +1,4 @@
-package dev.luzifer;
+package dev.luzifer.util;
 
 import lombok.experimental.UtilityClass;
 

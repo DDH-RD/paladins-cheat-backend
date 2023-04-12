@@ -1,6 +1,6 @@
 package dev.luzifer.data.evaluation;
 
-import dev.luzifer.MapUtil;
+import dev.luzifer.util.MapUtil;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;

@@ -1,6 +1,6 @@
 package dev.luzifer.spring;
 
-import dev.luzifer.Main;
+import dev.luzifer.Webservice;
 import dev.luzifer.data.access.Database;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,21 +33,24 @@ public class Application {
     @EventListener(ApplicationReadyEvent.class)
     public void connectToDatabase() {
         database.initialize();
-        Main.DATABASE_LOGGER.info("CONNECTED TO DATABASE");
+        Webservice.DATABASE_LOGGER.info("CONNECTED TO DATABASE");
+
+        database.connect();
+        Webservice.DATABASE_LOGGER.info("CONNECTED TO DATABASE");
     }
 
     @EventListener(ApplicationStartedEvent.class)
     public void startApplication() {
-        Main.REST_LOGGER.info("STARTING APPLICATION");
-        Main.REST_LOGGER.info("ASYNC TIMEOUT: " + async_timeout);
-        Main.REST_LOGGER.info("SESSION TIMEOUT: " + session_timeout);
-        Main.REST_LOGGER.info("CONNECTION TIMEOUT: " + connection_timeout);
+        Webservice.REST_LOGGER.info("STARTING APPLICATION");
+        Webservice.REST_LOGGER.info("ASYNC TIMEOUT: " + async_timeout);
+        Webservice.REST_LOGGER.info("SESSION TIMEOUT: " + session_timeout);
+        Webservice.REST_LOGGER.info("CONNECTION TIMEOUT: " + connection_timeout);
     }
 
     @EventListener(ContextClosedEvent.class)
     public void onContextClosedEvent(ContextClosedEvent event) throws SQLException {
-        Main.REST_LOGGER.info("CLOSING APPLICATION: " + event.getApplicationContext().getDisplayName());
-        Main.DATABASE_LOGGER.info("CLOSING DATABASE CONNECTION AND CLEARING CACHE");
+        Webservice.REST_LOGGER.info("CLOSING APPLICATION: " + event.getApplicationContext().getDisplayName());
+        Webservice.DATABASE_LOGGER.info("CLOSING DATABASE CONNECTION AND CLEARING CACHE");
         Database.getConnectionPool().closeAllConnections();
         Database.getRecordCache().clear();
     }

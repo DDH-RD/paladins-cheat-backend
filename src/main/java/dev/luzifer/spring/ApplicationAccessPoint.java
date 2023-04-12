@@ -1,9 +1,9 @@
-package dev.luzifer;
+package dev.luzifer.spring;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class WebPath {
+public class ApplicationAccessPoint {
 
     public static final String API_KEY = "/{apiKey}"; // api key
     public static final String GAME = API_KEY + "/game"; // main path
