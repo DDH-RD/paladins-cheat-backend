@@ -17,7 +17,7 @@ public class TaskForce1 {
 
     private static final Executor TASK_EXECUTOR =
             new ThreadPoolExecutor(
-                    Runtime.getRuntime().availableProcessors() / 4,
+                    Runtime.getRuntime().availableProcessors() - 2,
                     Runtime.getRuntime().availableProcessors(),
                     250L,
                     TimeUnit.MILLISECONDS,

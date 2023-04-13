@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox fx:id="rootVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.luzifer.ui.view.views.PaladinsClientView">
+   <children>
+      <VBox fx:id="contentHolder" alignment="CENTER" prefHeight="530.0" prefWidth="1000.0" VBox.vgrow="ALWAYS" />
+      <Separator prefWidth="200.0">
+         <padding>
+            <Insets left="5.0" />
+         </padding>
+      </Separator>
+      <HBox fx:id="bottomHBox" prefHeight="15.0" prefWidth="1000.0" VBox.vgrow="NEVER">
+         <children>
+            <Label fx:id="countLabel" prefHeight="20.0" prefWidth="344.0">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets left="5.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>
