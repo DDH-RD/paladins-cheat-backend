@@ -1,9 +1,13 @@
 package dev.luzifer.spring.controller;
 
+<<<<<<< HEAD:src/main/java/dev/luzifer/spring/controller/GameController.java
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+=======
+>>>>>>> performance:paladins-webservice/src/main/java/dev/luzifer/spring/controller/GameController.java
 import dev.luzifer.Webservice;
 import dev.luzifer.spring.ApplicationAccessPoint;
 import dev.luzifer.data.access.GameDao;
+import dev.luzifer.data.distribution.TaskForce1;
 import dev.luzifer.data.evaluation.BestBanForMapEvaluation;
 import dev.luzifer.data.evaluation.BestChampEvaluation;
 import dev.luzifer.data.evaluation.BestChampForMapEvaluation;
@@ -28,28 +32,10 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping(ApplicationAccessPoint.GAME)
 public class GameController {
-
-    private static final Executor TASK_EXECUTOR =
-            new ThreadPoolExecutor(
-                    Runtime.getRuntime().availableProcessors() / 4,
-                    Runtime.getRuntime().availableProcessors(),
-                    250L,
-                    TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(10000),
-                    new ThreadFactoryBuilder()
-                            .setUncaughtExceptionHandler((t, e) -> e.printStackTrace())
-                            .setDaemon(true)
-                            .setNameFormat("Paladins Task-%d")
-                            .build(),
-                    new ThreadPoolExecutor.AbortPolicy());
 
     private static final DeferredResult UNAUTHORIZED_RESULT = new DeferredResult<ResponseEntity<?>>();
 
@@ -67,7 +53,7 @@ public class GameController {
         if(couldNotVerifyApiKey(apiKey))
             return;
 
-        TASK_EXECUTOR.execute(() -> gameDao.insertChampData(champData));
+        TaskForce1.getTaskExecutor().execute(() -> gameDao.insertChampData(champData));
     }
 
     @GetMapping(ApplicationAccessPoint.GET_COUNT)
@@ -84,7 +70,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF COUNT: " + stopWatch.getTotalTimeMillis() + "ms");
                     return count;
-            }, TASK_EXECUTOR)
+            }, TaskForce1.getTaskExecutor())
                 .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -108,7 +94,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -132,7 +118,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -154,7 +140,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -176,7 +162,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -200,7 +186,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -222,7 +208,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -244,7 +230,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -266,7 +252,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
@@ -288,7 +274,7 @@ public class GameController {
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
                     return evaluationResult;
-                }, TASK_EXECUTOR)
+                }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
