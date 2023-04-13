@@ -1,9 +1,6 @@
 package dev.luzifer.data.access;
 
-<<<<<<< HEAD:src/main/java/dev/luzifer/data/access/Database.java
-=======
 import dev.luzifer.data.distribution.TaskForce1;
->>>>>>> performance:paladins-webservice/src/main/java/dev/luzifer/data/access/Database.java
 import dev.luzifer.Webservice;
 import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
@@ -32,22 +29,8 @@ public class Database {
     }
 
     public void connect() {
-<<<<<<< HEAD:src/main/java/dev/luzifer/data/access/Database.java
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            this.connection = DriverManager.getConnection(
-                    Webservice.getDatabaseUrl(),
-                    Webservice.getDatabaseUsername(),
-                    String.copyValueOf(Webservice.getDatabasePassword()));
-            ensureTableExists();
-            Webservice.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-=======
         ensureTableExists();
         Webservice.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
->>>>>>> performance:paladins-webservice/src/main/java/dev/luzifer/data/access/Database.java
     }
 
     public static DatabaseRecordCache getRecordCache() {
