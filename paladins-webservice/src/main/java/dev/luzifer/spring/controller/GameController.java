@@ -1,9 +1,5 @@
 package dev.luzifer.spring.controller;
 
-<<<<<<< HEAD:src/main/java/dev/luzifer/spring/controller/GameController.java
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-=======
->>>>>>> performance:paladins-webservice/src/main/java/dev/luzifer/spring/controller/GameController.java
 import dev.luzifer.Webservice;
 import dev.luzifer.spring.ApplicationAccessPoint;
 import dev.luzifer.data.access.GameDao;

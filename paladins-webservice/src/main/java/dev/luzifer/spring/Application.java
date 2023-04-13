@@ -33,10 +33,7 @@ public class Application {
     @EventListener(ApplicationReadyEvent.class)
     public void connectToDatabase() {
         database.initialize();
-        Webservice.DATABASE_LOGGER.info("CONNECTED TO DATABASE");
-
-        database.connect();
-        Webservice.DATABASE_LOGGER.info("CONNECTED TO DATABASE");
+        Webservice.DATABASE_LOGGER.info("INITIALIZED DATABASE");
     }
 
     @EventListener(ApplicationStartedEvent.class)
@@ -45,8 +42,6 @@ public class Application {
         Webservice.REST_LOGGER.info("ASYNC TIMEOUT: " + async_timeout);
         Webservice.REST_LOGGER.info("SESSION TIMEOUT: " + session_timeout);
         Webservice.REST_LOGGER.info("CONNECTION TIMEOUT: " + connection_timeout);
-<<<<<<< HEAD:src/main/java/dev/luzifer/spring/Application.java
-=======
     }
 
     @EventListener(ContextClosedEvent.class)
@@ -55,6 +50,5 @@ public class Application {
         Webservice.DATABASE_LOGGER.info("CLOSING DATABASE CONNECTION AND CLEARING CACHE");
         Database.getConnectionPool().closeAllConnections();
         Database.getRecordCache().clear();
->>>>>>> performance:paladins-webservice/src/main/java/dev/luzifer/spring/Application.java
     }
 }
