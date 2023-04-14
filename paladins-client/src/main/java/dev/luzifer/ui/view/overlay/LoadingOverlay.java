@@ -41,8 +41,8 @@ public class LoadingOverlay extends StackPane {
     }
 
     private void setupPositioning() {
-        background.widthProperty().bind(widthProperty());
-        background.heightProperty().bind(heightProperty());
+        widthProperty().addListener((observableValue, oldWidth, newWidth) -> background.setWidth(newWidth.doubleValue()));
+        heightProperty().addListener((observableValue, oldHeight, newHeight) -> background.setHeight(newHeight.doubleValue()));
 
         setAlignment(background, Pos.CENTER);
         setAlignment(progressIndicator, Pos.CENTER);

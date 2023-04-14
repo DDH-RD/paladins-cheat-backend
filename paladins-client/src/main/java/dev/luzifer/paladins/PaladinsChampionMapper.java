@@ -6,28 +6,24 @@ import java.util.Map;
 
 public class PaladinsChampionMapper {
 
-    private final Map<Integer, PaladinsChampion> champions = new HashMap<>();
+    private final Map<Integer, PaladinsChampion> championMap = new HashMap<>();
 
     public PaladinsChampionMapper(List<PaladinsChampion> champions) {
-        for (PaladinsChampion champion : champions) {
-            this.champions.put(champion.getId(), champion);
-        }
+        champions.forEach(champion -> championMap.put(champion.getId(), champion));
     }
 
     public PaladinsChampion getChampion(int id) {
-        return champions.get(id);
+        return championMap.get(id);
     }
 
     public PaladinsChampion getChampionByName(String name) {
-        for (PaladinsChampion champion : champions.values()) {
-            if (champion.getName().equalsIgnoreCase(name)) {
-                return champion;
-            }
-        }
-        return null;
+        return championMap.values().stream()
+                .filter(champion -> champion.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 
-    public Map<Integer, PaladinsChampion> getChampions() {
-        return champions;
+    public Map<Integer, PaladinsChampion> getChampionMap() {
+        return championMap;
     }
 }

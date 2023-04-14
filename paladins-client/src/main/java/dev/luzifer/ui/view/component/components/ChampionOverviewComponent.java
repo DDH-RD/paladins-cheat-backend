@@ -30,7 +30,7 @@ public class ChampionOverviewComponent extends AbstractLoadableComponent {
         getChildren().addAll(vBox);
     }
 
-    public void load() {
+    public void loadContent() {
         setLoading(true);
         TaskForce1.ChainedTask chainedTask = new TaskForce1.ChainedTask(() -> setLoading(false));
 

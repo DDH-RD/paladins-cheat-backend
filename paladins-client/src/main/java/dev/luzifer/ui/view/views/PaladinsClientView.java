@@ -55,7 +55,7 @@ public class PaladinsClientView extends View<PaladinsClientViewModel> {
                 champLabel -> {
                     PaladinsChampion paladinsChampion = Main.getPaladinsChampionMapper().getChampionByName(champLabel.getText());
                     ChampionOverviewComponent championOverviewComponent = new ChampionOverviewComponent(paladinsChampion.getId());
-                    championOverviewComponent.load();
+                    championOverviewComponent.loadContent();
                     setContent(championOverviewComponent);
                 }
         );
@@ -66,7 +66,7 @@ public class PaladinsClientView extends View<PaladinsClientViewModel> {
             championListComponent.sortByName();
             championListComponent.setupFilterComponent();
         }));
-        for(PaladinsChampion paladinsChampion : Main.getPaladinsChampionMapper().getChampions().values()) {
+        for(PaladinsChampion paladinsChampion : Main.getPaladinsChampionMapper().getChampionMap().values()) {
             chainedTask.addTask(() -> {
                 Image image = new Image(paladinsChampion.getArtwork(), 64, 64, false, true);
                 Platform.runLater(() -> championListComponent.addChampionLabel(new Label(paladinsChampion.getName(), new ImageView(image))));
