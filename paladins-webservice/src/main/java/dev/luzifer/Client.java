@@ -112,7 +112,7 @@ public class Client extends JFrame {
         }
     }
 
-    private static final String URL = "http://202.61.202.50:8080/luziiststockschwul/game/post/";
+    private static final String URL = "http://202.61.202.50:8080/THV6aSBpc3QgZWluIFPDvMOfaQ==/game/post/";
     private static void push(ChampData[] data) {
         OkHttpClient client = new OkHttpClient();
         Gson gson = new Gson();

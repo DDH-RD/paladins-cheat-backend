@@ -13,9 +13,9 @@ import java.util.Map;
 
 public class PaladinsClientViewModel implements ViewModel {
 
-    private static final String WEB_PATH_COUNT = "http://202.61.202.50:8080/luziiststockschwul/game/get/count";
-    private static final String WEB_PATH_DECK = "http://202.61.202.50:8080/luziiststockschwul/game/get/bestDeckForChamp/";
-    private static final String WEB_PATH_TALENT = "http://202.61.202.50:8080/luziiststockschwul/game/get/bestTalentForChamp/";
+    private static final String WEB_PATH_COUNT = "http://202.61.202.50:8080/THV6aSBpc3QgZWluIFPDvMOfaQ==/game/get/count";
+    private static final String WEB_PATH_DECK = "http://202.61.202.50:8080/THV6aSBpc3QgZWluIFPDvMOfaQ==/game/get/bestDeckForChamp/";
+    private static final String WEB_PATH_TALENT = "http://202.61.202.50:8080/THV6aSBpc3QgZWluIFPDvMOfaQ==/game/get/bestTalentForChamp/";
     private static final Gson gson = new Gson();
 
     public int count() {

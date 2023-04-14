@@ -32,7 +32,7 @@ public class PaladinsClientView extends View<PaladinsClientViewModel> {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        countLabel.setText("Ranked Matches: 69420");
+        countLabel.setText("Ranked Matches: " + getViewModel().count());
 
         ChampionListComponent championListComponent = setupChampionListComponent();
         setContent(championListComponent);

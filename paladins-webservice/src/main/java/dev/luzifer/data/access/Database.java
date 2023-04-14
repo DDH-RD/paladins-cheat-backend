@@ -112,7 +112,7 @@ public class Database {
             Webservice.DATABASE_LOGGER.info("INSERTING " + champData.length + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
             CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
-            throw new IllegalStateException("Failed to insert champ data", e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
