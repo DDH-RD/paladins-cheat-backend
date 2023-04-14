@@ -19,16 +19,13 @@ import java.util.Map;
 @Component("database")
 public class Database {
 
-    private static final DatabaseConnectionPool CONNECTION_POOL = new DatabaseConnectionPool();
     private static final DatabaseRecordCache RECORD_CACHE = new DatabaseRecordCache();
-
-    public static DatabaseConnectionPool getConnectionPool() {
-        return CONNECTION_POOL;
-    }
 
     public static DatabaseRecordCache getRecordCache() {
         return RECORD_CACHE;
     }
+
+    private Connection connection;
 
     public void initialize() {
         try {
@@ -40,6 +37,29 @@ public class Database {
         Webservice.DATABASE_LOGGER.info("Database initialized");
     }
 
+    protected boolean isConnected() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    protected void connect() {
+        try {
+            connection = createConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Connection createConnection() throws SQLException {
+        return DriverManager.getConnection(
+                Webservice.getDatabaseUrl(),
+                Webservice.getDatabaseUsername(),
+                String.copyValueOf(Webservice.getDatabasePassword()));
+    }
+
     public void insertChampData(ChampData[] champData) {
 
         String sql = "INSERT IGNORE INTO champdata (champ_id, match_id, map_name, ranked, average_rank, banned_champ1, banned_champ2, banned_champ3, banned_champ4, banned_champ5, banned_champ6, team1_points, team2_points, duration, timestamp, season, player_id, player_name, region, platform_id, league_tier, league_points, champ_level, won, category_id, gold_earned, talent_id, deck_card1, deck_card2, deck_card3, deck_card4, deck_card5, deck_card1_level, deck_card2_level, deck_card3_level, deck_card4_level, deck_card5_level, item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, killing_spree, kills, deaths, assists, damage_done, damage_taken, damage_shielded, heal, self_heal)\n" +
@@ -48,8 +68,11 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (ChampData data : champData) {
                 statement.setInt(1, data.getChampId());
                 statement.setLong(2, data.getMatchId());
@@ -110,7 +133,6 @@ public class Database {
             statement.executeBatch();
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("INSERTING " + champData.length + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -131,15 +153,17 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 stopWatch.stop();
                 Webservice.DATABASE_LOGGER.info("COUNT " + resultSet.getInt(1) + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
                 return resultSet.getInt(1);
             }
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -159,15 +183,17 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
                 data.add(constructChampDataFromResultSet(resultSet));
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -184,8 +210,11 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, matchId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -194,7 +223,6 @@ public class Database {
 
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -211,8 +239,11 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, matchId);
             statement.setInt(2, categoryId);
             ResultSet resultSet = statement.executeQuery();
@@ -221,7 +252,6 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -242,8 +272,11 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, champId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -251,7 +284,6 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -272,8 +304,11 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, mapName);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -281,7 +316,6 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -302,8 +336,11 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, categoryId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()) {
@@ -311,7 +348,6 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -332,8 +368,11 @@ public class Database {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, mapName);
             statement.setInt(2, categoryId);
             ResultSet resultSet = statement.executeQuery();
@@ -342,7 +381,6 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -470,11 +508,13 @@ public class Database {
                 "  PRIMARY KEY (hurensohn)\n" +
                 ");";
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(champDataTableSql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(champDataTableSql)) {
             statement.executeUpdate();
             Webservice.DATABASE_LOGGER.info("CREATED TABLE champdata");
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -485,14 +525,16 @@ public class Database {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE match_id = ?";
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, matchId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -503,15 +545,17 @@ public class Database {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE match_id = ? AND category_id = ?";
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, matchId);
             statement.setInt(2, categoryId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -530,14 +574,16 @@ public class Database {
                 break;
         }
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, mapName);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -556,14 +602,16 @@ public class Database {
                 break;
         }
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, categoryId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -582,15 +630,17 @@ public class Database {
                 break;
         }
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, mapName);
             statement.setInt(2, categoryId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -609,74 +659,20 @@ public class Database {
                 break;
         }
 
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        if(!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, champId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
-            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return -1;
-    }
-
-    public static class DatabaseConnectionPool {
-
-        private final List<Connection> connectionPool;
-        private final List<Connection> usedConnections = new ArrayList<>();
-        private final int initialPoolSize = 100;
-
-        {
-            this.connectionPool = new ArrayList<>(initialPoolSize);
-        }
-
-        public synchronized Connection getConnection() throws SQLException {
-            if (connectionPool.isEmpty()) {
-                if (usedConnections.size() < initialPoolSize) {
-                    connectionPool.add(createConnection());
-                } else {
-                    for(Connection connection : usedConnections) {
-                        if (connection.isValid(1) && !connection.isClosed()) {
-                            releaseConnection(connection);
-                        }
-                    }
-                }
-            }
-
-            Connection connection = connectionPool.remove(connectionPool.size() - 1);
-            usedConnections.add(connection);
-            return connection;
-        }
-
-        public synchronized boolean releaseConnection(Connection connection) {
-            if (usedConnections.remove(connection)) {
-                connectionPool.add(connection);
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        private Connection createConnection() throws SQLException {
-            return DriverManager.getConnection(
-                    Webservice.getDatabaseUrl(),
-                    Webservice.getDatabaseUsername(),
-                    String.copyValueOf(Webservice.getDatabasePassword()));
-        }
-
-        public synchronized void closeAllConnections() throws SQLException {
-            for (Connection connection : connectionPool) {
-                connection.close();
-            }
-            for (Connection connection : usedConnections) {
-                connection.close();
-            }
-            connectionPool.clear();
-            usedConnections.clear();
-        }
     }
 
     public static class DatabaseRecordCache {
@@ -694,6 +690,10 @@ public class Database {
 
         public void clear() {
             cache.clear();
+        }
+
+        public int size() {
+            return cache.size();
         }
     }
 }

@@ -45,10 +45,9 @@ public class Application {
     }
 
     @EventListener(ContextClosedEvent.class)
-    public void onContextClosedEvent(ContextClosedEvent event) throws SQLException {
+    public void onContextClosedEvent(ContextClosedEvent event) {
         Webservice.REST_LOGGER.info("CLOSING APPLICATION: " + event.getApplicationContext().getDisplayName());
-        Webservice.DATABASE_LOGGER.info("CLOSING DATABASE CONNECTION AND CLEARING CACHE");
-        Database.getConnectionPool().closeAllConnections();
+        Webservice.DATABASE_LOGGER.info("CLEARING CACHE:" + Database.getRecordCache().size());
         Database.getRecordCache().clear();
     }
 }
