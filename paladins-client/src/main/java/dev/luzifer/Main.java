@@ -20,12 +20,15 @@ public class Main {
     private static final PaladinsChampionMapper PALADINS_CHAMPION_MAPPER;
 
     static {
+        System.setProperty("java.util.logging.SimpleFormatter.format",
+                "[%1$tF %1$tT] [%4$-7s] %5$s %n");
+
         Gson gson = new Gson();
         try {
             List<PaladinsChampion> champions = gson.fromJson(readChampsJson(), new TypeToken<List<PaladinsChampion>>(){}.getType());
             PALADINS_CHAMPION_MAPPER = new PaladinsChampionMapper(champions);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

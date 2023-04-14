@@ -16,11 +16,11 @@ public class GameDao {
         database.insertChampData(champData);
     }
 
-    public int count(double season) {
+    public int count(Double season) {
         return database.countEntries(season);
     }
 
-    public List<ChampData> fetchAllChampData(double season) {
+    public List<ChampData> fetchAllChampData(Double season) {
         return database.fetchAllChampData(season);
     }
 
@@ -32,19 +32,19 @@ public class GameDao {
         return database.fetchChampDataForMatchOfCategory(matchId, categoryId);
     }
 
-    public List<ChampData> fetchChampDataForChamp(double season, int champId) {
+    public List<ChampData> fetchChampDataForChamp(Double season, int champId) {
         return database.fetchChampDataForChamp(season, champId);
     }
 
-    public List<ChampData> fetchChampDataForMap(double season, String mapName) {
+    public List<ChampData> fetchChampDataForMap(Double season, String mapName) {
         return database.fetchChampDataForMap(season, mapName);
     }
 
-    public List<ChampData> fetchChampDataForCategory(double season, int categoryId) {
+    public List<ChampData> fetchChampDataForCategory(Double season, int categoryId) {
         return database.fetchChampDataForCategory(season, categoryId);
     }
 
-    public List<ChampData> fetchChampDataForMapOfCategory(double season, String mapName, int categoryId) {
+    public List<ChampData> fetchChampDataForMapOfCategory(Double season, String mapName, int categoryId) {
         return database.fetchChampDataForMapOfCategory(season, mapName, categoryId);
     }
 }

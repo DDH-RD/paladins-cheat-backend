@@ -139,10 +139,10 @@ public class Database {
         }
     }
 
-    public int countEntries(double season) {
+    public int countEntries(Double season) {
 
         String sql = "SELECT COUNT(*) FROM champdata";
-        if(season != 0.0) sql+= " WHERE season = " + season;
+        if(season != null) sql+= " WHERE season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -164,11 +164,11 @@ public class Database {
         return -1;
     }
 
-    public List<ChampData> fetchAllChampData(double season) {
+    public List<ChampData> fetchAllChampData(Double season) {
 
         List<ChampData> data = new ArrayList<>(countEntries(season));
         String sql = "SELECT * FROM champdata";
-        if(season != 0.0) sql+= " WHERE season = " + season;
+        if(season != null) sql+= " WHERE season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -249,11 +249,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForChamp(double season, int champId) {
+    public List<ChampData> fetchChampDataForChamp(Double season, int champId) {
 
         List<ChampData> data = new ArrayList<>(countEntriesForChampId(season, champId));
         String sql = "SELECT * FROM champdata WHERE champ_id = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -277,11 +277,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForMap(double season, String mapName) {
+    public List<ChampData> fetchChampDataForMap(Double season, String mapName) {
 
         List<ChampData> data = new ArrayList<>(countEntriesForMap(season, mapName));
         String sql = "SELECT * FROM champdata WHERE map_name = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -305,11 +305,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForCategory(double season, int categoryId) {
+    public List<ChampData> fetchChampDataForCategory(Double season, int categoryId) {
 
         List<ChampData> data = new ArrayList<>(countEntriesForCategory(season, categoryId));
         String sql = "SELECT * FROM champdata WHERE category_id = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -333,11 +333,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForMapOfCategory(double season, String mapName, int categoryId) {
+    public List<ChampData> fetchChampDataForMapOfCategory(Double season, String mapName, int categoryId) {
 
         List<ChampData> data = new ArrayList<>(countEntriesForMapAndCategory(season, mapName, categoryId));
         String sql = "SELECT * FROM champdata WHERE map_name = ? AND category_id = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -536,10 +536,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForMap(double season, String mapName) {
+    private int countEntriesForMap(Double season, String mapName) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE map_name = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();
@@ -557,10 +557,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForCategory(double season, int categoryId) {
+    private int countEntriesForCategory(Double season, int categoryId) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE category_id = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();
@@ -578,10 +578,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForMapAndCategory(double season, String mapName, int categoryId) {
+    private int countEntriesForMapAndCategory(Double season, String mapName, int categoryId) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE map_name = ? AND category_id = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();
@@ -600,10 +600,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForChampId(double season, int champId) {
+    private int countEntriesForChampId(Double season, int champId) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE champ_id = ?";
-        if(season != 0.0) sql += " AND season = " + season;
+        if(season != null) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();

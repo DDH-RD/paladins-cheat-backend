@@ -18,7 +18,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private final int champId;
     private final GameDao gameDao;
-    private final double season;
+    private final Double season;
 
     @Override
     public Map<Integer, Integer> evaluate() {

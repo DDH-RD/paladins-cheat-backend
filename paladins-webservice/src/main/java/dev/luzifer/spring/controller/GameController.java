@@ -54,7 +54,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_COUNT)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@PathVariable String apiKey, @RequestParam(required = false) double season) {
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@PathVariable String apiKey, @RequestParam(required = false) Double season) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -70,7 +70,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable String mapName) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable String mapName) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -93,7 +93,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable String mapName, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable String mapName, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -116,7 +116,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -137,7 +137,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable int champId, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -158,7 +158,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_BAN_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable String mapName) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable String mapName) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -181,7 +181,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_TALENT_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -202,7 +202,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_DECK_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -223,7 +223,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@PathVariable String apiKey, @RequestParam(required = false) double season) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@PathVariable String apiKey, @RequestParam(required = false) Double season) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -244,7 +244,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_OF_CATEGORY)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@PathVariable String apiKey, @RequestParam(required = false) Double season, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;

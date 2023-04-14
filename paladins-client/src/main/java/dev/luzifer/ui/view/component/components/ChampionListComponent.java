@@ -31,12 +31,6 @@ public class ChampionListComponent extends AbstractLoadableComponent {
         getChildren().addAll(tabPane, filterComponent);
     }
 
-    @Override
-    public void setLoading(boolean loading) {
-        super.setLoading(loading);
-        loadSpecific(tabPane);
-    }
-
     public void sortByName() {
         mapListView.getItems().sort(Comparator.comparing(Labeled::getText));
         championListView.getItems().sort(Comparator.comparing(Labeled::getText));

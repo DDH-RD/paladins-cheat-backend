@@ -15,7 +15,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
 
     private final int champId;
     private final GameDao gameDao;
-    private final double season;
+    private final Double season;
 
     @Override
     public Map<Integer, Integer> evaluate() {

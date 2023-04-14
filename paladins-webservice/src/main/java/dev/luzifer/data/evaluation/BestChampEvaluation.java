@@ -14,7 +14,7 @@ import java.util.Map;
 public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
 
     private final GameDao gameDao;
-    private final double season;
+    private final Double season;
 
     @Override
     public Map<Integer, Integer> evaluate() {

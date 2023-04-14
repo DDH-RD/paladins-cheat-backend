@@ -21,7 +21,7 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private final int champId;
     private final GameDao gameDao;
-    private final double season;
+    private final Double season;
 
     public Map<Integer, Integer> evaluate() {
         return evaluate(-1);

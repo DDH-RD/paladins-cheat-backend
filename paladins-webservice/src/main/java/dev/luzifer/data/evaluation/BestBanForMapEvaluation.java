@@ -15,7 +15,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private final String mapName;
     private final GameDao gameDao;
-    private final double season;
+    private final Double season;
 
     public Map<Integer, Integer> evaluate() {
         return MapUtil.sortByValue(preparation());

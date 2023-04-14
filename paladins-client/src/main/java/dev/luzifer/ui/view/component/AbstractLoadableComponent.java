@@ -36,8 +36,4 @@ public abstract class AbstractLoadableComponent extends AbstractComponent implem
     public boolean isLoading() {
         return loadingOverlay.isVisible();
     }
-
-    protected void loadSpecific(Region node) {
-        loadingOverlay.bind(node);
-    }
 }

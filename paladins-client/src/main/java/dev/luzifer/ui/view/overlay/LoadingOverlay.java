@@ -7,7 +7,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -34,11 +33,6 @@ public class LoadingOverlay extends StackPane {
         setupLoadingWheel();
 
         getChildren().addAll(background, progressIndicator, loadingLabel);
-    }
-
-    public void bind(Region pane) {
-        pane.widthProperty().addListener((observable, oldValue, newValue) -> setWidth(newValue.doubleValue()));
-        pane.heightProperty().addListener((observable, oldValue, newValue) -> setHeight(newValue.doubleValue()));
     }
 
     private void guaranteeClickability() {

@@ -15,7 +15,7 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
 
     private final String mapName;
     private final GameDao gameDao;
-    private final double season;
+    private final Double season;
 
     public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
