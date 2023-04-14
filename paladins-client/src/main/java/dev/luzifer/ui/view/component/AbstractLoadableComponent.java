@@ -9,7 +9,7 @@ public abstract class AbstractLoadableComponent extends AbstractComponent implem
     protected AbstractLoadableComponent() {
         super();
 
-        loadingOverlay.setVisible(false);
+        adjustLoadingOverlay();
         getChildren().add(loadingOverlay);
     }
 
@@ -22,5 +22,15 @@ public abstract class AbstractLoadableComponent extends AbstractComponent implem
     @Override
     public boolean isLoading() {
         return loadingOverlay.isVisible();
+    }
+    
+    private void adjustLoadingOverlay() {
+        loadingOverlay.setVisible(false);
+
+        loadingOverlay.prefWidthProperty().bind(widthProperty());
+        loadingOverlay.prefHeightProperty().bind(heightProperty());
+        
+        loadingOverlay.translateXProperty().bind(widthProperty().subtract(loadingOverlay.widthProperty()).divide(2));
+        loadingOverlay.translateYProperty().bind(heightProperty().subtract(loadingOverlay.heightProperty()).divide(2));
     }
 }
