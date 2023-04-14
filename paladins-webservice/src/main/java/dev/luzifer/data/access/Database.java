@@ -1,6 +1,5 @@
 package dev.luzifer.data.access;
 
-import dev.luzifer.data.distribution.TaskForce1;
 import dev.luzifer.Webservice;
 import dev.luzifer.data.match.info.ChampData;
 import dev.luzifer.spring.controller.GameController;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Component("database")
 public class Database {
@@ -28,16 +26,16 @@ public class Database {
         return CONNECTION_POOL;
     }
 
-    public void connect() {
-        ensureTableExists();
-        Webservice.DATABASE_LOGGER.info("CONNECTED TO THE DATABASE");
-    }
-
     public static DatabaseRecordCache getRecordCache() {
         return RECORD_CACHE;
     }
 
     public void initialize() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         ensureTableExists();
         Webservice.DATABASE_LOGGER.info("Database initialized");
     }
@@ -112,17 +110,9 @@ public class Database {
             statement.executeBatch();
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("INSERTING " + champData.length + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to insert champ data", e);
-        }
-    }
-
-    ResultSet execute(String query) {
-        try (Connection connection = CONNECTION_POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            return statement.executeQuery();
-        } catch (SQLException e) {
-            throw new IllegalStateException("Failed to execute query", e);
         }
     }
 
@@ -149,41 +139,11 @@ public class Database {
                 Webservice.DATABASE_LOGGER.info("COUNT " + resultSet.getInt(1) + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
                 return resultSet.getInt(1);
             }
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return -1;
-    }
-
-    public CompletableFuture<List<ChampData>> fetchAllChampDataWithQueryDistributor(GameController.MatchType matchType) {
-
-        List<ChampData> data = new ArrayList<>(countEntries(matchType));
-
-        String sql = "SELECT * FROM champdata";
-        switch (matchType) {
-            case RANKED -> sql += " WHERE ranked = 1";
-            case CASUAL -> sql += " WHERE ranked = 0";
-        }
-
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-
-        SqlQueryDistributor sqlQueryDistributor = new SqlQueryDistributor(this, sql, countEntries(matchType));
-        CompletableFuture<List<ResultSet>> distributionResult = sqlQueryDistributor.distribute();
-        return distributionResult.thenApplyAsync(resultSets -> {
-            for (ResultSet resultSet : resultSets) {
-                try {
-                    while (resultSet.next()) {
-                        data.add(constructChampDataFromResultSet(resultSet));
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            stopWatch.stop();
-            Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
-            return data;
-        }, TaskForce1.getTaskExecutor());
     }
 
     public List<ChampData> fetchAllChampData(GameController.MatchType matchType) {
@@ -207,6 +167,7 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -233,6 +194,7 @@ public class Database {
 
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -259,6 +221,7 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -288,6 +251,7 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -317,6 +281,7 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -346,6 +311,7 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -376,6 +342,7 @@ public class Database {
             }
             stopWatch.stop();
             Webservice.DATABASE_LOGGER.info("FETCHING " + data.size() + " TOOK " + stopWatch.getTotalTimeMillis() + "ms");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -507,6 +474,7 @@ public class Database {
              PreparedStatement statement = connection.prepareStatement(champDataTableSql)) {
             statement.executeUpdate();
             Webservice.DATABASE_LOGGER.info("CREATED TABLE champdata");
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -524,6 +492,7 @@ public class Database {
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -542,6 +511,7 @@ public class Database {
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -567,6 +537,7 @@ public class Database {
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -592,6 +563,7 @@ public class Database {
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -618,6 +590,7 @@ public class Database {
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -643,6 +616,7 @@ public class Database {
             if (resultSet.next()) {
                 return resultSet.getInt(1);
             }
+            CONNECTION_POOL.releaseConnection(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -653,7 +627,7 @@ public class Database {
 
         private final List<Connection> connectionPool;
         private final List<Connection> usedConnections = new ArrayList<>();
-        private final int initialPoolSize = 10;
+        private final int initialPoolSize = 100;
 
         {
             this.connectionPool = new ArrayList<>(initialPoolSize);
@@ -664,7 +638,11 @@ public class Database {
                 if (usedConnections.size() < initialPoolSize) {
                     connectionPool.add(createConnection());
                 } else {
-                    throw new SQLException("Connection pool exhausted");
+                    for(Connection connection : usedConnections) {
+                        if (connection.isValid(1) && !connection.isClosed()) {
+                            releaseConnection(connection);
+                        }
+                    }
                 }
             }
 

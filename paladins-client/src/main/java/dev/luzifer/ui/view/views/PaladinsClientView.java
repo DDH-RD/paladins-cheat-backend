@@ -1,6 +1,7 @@
 package dev.luzifer.ui.view.views;
 
 import dev.luzifer.Main;
+import dev.luzifer.distribution.TaskForce1;
 import dev.luzifer.paladins.PaladinsChampion;
 import dev.luzifer.ui.view.View;
 import dev.luzifer.ui.view.component.components.ChampionListComponent;
@@ -16,7 +17,6 @@ import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 
 public class PaladinsClientView extends View<PaladinsClientViewModel> {
 
@@ -32,7 +32,7 @@ public class PaladinsClientView extends View<PaladinsClientViewModel> {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        countLabel.setText("Ranked Matches: " + getViewModel().count());
+        countLabel.setText("Ranked Matches: 69420");
 
         ChampionListComponent championListComponent = setupChampionListComponent();
         setContent(championListComponent);
@@ -54,12 +54,20 @@ public class PaladinsClientView extends View<PaladinsClientViewModel> {
                 champLabel -> {}
         );
         championListComponent.setLoading(true);
-        CompletableFuture.runAsync(() -> {
-            for(PaladinsChampion paladinsChampion : Main.getPaladinsChampionMapper().getChampions().values()) {
+
+        TaskForce1.ChainedTask chainedTask = new TaskForce1.ChainedTask(() -> Platform.runLater(() -> {
+            championListComponent.setLoading(false);
+            championListComponent.sortByName();
+            championListComponent.setupFilterComponent();
+        }));
+        for(PaladinsChampion paladinsChampion : Main.getPaladinsChampionMapper().getChampions().values()) {
+            chainedTask.addTask(() -> {
                 Image image = new Image(paladinsChampion.getArtwork(), 64, 64, false, true);
                 Platform.runLater(() -> championListComponent.addChampionLabel(new Label(paladinsChampion.getName(), new ImageView(image))));
-            }
-        }).thenRun(() -> championListComponent.setLoading(false));
+            });
+        }
+
+        TaskForce1.order(chainedTask);
         return championListComponent;
     }
 }

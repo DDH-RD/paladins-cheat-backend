@@ -23,7 +23,7 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>randomizer</finalName>
+                    <finalName>paladins-client</finalName>
                     <archive>
                         <manifest>
                             <mainClass>dev.luzifer.Main</mainClass>
@@ -94,9 +94,9 @@
             <version>${javafx.version}</version>
         </dependency>
         <dependency>
-            <groupId>dev.luzifer</groupId>
-            <artifactId>randomizer-model</artifactId>
-            <version>1.0</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
         </dependency>
     </dependencies>
 </project>

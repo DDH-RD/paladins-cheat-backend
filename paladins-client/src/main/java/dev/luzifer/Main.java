@@ -27,7 +27,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Application.launch(AppStarter.class, args);
     }
 

@@ -5,6 +5,7 @@ import dev.luzifer.spring.controller.GameController;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component("gameDao")
 public class GameDao {
