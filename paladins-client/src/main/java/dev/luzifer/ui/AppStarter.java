@@ -10,8 +10,12 @@ public class AppStarter extends Application {
 
     @Override
     public void start(Stage stage) {
-        ViewController viewController = new ViewController();
-        viewController.showView(new PaladinsClientView(new PaladinsClientViewModel()));
+        try{
+            ViewController viewController = new ViewController();
+            viewController.showView(new PaladinsClientView(new PaladinsClientViewModel()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

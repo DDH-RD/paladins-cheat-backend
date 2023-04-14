@@ -53,7 +53,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_COUNT)
-    public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@PathVariable String apiKey, @RequestParam String matchType) {
+    public @ResponseBody DeferredResult<ResponseEntity<Integer>> count(@PathVariable String apiKey, @RequestParam(required = false) double season) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -62,7 +62,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    int count = gameDao.count(MatchType.valueOf(matchType));
+                    int count = gameDao.count(season);
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF COUNT: " + stopWatch.getTotalTimeMillis() + "ms");
                     return count;
@@ -72,7 +72,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampForMap(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable String mapName) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -85,7 +85,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, MatchType.valueOf(matchType));
+                    BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -96,7 +96,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_OF_CATEGORY_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategoryForMap(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable String mapName, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -109,7 +109,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, MatchType.valueOf(matchType));
+                    BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -120,7 +120,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_COUNTER_CHAMP_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -131,7 +131,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
+                    BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -142,7 +142,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_COUNTER_CHAMP_OF_CATEGORY_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestCounterChampOfCategoryForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -153,7 +153,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
+                    BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -164,7 +164,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_BAN_FOR_MAP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable String mapName) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestBanForMap(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable String mapName) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -177,7 +177,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestBanForMapEvaluation evaluation = new BestBanForMapEvaluation(finalMapName, gameDao, MatchType.valueOf(matchType));
+                    BestBanForMapEvaluation evaluation = new BestBanForMapEvaluation(finalMapName, gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -188,7 +188,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_TALENT_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestTalentForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -199,7 +199,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestTalentForChampEvaluation evaluation = new BestTalentForChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
+                    BestTalentForChampEvaluation evaluation = new BestTalentForChampEvaluation(champId, gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -210,7 +210,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_DECK_FOR_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champId) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestDeckForChamp(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champId) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -221,7 +221,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, MatchType.valueOf(matchType));
+                    BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -232,7 +232,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@PathVariable String apiKey, @RequestParam String matchType) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChamp(@PathVariable String apiKey, @RequestParam(required = false) double season) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -243,7 +243,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, MatchType.valueOf(matchType));
+                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate();
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -254,7 +254,7 @@ public class GameController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_BEST_CHAMP_OF_CATEGORY)
-    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@PathVariable String apiKey, @RequestParam String matchType, @PathVariable int champCategory) {
+    public @ResponseBody DeferredResult<ResponseEntity<Map<Integer, Integer>>> getBestChampOfCategory(@PathVariable String apiKey, @RequestParam(required = false) double season, @PathVariable int champCategory) {
 
         if(couldNotVerifyApiKey(apiKey))
             return UNAUTHORIZED_RESULT;
@@ -265,7 +265,7 @@ public class GameController {
         CompletableFuture.supplyAsync(() -> {
                     StopWatch stopWatch = new StopWatch();
                     stopWatch.start();
-                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, MatchType.valueOf(matchType));
+                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, season);
                     Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
                     stopWatch.stop();
                     Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
@@ -277,11 +277,5 @@ public class GameController {
 
     private boolean couldNotVerifyApiKey(String key) {
         return !Webservice.getApiKey().equals(key);
-    }
-
-    public enum MatchType {
-        ALL,
-        RANKED, 
-        CASUAL
     }
 }

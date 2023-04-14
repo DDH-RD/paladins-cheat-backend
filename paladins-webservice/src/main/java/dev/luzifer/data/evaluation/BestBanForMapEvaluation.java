@@ -15,7 +15,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
 
     private final String mapName;
     private final GameDao gameDao;
-    private final GameController.MatchType matchType;
+    private final double season;
 
     public Map<Integer, Integer> evaluate() {
         return MapUtil.sortByValue(preparation());
@@ -29,7 +29,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
     private Map<Integer, Integer> preparation() {
 
         Map<Integer, Integer[]> bannedChampsForMatch = new HashMap<>();
-        List<ChampData> champDataList = gameDao.fetchChampDataForMap(matchType, mapName);
+        List<ChampData> champDataList = gameDao.fetchChampDataForMap(season, mapName);
 
         for(ChampData champData : champDataList) {
             int matchId = champData.getMatchId();

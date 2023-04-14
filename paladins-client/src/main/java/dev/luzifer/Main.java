@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import dev.luzifer.paladins.PaladinsChampion;
 import dev.luzifer.paladins.PaladinsChampionMapper;
 import dev.luzifer.ui.AppStarter;
+import dev.luzifer.web.WebClient;
 import javafx.application.Application;
 
 import java.io.BufferedReader;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class Main {
 
+    private static final WebClient WEB_CLIENT = new WebClient();
     private static final PaladinsChampionMapper PALADINS_CHAMPION_MAPPER;
 
     static {
@@ -33,6 +35,10 @@ public class Main {
 
     public static PaladinsChampionMapper getPaladinsChampionMapper() {
         return PALADINS_CHAMPION_MAPPER;
+    }
+
+    public static WebClient getWebClient() {
+        return WEB_CLIENT;
     }
 
     private static String readChampsJson() throws IOException {

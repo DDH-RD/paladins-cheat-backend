@@ -15,7 +15,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
 
     private final int champId;
     private final GameDao gameDao;
-    private final GameController.MatchType matchType;
+    private final double season;
 
     @Override
     public Map<Integer, Integer> evaluate() {
@@ -45,6 +45,6 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
     }
 
     private List<ChampData> preparation() {
-        return gameDao.fetchChampDataForChamp(matchType, champId);
+        return gameDao.fetchChampDataForChamp(season, champId);
     }
 }

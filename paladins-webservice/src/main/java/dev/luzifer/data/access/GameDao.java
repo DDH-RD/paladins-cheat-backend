@@ -16,12 +16,12 @@ public class GameDao {
         database.insertChampData(champData);
     }
 
-    public int count(GameController.MatchType matchType) {
-        return database.countEntries(matchType);
+    public int count(double season) {
+        return database.countEntries(season);
     }
 
-    public List<ChampData> fetchAllChampData(GameController.MatchType matchType) {
-        return database.fetchAllChampData(matchType);
+    public List<ChampData> fetchAllChampData(double season) {
+        return database.fetchAllChampData(season);
     }
 
     public List<ChampData> fetchChampDataForMatch(int matchId) {
@@ -32,19 +32,19 @@ public class GameDao {
         return database.fetchChampDataForMatchOfCategory(matchId, categoryId);
     }
 
-    public List<ChampData> fetchChampDataForChamp(GameController.MatchType matchType, int champId) {
-        return database.fetchChampDataForChamp(matchType, champId);
+    public List<ChampData> fetchChampDataForChamp(double season, int champId) {
+        return database.fetchChampDataForChamp(season, champId);
     }
 
-    public List<ChampData> fetchChampDataForMap(GameController.MatchType matchType, String mapName) {
-        return database.fetchChampDataForMap(matchType, mapName);
+    public List<ChampData> fetchChampDataForMap(double season, String mapName) {
+        return database.fetchChampDataForMap(season, mapName);
     }
 
-    public List<ChampData> fetchChampDataForCategory(GameController.MatchType matchType, int categoryId) {
-        return database.fetchChampDataForCategory(matchType, categoryId);
+    public List<ChampData> fetchChampDataForCategory(double season, int categoryId) {
+        return database.fetchChampDataForCategory(season, categoryId);
     }
 
-    public List<ChampData> fetchChampDataForMapOfCategory(GameController.MatchType matchType, String mapName, int categoryId) {
-        return database.fetchChampDataForMapOfCategory(matchType, mapName, categoryId);
+    public List<ChampData> fetchChampDataForMapOfCategory(double season, String mapName, int categoryId) {
+        return database.fetchChampDataForMapOfCategory(season, mapName, categoryId);
     }
 }

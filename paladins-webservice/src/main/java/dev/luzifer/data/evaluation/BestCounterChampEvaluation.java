@@ -21,7 +21,7 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private final int champId;
     private final GameDao gameDao;
-    private final GameController.MatchType matchType;
+    private final double season;
 
     public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
@@ -48,7 +48,7 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private Set<ChampData> preparation(int champCategory) {
 
-        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(matchType, champId);
+        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(season, champId);
         Set<ChampData> champDataListExtended = new HashSet<>();
 
         for(ChampData champData : champDataList) {

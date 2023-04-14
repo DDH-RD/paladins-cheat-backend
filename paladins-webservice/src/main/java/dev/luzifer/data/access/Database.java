@@ -2,7 +2,6 @@ package dev.luzifer.data.access;
 
 import dev.luzifer.Webservice;
 import dev.luzifer.data.match.info.ChampData;
-import dev.luzifer.spring.controller.GameController;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 @Component("database")
 public class Database {
@@ -48,6 +48,7 @@ public class Database {
     protected void connect() {
         try {
             connection = createConnection();
+            connection.setNetworkTimeout(Executors.newFixedThreadPool(1), 60 * 1000);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -138,17 +139,10 @@ public class Database {
         }
     }
 
-    public int countEntries(GameController.MatchType matchType) {
+    public int countEntries(double season) {
 
         String sql = "SELECT COUNT(*) FROM champdata";
-        switch (matchType) {
-            case RANKED:
-                sql += " WHERE ranked = 1";
-                break;
-            case CASUAL:
-                sql += " WHERE ranked = 0";
-                break;
-        }
+        if(season != 0.0) sql+= " WHERE season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -170,15 +164,11 @@ public class Database {
         return -1;
     }
 
-    public List<ChampData> fetchAllChampData(GameController.MatchType matchType) {
+    public List<ChampData> fetchAllChampData(double season) {
 
-        List<ChampData> data = new ArrayList<>(countEntries(matchType));
-
+        List<ChampData> data = new ArrayList<>(countEntries(season));
         String sql = "SELECT * FROM champdata";
-        switch (matchType) {
-            case RANKED -> sql += " WHERE ranked = 1";
-            case CASUAL -> sql += " WHERE ranked = 0";
-        }
+        if(season != 0.0) sql+= " WHERE season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -259,15 +249,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForChamp(GameController.MatchType matchType, int champId) {
+    public List<ChampData> fetchChampDataForChamp(double season, int champId) {
 
-        List<ChampData> data = new ArrayList<>(countEntriesForChampId(matchType, champId));
-
+        List<ChampData> data = new ArrayList<>(countEntriesForChampId(season, champId));
         String sql = "SELECT * FROM champdata WHERE champ_id = ?";
-        switch (matchType) {
-            case RANKED -> sql += " AND ranked = 1";
-            case CASUAL -> sql += " AND ranked = 0";
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -291,15 +277,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForMap(GameController.MatchType matchType, String mapName) {
+    public List<ChampData> fetchChampDataForMap(double season, String mapName) {
 
-        List<ChampData> data = new ArrayList<>(countEntriesForMap(matchType, mapName));
-
+        List<ChampData> data = new ArrayList<>(countEntriesForMap(season, mapName));
         String sql = "SELECT * FROM champdata WHERE map_name = ?";
-        switch (matchType) {
-            case RANKED -> sql += " AND ranked = 1";
-            case CASUAL -> sql += " AND ranked = 0";
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -323,15 +305,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForCategory(GameController.MatchType matchType, int categoryId) {
+    public List<ChampData> fetchChampDataForCategory(double season, int categoryId) {
 
-        List<ChampData> data = new ArrayList<>(countEntriesForCategory(matchType, categoryId));
-
+        List<ChampData> data = new ArrayList<>(countEntriesForCategory(season, categoryId));
         String sql = "SELECT * FROM champdata WHERE category_id = ?";
-        switch (matchType) {
-            case RANKED -> sql += " AND ranked = 1";
-            case CASUAL -> sql += " AND ranked = 0";
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -355,15 +333,11 @@ public class Database {
         return data;
     }
 
-    public List<ChampData> fetchChampDataForMapOfCategory(GameController.MatchType matchType, String mapName, int categoryId) {
+    public List<ChampData> fetchChampDataForMapOfCategory(double season, String mapName, int categoryId) {
 
-        List<ChampData> data = new ArrayList<>(countEntriesForMapAndCategory(matchType, mapName, categoryId));
-
+        List<ChampData> data = new ArrayList<>(countEntriesForMapAndCategory(season, mapName, categoryId));
         String sql = "SELECT * FROM champdata WHERE map_name = ? AND category_id = ?";
-        switch (matchType) {
-            case RANKED -> sql += " AND ranked = 1";
-            case CASUAL -> sql += " AND ranked = 0";
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -562,17 +536,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForMap(GameController.MatchType matchType, String mapName) {
+    private int countEntriesForMap(double season, String mapName) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE map_name = ?";
-        switch (matchType) {
-            case RANKED:
-                sql += " AND ranked = 1";
-                break;
-            case CASUAL:
-                sql += " AND ranked = 0";
-                break;
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();
@@ -590,17 +557,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForCategory(GameController.MatchType matchType, int categoryId) {
+    private int countEntriesForCategory(double season, int categoryId) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE category_id = ?";
-        switch (matchType) {
-            case RANKED:
-                sql += " AND ranked = 1";
-                break;
-            case CASUAL:
-                sql += " AND ranked = 0";
-                break;
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();
@@ -618,17 +578,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForMapAndCategory(GameController.MatchType matchType, String mapName, int categoryId) {
+    private int countEntriesForMapAndCategory(double season, String mapName, int categoryId) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE map_name = ? AND category_id = ?";
-        switch (matchType) {
-            case RANKED:
-                sql += " AND ranked = 1";
-                break;
-            case CASUAL:
-                sql += " AND ranked = 0";
-                break;
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();
@@ -647,17 +600,10 @@ public class Database {
         return -1;
     }
 
-    private int countEntriesForChampId(GameController.MatchType matchType, int champId) {
+    private int countEntriesForChampId(double season, int champId) {
 
         String sql = "SELECT COUNT(*) FROM champdata WHERE champ_id = ?";
-        switch (matchType) {
-            case RANKED:
-                sql += " AND ranked = 1";
-                break;
-            case CASUAL:
-                sql += " AND ranked = 0";
-                break;
-        }
+        if(season != 0.0) sql += " AND season = " + season;
 
         if(!isConnected()) {
             connect();

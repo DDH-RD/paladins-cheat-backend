@@ -12,8 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 
-import java.sql.SQLException;
-
 @SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)
 @PropertySource("classpath:application.properties")
 public class Application {

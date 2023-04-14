@@ -14,7 +14,7 @@ import java.util.Map;
 public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
 
     private final GameDao gameDao;
-    private final GameController.MatchType matchType;
+    private final double season;
 
     @Override
     public Map<Integer, Integer> evaluate() {
@@ -43,8 +43,8 @@ public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
 
     private List<ChampData> preparation(int champCategory) {
         if(champCategory == -1)
-            return gameDao.fetchAllChampData(matchType);
+            return gameDao.fetchAllChampData(season);
         else
-            return gameDao.fetchChampDataForCategory(matchType, champCategory);
+            return gameDao.fetchChampDataForCategory(season, champCategory);
     }
 }

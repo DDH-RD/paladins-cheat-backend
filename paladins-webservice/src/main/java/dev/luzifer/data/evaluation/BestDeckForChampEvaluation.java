@@ -18,7 +18,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private final int champId;
     private final GameDao gameDao;
-    private final GameController.MatchType matchType;
+    private final double season;
 
     @Override
     public Map<Integer, Integer> evaluate() {
@@ -121,7 +121,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private Map<ChampData, CardMeter[]> preparation() {
 
-        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(matchType, champId);
+        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(season, champId);
 
         Map<ChampData, CardMeter[]> cardMap = new HashMap<>();
         for(ChampData champData : champDataList) {

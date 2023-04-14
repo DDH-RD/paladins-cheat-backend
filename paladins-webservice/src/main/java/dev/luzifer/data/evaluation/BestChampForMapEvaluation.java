@@ -15,7 +15,7 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
 
     private final String mapName;
     private final GameDao gameDao;
-    private final GameController.MatchType matchType;
+    private final double season;
 
     public Map<Integer, Integer> evaluate() {
         return evaluate(-1);
@@ -42,9 +42,9 @@ public class BestChampForMapEvaluation implements Evaluation<Map<Integer, Intege
 
     private List<ChampData> preparation(int champCategory) {
         if(champCategory == -1)
-            return gameDao.fetchChampDataForMap(matchType, mapName);
+            return gameDao.fetchChampDataForMap(season, mapName);
         else
-            return gameDao.fetchChampDataForMapOfCategory(matchType, mapName, champCategory);
+            return gameDao.fetchChampDataForMapOfCategory(season, mapName, champCategory);
     }
 
 }
