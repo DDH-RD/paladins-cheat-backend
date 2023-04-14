@@ -28,6 +28,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping(ApplicationAccessPoint.GAME)
@@ -60,14 +61,11 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Integer>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    int count = gameDao.count(season);
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF COUNT: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return count;
-            }, TaskForce1.getTaskExecutor())
-                .thenAccept(count -> deferredResult.setResult(new ResponseEntity<>(count, HttpStatus.FOUND)));
+                    AtomicReference<Integer> count = new AtomicReference<>();
+                    timing(() -> count.set(gameDao.count(season)));
+                    return count.get();
+                }, TaskForce1.getTaskExecutor())
+                .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
     }
 
@@ -83,13 +81,12 @@ public class GameController {
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         String finalMapName = mapName;
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate();
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, season);
+                        evaluationResult.set(evaluation.evaluate());
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -107,13 +104,12 @@ public class GameController {
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         String finalMapName = mapName;
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestChampForMapEvaluation evaluation = new BestChampForMapEvaluation(finalMapName, gameDao, season);
+                        evaluationResult.set(evaluation.evaluate(champCategory));
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -129,13 +125,12 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate();
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, season);
+                        evaluationResult.set(evaluation.evaluate());
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -151,13 +146,12 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestCounterChampEvaluation evaluation = new BestCounterChampEvaluation(champId, gameDao, season);
+                        evaluationResult.set(evaluation.evaluate(champCategory));
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -175,13 +169,12 @@ public class GameController {
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         String finalMapName = mapName;
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestBanForMapEvaluation evaluation = new BestBanForMapEvaluation(finalMapName, gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate();
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestBanForMapEvaluation evaluation = new BestBanForMapEvaluation(finalMapName, gameDao, season);
+                        evaluationResult.set(evaluation.evaluate());
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -197,13 +190,12 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestTalentForChampEvaluation evaluation = new BestTalentForChampEvaluation(champId, gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate();
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestTalentForChampEvaluation evaluation = new BestTalentForChampEvaluation(champId, gameDao, season);
+                        evaluationResult.set(evaluation.evaluate());
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -219,13 +211,12 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate();
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestDeckForChampEvaluation evaluation = new BestDeckForChampEvaluation(champId, gameDao, season);
+                        evaluationResult.set(evaluation.evaluate());
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -241,13 +232,12 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate();
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+                    AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, season);
+                        evaluationResult.set(evaluation.evaluate());
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -263,13 +253,12 @@ public class GameController {
 
         DeferredResult<ResponseEntity<Map<Integer, Integer>>> deferredResult = new DeferredResult<>();
         CompletableFuture.supplyAsync(() -> {
-                    StopWatch stopWatch = new StopWatch();
-                    stopWatch.start();
-                    BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, season);
-                    Map<Integer, Integer> evaluationResult = evaluation.evaluate(champCategory);
-                    stopWatch.stop();
-                    Webservice.REST_LOGGER.info("TIMING OF EVALUATION: " + stopWatch.getTotalTimeMillis() + "ms");
-                    return evaluationResult;
+            AtomicReference<Map<Integer, Integer>> evaluationResult = new AtomicReference<>();
+                    timing(() -> {
+                        BestChampEvaluation evaluation = new BestChampEvaluation(gameDao, season);
+                        evaluationResult.set(evaluation.evaluate(champCategory));
+                    });
+                    return evaluationResult.get();
                 }, TaskForce1.getTaskExecutor())
                 .thenAccept(result -> deferredResult.setResult(new ResponseEntity<>(result, HttpStatus.FOUND)));
         return deferredResult;
@@ -277,5 +266,13 @@ public class GameController {
 
     private boolean couldNotVerifyApiKey(String key) {
         return !Webservice.getApiKey().equals(key);
+    }
+
+    private void timing(Runnable runnable) {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        runnable.run();
+        stopWatch.stop();
+        Webservice.REST_LOGGER.info("TIMING OF ACTION: " + stopWatch.getTotalTimeMillis() + "ms");
     }
 }
