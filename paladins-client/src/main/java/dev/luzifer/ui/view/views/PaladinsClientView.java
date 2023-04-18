@@ -4,8 +4,8 @@ import dev.luzifer.Main;
 import dev.luzifer.distribution.TaskForce1;
 import dev.luzifer.paladins.PaladinsChampion;
 import dev.luzifer.ui.view.View;
+import dev.luzifer.ui.view.component.components.ChampInfoComponent;
 import dev.luzifer.ui.view.component.components.ChampionListComponent;
-import dev.luzifer.ui.view.component.components.ChampionOverviewComponent;
 import dev.luzifer.ui.view.viewmodels.PaladinsClientViewModel;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -54,9 +54,8 @@ public class PaladinsClientView extends View<PaladinsClientViewModel> {
                 mapLabel -> {},
                 champLabel -> {
                     PaladinsChampion paladinsChampion = Main.getPaladinsChampionMapper().getChampionByName(champLabel.getText());
-                    ChampionOverviewComponent championOverviewComponent = new ChampionOverviewComponent(paladinsChampion.getId());
-                    championOverviewComponent.loadContent();
-                    setContent(championOverviewComponent);
+                    ChampInfoComponent champInfoComponent = new ChampInfoComponent(paladinsChampion);
+                    setContent(champInfoComponent);
                 }
         );
         championListComponent.setLoading(true);

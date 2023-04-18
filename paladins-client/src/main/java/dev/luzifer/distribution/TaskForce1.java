@@ -12,10 +12,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 @UtilityClass
 public class TaskForce1 {
 
+    private static final Logger LOGGER = Logger.getLogger(TaskForce1.class.getName());
+    
     private static final Executor TASK_EXECUTOR =
             new ThreadPoolExecutor(
                     Runtime.getRuntime().availableProcessors() - 2,
@@ -74,9 +77,9 @@ public class TaskForce1 {
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            System.out.println("Uncaught explosion in thread '" + t.getName() + "': " + e.getMessage());
+            LOGGER.severe("Uncaught exception in thread " + t.getName() + ": " + e.getMessage());
             for(StackTraceElement element : e.getStackTrace()) {
-                System.out.println("    " + element.toString());
+                LOGGER.severe(element.toString());
             }
         }
     }
