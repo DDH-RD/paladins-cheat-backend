@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Integer>> {
@@ -20,7 +21,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
     @Override
     public Map<Integer, Integer> evaluate() {
 
-        List<ChampData> champs = preparation();
+        Set<ChampData> champs = preparation();
         Map<Integer, Integer> map = new HashMap<>();
 
         for(ChampData champData : champs) {
@@ -44,7 +45,7 @@ public class BestTalentForChampEvaluation implements Evaluation<Map<Integer, Int
         throw new UnsupportedOperationException("There is no category for this evaluation");
     }
 
-    private List<ChampData> preparation() {
+    private Set<ChampData> preparation() {
         return gameDao.fetchChampDataForChamp(season, champId);
     }
 }

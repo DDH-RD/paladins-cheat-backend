@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
@@ -24,7 +25,7 @@ public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
     @Override
     public Map<Integer, Integer> evaluate(int champCategory) {
 
-        List<ChampData> champDataSet = preparation(champCategory);
+        Set<ChampData> champDataSet = preparation(champCategory);
         Map<Integer, Integer> champPoints = new HashMap<>();
 
         for (ChampData champData : champDataSet) {
@@ -41,7 +42,7 @@ public class BestChampEvaluation implements Evaluation<Map<Integer, Integer>> {
         return MapUtil.sortByValue(champPoints);
     }
 
-    private List<ChampData> preparation(int champCategory) {
+    private Set<ChampData> preparation(int champCategory) {
         if(champCategory == -1)
             return gameDao.fetchAllChampData(season);
         else

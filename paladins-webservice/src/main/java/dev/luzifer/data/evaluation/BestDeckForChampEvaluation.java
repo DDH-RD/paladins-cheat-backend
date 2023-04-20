@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integer>> {
@@ -121,7 +122,7 @@ public class BestDeckForChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private Map<ChampData, CardMeter[]> preparation() {
 
-        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(season, champId);
+        Set<ChampData> champDataList = gameDao.fetchChampDataForChamp(season, champId);
 
         Map<ChampData, CardMeter[]> cardMap = new HashMap<>();
         for(ChampData champData : champDataList) {

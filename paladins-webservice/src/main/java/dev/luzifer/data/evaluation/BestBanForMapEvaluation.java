@@ -3,12 +3,11 @@ package dev.luzifer.data.evaluation;
 import dev.luzifer.util.MapUtil;
 import dev.luzifer.data.access.GameDao;
 import dev.luzifer.data.match.info.ChampData;
-import dev.luzifer.spring.controller.GameController;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>> {
@@ -29,7 +28,7 @@ public class BestBanForMapEvaluation implements Evaluation<Map<Integer, Integer>
     private Map<Integer, Integer> preparation() {
 
         Map<Integer, Integer[]> bannedChampsForMatch = new HashMap<>();
-        List<ChampData> champDataList = gameDao.fetchChampDataForMap(season, mapName);
+        Set<ChampData> champDataList = gameDao.fetchChampDataForMap(season, mapName);
 
         for(ChampData champData : champDataList) {
             int matchId = champData.getMatchId();

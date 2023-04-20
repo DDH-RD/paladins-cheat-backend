@@ -48,11 +48,11 @@ public class BestCounterChampEvaluation implements Evaluation<Map<Integer, Integ
 
     private Set<ChampData> preparation(int champCategory) {
 
-        List<ChampData> champDataList = gameDao.fetchChampDataForChamp(season, champId);
+        Set<ChampData> champDataList = gameDao.fetchChampDataForChamp(season, champId);
         Set<ChampData> champDataListExtended = new HashSet<>();
 
         for(ChampData champData : champDataList) {
-            List<ChampData> champDataInMatch;
+            Set<ChampData> champDataInMatch;
             if(champCategory == -1)
                 champDataInMatch = gameDao.fetchChampDataForMatch(champData.getMatchId());
             else
