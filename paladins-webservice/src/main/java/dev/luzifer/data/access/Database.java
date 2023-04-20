@@ -48,13 +48,15 @@ public class Database {
     protected void connect() {
         try {
             connection = createConnection();
-            connection.setNetworkTimeout(Executors.newFixedThreadPool(1), 60 * 1000);
+            
+            int threads = Runtime.getRuntime().availableProcessors();
+            connection.setNetworkTimeout(Executors.newFixedThreadPool(threads), 60 * 1000);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Connection createConnection() throws SQLException {
+    private static Connection createConnection() throws SQLException {
         return DriverManager.getConnection(
                 Webservice.getDatabaseUrl(),
                 Webservice.getDatabaseUsername(),
@@ -620,7 +622,7 @@ public class Database {
         }
         return -1;
     }
-
+    
     public static class DatabaseRecordCache {
 
         private final Map<Object, Object> cache = new HashMap<>();
