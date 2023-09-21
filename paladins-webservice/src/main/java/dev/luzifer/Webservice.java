@@ -34,6 +34,7 @@ public class Webservice {
 
             try {
                 CREDENTIALS_FILE.createNewFile();
+                REST_LOGGER.info("Created credentials file, please fill it with your credentials and restart the application.");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -62,13 +63,15 @@ public class Webservice {
                 if(line.startsWith("database-username:")) DATABASE_USERNAME = line.substring(18);
                 if(line.startsWith("database-password:")) DATABASE_PASSWORD = line.substring(18).toCharArray();
             });
+            REST_LOGGER.info("Loaded credentials from file");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class);
+        Application application = new Application();
+        SpringApplication.run(application.getClass(), args);
     }
 
     public static String getApiKey() {

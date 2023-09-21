@@ -2,6 +2,7 @@ package dev.luzifer.spring;
 
 import dev.luzifer.Webservice;
 import dev.luzifer.data.access.Database;
+import dev.luzifer.data.access.GameDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +12,8 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
+
+import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)
 @PropertySource("classpath:application.properties")
@@ -26,26 +29,20 @@ public class Application {
     private String connection_timeout;
 
     @Autowired
-    private Database database;
+    private GameDao gameDao;
 
     @EventListener(ApplicationReadyEvent.class)
     public void connectToDatabase() {
-        database.initialize();
-        Webservice.DATABASE_LOGGER.info("INITIALIZED DATABASE");
+        CompletableFuture.runAsync(() -> gameDao.initializeDatabase());
     }
 
     @EventListener(ApplicationStartedEvent.class)
     public void startApplication() {
         Webservice.REST_LOGGER.info("STARTING APPLICATION");
-        Webservice.REST_LOGGER.info("ASYNC TIMEOUT: " + async_timeout);
-        Webservice.REST_LOGGER.info("SESSION TIMEOUT: " + session_timeout);
-        Webservice.REST_LOGGER.info("CONNECTION TIMEOUT: " + connection_timeout);
     }
 
     @EventListener(ContextClosedEvent.class)
     public void onContextClosedEvent(ContextClosedEvent event) {
         Webservice.REST_LOGGER.info("CLOSING APPLICATION: " + event.getApplicationContext().getDisplayName());
-        Webservice.DATABASE_LOGGER.info("CLEARING CACHE:" + Database.getRecordCache().size());
-        Database.getRecordCache().clear();
     }
 }
