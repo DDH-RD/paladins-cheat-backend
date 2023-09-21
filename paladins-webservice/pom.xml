@@ -64,11 +64,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.Cristian-Sknz</groupId>
-            <artifactId>Paladins-Wrapper</artifactId>
-            <version>2021.0417.3</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>

@@ -43,8 +43,8 @@ public class GameDao {
 
         database.insertGameInfo(gameInfo);
 
-        ChampInfo[] champInfos = new ChampInfo[10];
-        PlayerInfo[] playerInfos = new PlayerInfo[10];
+        ChampInfo[] champInfos = new ChampInfo[gameDto.getChamps().length];
+        PlayerInfo[] playerInfos = new PlayerInfo[gameDto.getChamps().length];
 
         int index = 0;
         for(ChampDto champDto : gameDto.getChamps()) {

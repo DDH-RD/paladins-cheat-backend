@@ -1,7 +1,6 @@
 package dev.luzifer.spring;
 
 import dev.luzifer.Webservice;
-import dev.luzifer.data.access.Database;
 import dev.luzifer.data.access.GameDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +11,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
-
-import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)
 @PropertySource("classpath:application.properties")
@@ -33,7 +30,7 @@ public class Application {
 
     @EventListener(ApplicationReadyEvent.class)
     public void connectToDatabase() {
-        CompletableFuture.runAsync(() -> gameDao.initializeDatabase());
+        gameDao.initializeDatabase();
     }
 
     @EventListener(ApplicationStartedEvent.class)

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 
 public class Database {
 
@@ -33,9 +34,9 @@ public class Database {
 
         connect();
         createMapInfoTable();
-        createChampInfoTable();
         createGameInfoTable();
         createPlayerInfoTable();
+        createChampInfoTable();
 
         Webservice.DATABASE_LOGGER.info("Database initialized");
     }
@@ -64,7 +65,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO MapInfo (mapName) VALUES (?)")) {
+                "INSERT IGNORE INTO MapInfo (mapName) VALUES (?)")) {
             preparedStatement.setString(1, mapName);
             preparedStatement.executeUpdate();
             Webservice.DATABASE_LOGGER.info("MapInfo record inserted successfully.");
@@ -79,7 +80,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO PlayerInfo (playerId, playerName, region, platformId) " +
+                "INSERT IGNORE INTO PlayerInfo (playerId, playerName, region, platformId) " +
                         "VALUES (?, ?, ?, ?)")) {
 
             for (PlayerInfo playerInfo : playerInfos) {
@@ -104,7 +105,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
+                "INSERT IGNORE INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
                         "won, categoryId, goldEarned, talentId, deckCard1, deckCard2, deckCard3, " +
                         "deckCard4, deckCard5, deckCard1Level, deckCard2Level, deckCard3Level, " +
                         "deckCard4Level, deckCard5Level, item1, item2, item3, item4, item1Level, " +
@@ -168,7 +169,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
+                "INSERT IGNORE INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
                         "won, categoryId, goldEarned, talentId, deckCard1, deckCard2, deckCard3, " +
                         "deckCard4, deckCard5, deckCard1Level, deckCard2Level, deckCard3Level, " +
                         "deckCard4Level, deckCard5Level, item1, item2, item3, item4, item1Level, " +
@@ -227,7 +228,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO GameInfo (matchId, ranked, averageRank, mapId, bannedChamp1, " +
+                "INSERT IGNORE INTO GameInfo (matchId, ranked, averageRank, mapId, bannedChamp1, " +
                         "bannedChamp2, bannedChamp3, bannedChamp4, bannedChamp5, bannedChamp6, " +
                         "bannedChamp7, bannedChamp8, team1Points, team2Points, duration, timestamp, " +
                         "season) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
@@ -262,7 +263,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO PlayerInfo (playerId, playerName, region, platformId) " +
+                "INSERT IGNORE INTO PlayerInfo (playerId, playerName, region, platformId) " +
                         "VALUES (?, ?, ?, ?)")) {
             preparedStatement.setInt(1, playerInfo.getPlayerId());
             preparedStatement.setString(2, playerInfo.getPlayerName());
@@ -371,7 +372,7 @@ public class Database {
             preparedStatement.executeQuery();
             id = preparedStatement.getResultSet().getInt("id");
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting id for map", e);
+            Webservice.DATABASE_LOGGER.log(Level.WARNING, "Could not get id for map " + mapName);
         }
 
         return id;
