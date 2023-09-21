@@ -63,9 +63,9 @@ public class ChampDto {
     int kills;
     int deaths;
     int assists;
-    long damageDone;
-    long damageTaken;
-    long damageShielded; /* "migiated" */
-    long heal;
-    long selfHeal;
+    int damageDone;
+    int damageTaken;
+    int damageShielded; /* "migiated" */
+    int heal;
+    int selfHeal;
 }

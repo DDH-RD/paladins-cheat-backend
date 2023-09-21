@@ -28,6 +28,8 @@ public class GameDto {
     int bannedChamp4;
     int bannedChamp5;
     int bannedChamp6;
+    int bannedChamp7;
+    int bannedChamp8;
     /* Punktestand der Teams */
     int team1Points;
     int team2Points;

@@ -73,6 +73,95 @@ public class Database {
         }
     }
 
+    public void insertBatchPlayerInfos(PlayerInfo[] playerInfos) {
+        if (!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT INTO PlayerInfo (playerId, playerName, region, platformId) " +
+                        "VALUES (?, ?, ?, ?)")) {
+
+            for (PlayerInfo playerInfo : playerInfos) {
+                preparedStatement.setInt(1, playerInfo.getPlayerId());
+                preparedStatement.setString(2, playerInfo.getPlayerName());
+                preparedStatement.setString(3, playerInfo.getRegion());
+                preparedStatement.setInt(4, playerInfo.getPlatformId());
+
+                preparedStatement.addBatch();
+            }
+
+            int[] updateCounts = preparedStatement.executeBatch();
+            Webservice.DATABASE_LOGGER.info("Batch insert(PlayerInfo) completed. Inserted " + updateCounts.length + " records.");
+        } catch (SQLException e) {
+            throw new RuntimeException("Error inserting batch PlayerInfo records", e);
+        }
+    }
+
+    public void insertBatchChampInfos(ChampInfo[] champInfos) {
+        if (!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
+                        "won, categoryId, goldEarned, talentId, deckCard1, deckCard2, deckCard3, " +
+                        "deckCard4, deckCard5, deckCard1Level, deckCard2Level, deckCard3Level, " +
+                        "deckCard4Level, deckCard5Level, item1, item2, item3, item4, item1Level, " +
+                        "item2Level, item3Level, item4Level, killingSpree, kills, deaths, assists, " +
+                        "damageDone, damageTaken, damageShielded, heal, selfHeal, matchId, playerId) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+
+            for (ChampInfo champInfo : champInfos) {
+                preparedStatement.setInt(1, champInfo.getChampId());
+                preparedStatement.setInt(2, champInfo.getLeagueTier());
+                preparedStatement.setInt(3, champInfo.getLeaguePoints());
+                preparedStatement.setInt(4, champInfo.getChampLevel());
+                preparedStatement.setInt(5, champInfo.getWon());
+                preparedStatement.setInt(6, champInfo.getCategoryId());
+                preparedStatement.setInt(7, champInfo.getGoldEarned());
+                preparedStatement.setInt(8, champInfo.getTalentId());
+                preparedStatement.setInt(9, champInfo.getDeckCard1());
+                preparedStatement.setInt(10, champInfo.getDeckCard2());
+                preparedStatement.setInt(11, champInfo.getDeckCard3());
+                preparedStatement.setInt(12, champInfo.getDeckCard4());
+                preparedStatement.setInt(13, champInfo.getDeckCard5());
+                preparedStatement.setInt(14, champInfo.getDeckCard1Level());
+                preparedStatement.setInt(15, champInfo.getDeckCard2Level());
+                preparedStatement.setInt(16, champInfo.getDeckCard3Level());
+                preparedStatement.setInt(17, champInfo.getDeckCard4Level());
+                preparedStatement.setInt(18, champInfo.getDeckCard5Level());
+                preparedStatement.setInt(19, champInfo.getItem1());
+                preparedStatement.setInt(20, champInfo.getItem2());
+                preparedStatement.setInt(21, champInfo.getItem3());
+                preparedStatement.setInt(22, champInfo.getItem4());
+                preparedStatement.setInt(23, champInfo.getItem1Level());
+                preparedStatement.setInt(24, champInfo.getItem2Level());
+                preparedStatement.setInt(25, champInfo.getItem3Level());
+                preparedStatement.setInt(26, champInfo.getItem4Level());
+                preparedStatement.setInt(27, champInfo.getKillingSpree());
+                preparedStatement.setInt(28, champInfo.getKills());
+                preparedStatement.setInt(29, champInfo.getDeaths());
+                preparedStatement.setInt(30, champInfo.getAssists());
+                preparedStatement.setInt(31, champInfo.getDamageDone());
+                preparedStatement.setInt(32, champInfo.getDamageTaken());
+                preparedStatement.setInt(33, champInfo.getDamageShielded());
+                preparedStatement.setInt(34, champInfo.getHeal());
+                preparedStatement.setInt(35, champInfo.getSelfHeal());
+                preparedStatement.setInt(36, champInfo.getMatchId());
+                preparedStatement.setInt(37, champInfo.getPlayerId());
+
+                preparedStatement.addBatch();
+            }
+
+            int[] updateCounts = preparedStatement.executeBatch();
+            Webservice.DATABASE_LOGGER.info("Batch insert(ChampInfo) completed. Inserted " + updateCounts.length + " records.");
+        } catch (SQLException e) {
+            throw new RuntimeException("Error inserting batch ChampInfo records", e);
+        }
+    }
+
     public void insertChampInfo(ChampInfo champInfo) {
         if (!isConnected()) {
             connect();
@@ -268,6 +357,24 @@ public class Database {
                         + "region VARCHAR(255),"
                         + "platformId INT"
         );
+    }
+
+    public int getIdForMap(String mapName) {
+        if (!isConnected()) {
+            connect();
+        }
+
+        int id = -1;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT id FROM MapInfo WHERE mapName = ?")) {
+            preparedStatement.setString(1, mapName);
+            preparedStatement.executeQuery();
+            id = preparedStatement.getResultSet().getInt("id");
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting id for map", e);
+        }
+
+        return id;
     }
 
     private void createTableIfNotExists(String tableName, String tableDefinition) {

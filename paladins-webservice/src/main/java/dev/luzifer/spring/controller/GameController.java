@@ -39,7 +39,11 @@ public class GameController {
             return;
         }
 
-        timing(() -> gameDao.saveGames(gameDtos));
+        timing(() -> {
+            for (GameDto gameDto : gameDtos) {
+                gameDao.saveGameData(gameDto);
+            }
+        });
     }
 
     private boolean couldNotVerifyApiKey(String key) {
