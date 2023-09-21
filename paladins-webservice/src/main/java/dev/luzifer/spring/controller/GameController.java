@@ -1,6 +1,7 @@
 package dev.luzifer.spring.controller;
 
 import dev.luzifer.Webservice;
+import dev.luzifer.data.distribution.TaskForce1;
 import dev.luzifer.data.dto.GameDto;
 import dev.luzifer.spring.ApplicationAccessPoint;
 import dev.luzifer.data.access.GameDao;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StopWatch;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,11 +41,26 @@ public class GameController {
             return;
         }
 
-        timing(() -> {
-            for (GameDto gameDto : gameDtos) {
-                gameDao.saveGameData(gameDto);
-            }
+        TaskForce1.getTaskExecutor().execute(() -> {
+            timing(() -> {
+                for (GameDto gameDto : gameDtos) {
+                    gameDao.saveGameData(gameDto);
+                }
+            });
         });
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT)
+    public DeferredResult<ResponseEntity<?>> getGameCount(@PathVariable String apiKey) {
+        if (couldNotVerifyApiKey(apiKey)) {
+            Webservice.REST_LOGGER.log(Level.WARNING, "UNAUTHORIZED ACCESS ATTEMPT");
+            return UNAUTHORIZED_RESULT;
+        }
+
+        DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+        TaskForce1.getTaskExecutor().execute(() -> timing(()
+                -> result.setResult(new ResponseEntity<>(gameDao.getTotalGameCount(), HttpStatus.OK))));
+        return result;
     }
 
     private boolean couldNotVerifyApiKey(String key) {

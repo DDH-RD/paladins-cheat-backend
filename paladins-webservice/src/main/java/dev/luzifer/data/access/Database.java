@@ -377,6 +377,20 @@ public class Database {
         return id;
     }
 
+    public int getTotalGames() {
+        if (!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT COUNT(*) FROM GameInfo")) {
+            preparedStatement.executeQuery();
+            return preparedStatement.getResultSet().getInt(1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting total games", e);
+        }
+    }
+
     private void createTableIfNotExists(String tableName, String tableDefinition) {
         if (!isConnected()) {
             connect();

@@ -99,6 +99,10 @@ public class GameDao {
         database.insertBatchPlayerInfos(playerInfos);
     }
 
+    public int getTotalGameCount() {
+        return database.getTotalGames();
+    }
+
     private int convertMapNameToId(String mapName) {
         int id = mapCache.getOrDefault(mapName, database.getIdForMap(mapName));
         if(id == -1) {
