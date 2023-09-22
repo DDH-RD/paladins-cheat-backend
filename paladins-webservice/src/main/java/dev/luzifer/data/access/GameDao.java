@@ -105,8 +105,8 @@ public class GameDao {
             index++;
         }
 
-        database.insertBatchChampInfos(champInfos);
         database.insertBatchPlayerInfos(playerInfos);
+        database.insertBatchChampInfos(champInfos);
         database.insertBatchDeckInfos(deckInfos);
         database.insertBatchItemInfos(itemInfos);
     }
