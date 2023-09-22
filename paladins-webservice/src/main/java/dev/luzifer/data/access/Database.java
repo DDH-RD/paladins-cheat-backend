@@ -8,6 +8,7 @@ import dev.luzifer.data.access.shit.PlayerInfo;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.Executors;
@@ -369,8 +370,9 @@ public class Database {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT id FROM MapInfo WHERE mapName = ?")) {
             preparedStatement.setString(1, mapName);
-            preparedStatement.executeQuery();
-            id = preparedStatement.getResultSet().getInt("id");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next())
+                return resultSet.getInt(1);
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.WARNING, "Could not get id for map " + mapName);
         }
@@ -386,10 +388,14 @@ public class Database {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT COUNT(*) FROM GameInfo")) {
             preparedStatement.executeQuery();
-            return preparedStatement.getResultSet().getInt(1);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next())
+                return resultSet.getInt(1);
         } catch (SQLException e) {
             throw new RuntimeException("Error getting total games", e);
         }
+
+        return -1;
     }
 
     private void createTableIfNotExists(String tableName, String tableDefinition) {
