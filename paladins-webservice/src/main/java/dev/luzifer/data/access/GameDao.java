@@ -27,14 +27,7 @@ public class GameDao {
                 gameDto.getRanked(),
                 gameDto.getAverageRank(),
                 convertMapNameToId(gameDto.getMapName()),
-                gameDto.getBannedChamp1(),
-                gameDto.getBannedChamp2(),
-                gameDto.getBannedChamp3(),
-                gameDto.getBannedChamp4(),
-                gameDto.getBannedChamp5(),
-                gameDto.getBannedChamp6(),
-                gameDto.getBannedChamp7(),
-                gameDto.getBannedChamp8(),
+                gameDto.getBannedChamps(),
                 gameDto.getTeam1Points(),
                 gameDto.getTeam2Points(),
                 gameDto.getDuration(),
@@ -42,6 +35,7 @@ public class GameDao {
                 gameDto.getSeason());
 
         database.insertGameInfo(gameInfo);
+        database.insertBannedChamps(gameInfo);
 
         ChampInfo[] champInfos = new ChampInfo[gameDto.getChamps().length];
         PlayerInfo[] playerInfos = new PlayerInfo[gameDto.getChamps().length];

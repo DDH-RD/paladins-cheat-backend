@@ -38,6 +38,7 @@ public class Database {
         createGameInfoTable();
         createPlayerInfoTable();
         createChampInfoTable();
+        createBannedChampsTable();
 
         Webservice.DATABASE_LOGGER.info("Database initialized");
     }
@@ -163,6 +164,25 @@ public class Database {
             throw new RuntimeException("Error inserting batch ChampInfo records", e);
         }
     }
+    
+    public void insertBannedChamps(GameInfo gameInfo) {
+        if (!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT IGNORE INTO BannedChamps (matchId, champId) VALUES (?, ?)")) {
+            for(int champId : gameInfo.getBannedChamps()) {
+                preparedStatement.setInt(1, gameInfo.getMatchId());
+                preparedStatement.setInt(2, champId);
+                preparedStatement.addBatch();
+            }
+            int[] updateCounts = preparedStatement.executeBatch();
+            Webservice.DATABASE_LOGGER.info("Batch insert(BannedChamps) completed. Inserted " + updateCounts.length + " records.");
+        } catch (SQLException e) {
+            throw new RuntimeException("Error inserting batch BannedChamps records", e);
+        }
+    }
 
     public void insertChampInfo(ChampInfo champInfo) {
         if (!isConnected()) {
@@ -229,27 +249,18 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO GameInfo (matchId, ranked, averageRank, mapId, bannedChamp1, " +
-                        "bannedChamp2, bannedChamp3, bannedChamp4, bannedChamp5, bannedChamp6, " +
-                        "bannedChamp7, bannedChamp8, team1Points, team2Points, duration, timestamp, " +
+                "INSERT IGNORE INTO GameInfo (matchId, ranked, averageRank, mapId, " +
+                        "team1Points, team2Points, duration, timestamp, " +
                         "season) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             preparedStatement.setInt(1, gameInfo.getMatchId());
             preparedStatement.setInt(2, gameInfo.getRanked());
             preparedStatement.setInt(3, gameInfo.getAverageRank());
             preparedStatement.setInt(4, gameInfo.getMapId());
-            preparedStatement.setInt(5, gameInfo.getBannedChamp1());
-            preparedStatement.setInt(6, gameInfo.getBannedChamp2());
-            preparedStatement.setInt(7, gameInfo.getBannedChamp3());
-            preparedStatement.setInt(8, gameInfo.getBannedChamp4());
-            preparedStatement.setInt(9, gameInfo.getBannedChamp5());
-            preparedStatement.setInt(10, gameInfo.getBannedChamp6());
-            preparedStatement.setInt(11, gameInfo.getBannedChamp7());
-            preparedStatement.setInt(12, gameInfo.getBannedChamp8());
-            preparedStatement.setInt(13, gameInfo.getTeam1Points());
-            preparedStatement.setInt(14, gameInfo.getTeam2Points());
-            preparedStatement.setLong(15, gameInfo.getDuration());
-            preparedStatement.setLong(16, gameInfo.getTimestamp());
-            preparedStatement.setDouble(17, gameInfo.getSeason());
+            preparedStatement.setInt(5, gameInfo.getTeam1Points());
+            preparedStatement.setInt(6, gameInfo.getTeam2Points());
+            preparedStatement.setLong(7, gameInfo.getDuration());
+            preparedStatement.setLong(8, gameInfo.getTimestamp());
+            preparedStatement.setDouble(9, gameInfo.getSeason());
 
             preparedStatement.executeUpdate();
             Webservice.DATABASE_LOGGER.info("GameInfo record inserted successfully.");
@@ -336,19 +347,19 @@ public class Database {
                         + "ranked INT,"
                         + "averageRank INT,"
                         + "mapId INT,"
-                        + "bannedChamp1 INT,"
-                        + "bannedChamp2 INT,"
-                        + "bannedChamp3 INT,"
-                        + "bannedChamp4 INT,"
-                        + "bannedChamp5 INT,"
-                        + "bannedChamp6 INT,"
-                        + "bannedChamp7 INT,"
-                        + "bannedChamp8 INT,"
                         + "team1Points INT,"
                         + "team2Points INT,"
                         + "duration BIGINT,"
                         + "timestamp BIGINT,"
                         + "season DOUBLE"
+        );
+    }
+    
+    public void createBannedChampsTable() {
+        createTableIfNotExists("BannedChamps",
+                "matchId INT,"
+                        + "champId INT,"
+                        + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
         );
     }
 
