@@ -14,7 +14,7 @@ import lombok.Value;
 public class ChampDto {
 
     /* Die ID des Champs */
-    int champ_id;
+    int champId;
     /* player specific data */
     int playerId;
     String playerName;

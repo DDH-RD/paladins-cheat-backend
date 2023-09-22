@@ -11,10 +11,17 @@ import lombok.Value;
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class PlayerInfo {
-
-    int playerId;
-    String playerName;
-    int regionId;
-    int platformId;
+public class ItemInfo {
+    
+    int item1;
+    int item2;
+    int item3;
+    int item4;
+    int item1Level;
+    int item2Level;
+    int item3Level;
+    int item4Level;
+    int won;
+    int matchId;
+    int champId;
 }

@@ -2,7 +2,9 @@ package dev.luzifer.data.access;
 
 import dev.luzifer.Webservice;
 import dev.luzifer.data.access.shit.ChampInfo;
+import dev.luzifer.data.access.shit.DeckInfo;
 import dev.luzifer.data.access.shit.GameInfo;
+import dev.luzifer.data.access.shit.ItemInfo;
 import dev.luzifer.data.access.shit.PlayerInfo;
 
 import java.sql.Connection;
@@ -35,10 +37,13 @@ public class Database {
 
         connect();
         createMapInfoTable();
+        createRegionInfoTable();
         createGameInfoTable();
         createPlayerInfoTable();
         createChampInfoTable();
         createBannedChampsTable();
+        createDeckInfoTable();
+        createItemInfoTable();
 
         Webservice.DATABASE_LOGGER.info("Database initialized");
     }
@@ -88,7 +93,7 @@ public class Database {
             for (PlayerInfo playerInfo : playerInfos) {
                 preparedStatement.setInt(1, playerInfo.getPlayerId());
                 preparedStatement.setString(2, playerInfo.getPlayerName());
-                preparedStatement.setString(3, playerInfo.getRegion());
+                preparedStatement.setInt(3, playerInfo.getRegionId());
                 preparedStatement.setInt(4, playerInfo.getPlatformId());
 
                 preparedStatement.addBatch();
@@ -100,22 +105,18 @@ public class Database {
             throw new RuntimeException("Error inserting batch PlayerInfo records", e);
         }
     }
-
+    
     public void insertBatchChampInfos(ChampInfo[] champInfos) {
         if (!isConnected()) {
             connect();
         }
-
+        
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT IGNORE INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
-                        "won, categoryId, goldEarned, talentId, deckCard1, deckCard2, deckCard3, " +
-                        "deckCard4, deckCard5, deckCard1Level, deckCard2Level, deckCard3Level, " +
-                        "deckCard4Level, deckCard5Level, item1, item2, item3, item4, item1Level, " +
-                        "item2Level, item3Level, item4Level, killingSpree, kills, deaths, assists, " +
+                        "won, categoryId, goldEarned, killingSpree, kills, deaths, assists, " +
                         "damageDone, damageTaken, damageShielded, heal, selfHeal, matchId, playerId) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            
             for (ChampInfo champInfo : champInfos) {
                 preparedStatement.setInt(1, champInfo.getChampId());
                 preparedStatement.setInt(2, champInfo.getLeagueTier());
@@ -124,40 +125,21 @@ public class Database {
                 preparedStatement.setInt(5, champInfo.getWon());
                 preparedStatement.setInt(6, champInfo.getCategoryId());
                 preparedStatement.setInt(7, champInfo.getGoldEarned());
-                preparedStatement.setInt(8, champInfo.getTalentId());
-                preparedStatement.setInt(9, champInfo.getDeckCard1());
-                preparedStatement.setInt(10, champInfo.getDeckCard2());
-                preparedStatement.setInt(11, champInfo.getDeckCard3());
-                preparedStatement.setInt(12, champInfo.getDeckCard4());
-                preparedStatement.setInt(13, champInfo.getDeckCard5());
-                preparedStatement.setInt(14, champInfo.getDeckCard1Level());
-                preparedStatement.setInt(15, champInfo.getDeckCard2Level());
-                preparedStatement.setInt(16, champInfo.getDeckCard3Level());
-                preparedStatement.setInt(17, champInfo.getDeckCard4Level());
-                preparedStatement.setInt(18, champInfo.getDeckCard5Level());
-                preparedStatement.setInt(19, champInfo.getItem1());
-                preparedStatement.setInt(20, champInfo.getItem2());
-                preparedStatement.setInt(21, champInfo.getItem3());
-                preparedStatement.setInt(22, champInfo.getItem4());
-                preparedStatement.setInt(23, champInfo.getItem1Level());
-                preparedStatement.setInt(24, champInfo.getItem2Level());
-                preparedStatement.setInt(25, champInfo.getItem3Level());
-                preparedStatement.setInt(26, champInfo.getItem4Level());
-                preparedStatement.setInt(27, champInfo.getKillingSpree());
-                preparedStatement.setInt(28, champInfo.getKills());
-                preparedStatement.setInt(29, champInfo.getDeaths());
-                preparedStatement.setInt(30, champInfo.getAssists());
-                preparedStatement.setInt(31, champInfo.getDamageDone());
-                preparedStatement.setInt(32, champInfo.getDamageTaken());
-                preparedStatement.setInt(33, champInfo.getDamageShielded());
-                preparedStatement.setInt(34, champInfo.getHeal());
-                preparedStatement.setInt(35, champInfo.getSelfHeal());
-                preparedStatement.setInt(36, champInfo.getMatchId());
-                preparedStatement.setInt(37, champInfo.getPlayerId());
-
+                preparedStatement.setInt(8, champInfo.getKillingSpree());
+                preparedStatement.setInt(9, champInfo.getKills());
+                preparedStatement.setInt(10, champInfo.getDeaths());
+                preparedStatement.setInt(11, champInfo.getAssists());
+                preparedStatement.setInt(12, champInfo.getDamageDone());
+                preparedStatement.setInt(13, champInfo.getDamageTaken());
+                preparedStatement.setInt(14, champInfo.getDamageShielded());
+                preparedStatement.setInt(15, champInfo.getHeal());
+                preparedStatement.setInt(16, champInfo.getSelfHeal());
+                preparedStatement.setInt(17, champInfo.getMatchId());
+                preparedStatement.setInt(18, champInfo.getPlayerId());
+                
                 preparedStatement.addBatch();
             }
-
+            
             int[] updateCounts = preparedStatement.executeBatch();
             Webservice.DATABASE_LOGGER.info("Batch insert(ChampInfo) completed. Inserted " + updateCounts.length + " records.");
         } catch (SQLException e) {
@@ -183,75 +165,31 @@ public class Database {
             throw new RuntimeException("Error inserting batch BannedChamps records", e);
         }
     }
-
-    public void insertChampInfo(ChampInfo champInfo) {
+    
+    public void insertRegionInfo(String region) {
         if (!isConnected()) {
             connect();
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
-                        "won, categoryId, goldEarned, talentId, deckCard1, deckCard2, deckCard3, " +
-                        "deckCard4, deckCard5, deckCard1Level, deckCard2Level, deckCard3Level, " +
-                        "deckCard4Level, deckCard5Level, item1, item2, item3, item4, item1Level, " +
-                        "item2Level, item3Level, item4Level, killingSpree, kills, deaths, assists, " +
-                        "damageDone, damageTaken, damageShielded, heal, selfHeal, matchId, playerId) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-            preparedStatement.setInt(1, champInfo.getChampId());
-            preparedStatement.setInt(2, champInfo.getLeagueTier());
-            preparedStatement.setInt(3, champInfo.getLeaguePoints());
-            preparedStatement.setInt(4, champInfo.getChampLevel());
-            preparedStatement.setInt(5, champInfo.getWon());
-            preparedStatement.setInt(6, champInfo.getCategoryId());
-            preparedStatement.setInt(7, champInfo.getGoldEarned());
-            preparedStatement.setInt(8, champInfo.getTalentId());
-            preparedStatement.setInt(9, champInfo.getDeckCard1());
-            preparedStatement.setInt(10, champInfo.getDeckCard2());
-            preparedStatement.setInt(11, champInfo.getDeckCard3());
-            preparedStatement.setInt(12, champInfo.getDeckCard4());
-            preparedStatement.setInt(13, champInfo.getDeckCard5());
-            preparedStatement.setInt(14, champInfo.getDeckCard1Level());
-            preparedStatement.setInt(15, champInfo.getDeckCard2Level());
-            preparedStatement.setInt(16, champInfo.getDeckCard3Level());
-            preparedStatement.setInt(17, champInfo.getDeckCard4Level());
-            preparedStatement.setInt(18, champInfo.getDeckCard5Level());
-            preparedStatement.setInt(19, champInfo.getItem1());
-            preparedStatement.setInt(20, champInfo.getItem2());
-            preparedStatement.setInt(21, champInfo.getItem3());
-            preparedStatement.setInt(22, champInfo.getItem4());
-            preparedStatement.setInt(23, champInfo.getItem1Level());
-            preparedStatement.setInt(24, champInfo.getItem2Level());
-            preparedStatement.setInt(25, champInfo.getItem3Level());
-            preparedStatement.setInt(26, champInfo.getItem4Level());
-            preparedStatement.setInt(27, champInfo.getKillingSpree());
-            preparedStatement.setInt(28, champInfo.getKills());
-            preparedStatement.setInt(29, champInfo.getDeaths());
-            preparedStatement.setInt(30, champInfo.getAssists());
-            preparedStatement.setInt(31, champInfo.getDamageDone());
-            preparedStatement.setInt(32, champInfo.getDamageTaken());
-            preparedStatement.setInt(33, champInfo.getDamageShielded());
-            preparedStatement.setInt(34, champInfo.getHeal());
-            preparedStatement.setInt(35, champInfo.getSelfHeal());
-            preparedStatement.setInt(36, champInfo.getMatchId());
-            preparedStatement.setInt(37, champInfo.getPlayerId());
-
+                "INSERT IGNORE INTO RegionInfo (regionName) VALUES (?)")) {
+            preparedStatement.setString(1, region);
             preparedStatement.executeUpdate();
-            Webservice.DATABASE_LOGGER.info("ChampInfo record inserted successfully.");
+            Webservice.DATABASE_LOGGER.info("RegionInfo record inserted successfully.");
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting ChampInfo record", e);
+            throw new RuntimeException("Error inserting RegionInfo record", e);
         }
     }
-
+    
     public void insertGameInfo(GameInfo gameInfo) {
         if (!isConnected()) {
             connect();
         }
-
+        
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT IGNORE INTO GameInfo (matchId, ranked, averageRank, mapId, " +
                         "team1Points, team2Points, duration, timestamp, " +
-                        "season) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                        "season) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             preparedStatement.setInt(1, gameInfo.getMatchId());
             preparedStatement.setInt(2, gameInfo.getRanked());
             preparedStatement.setInt(3, gameInfo.getAverageRank());
@@ -261,38 +199,84 @@ public class Database {
             preparedStatement.setLong(7, gameInfo.getDuration());
             preparedStatement.setLong(8, gameInfo.getTimestamp());
             preparedStatement.setDouble(9, gameInfo.getSeason());
-
+            
             preparedStatement.executeUpdate();
             Webservice.DATABASE_LOGGER.info("GameInfo record inserted successfully.");
         } catch (SQLException e) {
             throw new RuntimeException("Error inserting GameInfo record", e);
         }
     }
-
-    public void insertPlayerInfo(PlayerInfo playerInfo) {
+    
+    public void insertBatchItemInfos(ItemInfo[] itemInfos) {
         if (!isConnected()) {
             connect();
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO PlayerInfo (playerId, playerName, region, platformId) " +
-                        "VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setInt(1, playerInfo.getPlayerId());
-            preparedStatement.setString(2, playerInfo.getPlayerName());
-            preparedStatement.setString(3, playerInfo.getRegion());
-            preparedStatement.setInt(4, playerInfo.getPlatformId());
+                "INSERT IGNORE INTO ItemInfo (item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, won, matchId, champId) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 
-            preparedStatement.executeUpdate();
-            Webservice.DATABASE_LOGGER.info("PlayerInfo record inserted successfully.");
+            for (ItemInfo itemInfo : itemInfos) {
+                preparedStatement.setInt(1, itemInfo.getItem1());
+                preparedStatement.setInt(2, itemInfo.getItem2());
+                preparedStatement.setInt(3, itemInfo.getItem3());
+                preparedStatement.setInt(4, itemInfo.getItem4());
+                preparedStatement.setInt(5, itemInfo.getItem1Level());
+                preparedStatement.setInt(6, itemInfo.getItem2Level());
+                preparedStatement.setInt(7, itemInfo.getItem3Level());
+                preparedStatement.setInt(8, itemInfo.getItem4Level());
+                preparedStatement.setInt(9, itemInfo.getWon());
+                preparedStatement.setInt(10, itemInfo.getMatchId());
+                preparedStatement.setInt(11, itemInfo.getChampId());
+
+                preparedStatement.addBatch();
+            }
+
+            int[] updateCounts = preparedStatement.executeBatch();
+            Webservice.DATABASE_LOGGER.info("Batch insert(ItemInfo) completed. Inserted " + updateCounts.length + " records.");
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting PlayerInfo record", e);
+            throw new RuntimeException("Error inserting batch ItemInfo records", e);
+        }
+    }
+    
+    public void insertBatchDeckInfos(DeckInfo[] deckInfos) {
+        if(!isConnected()) {
+            connect();
+        }
+        
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT IGNORE INTO DeckInfo (talentId, deckCard1, deckCard2, deckCard3, deckCard4, deckCard5, deckCard1Level, deckCard2Level, deckCard3Level, deckCard4Level, deckCard5Level, won, matchId, champId)" +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            for(DeckInfo deckInfo : deckInfos) {
+                preparedStatement.setInt(1, deckInfo.getTalentId());
+                preparedStatement.setInt(2, deckInfo.getDeckCard1());
+                preparedStatement.setInt(3, deckInfo.getDeckCard2());
+                preparedStatement.setInt(4, deckInfo.getDeckCard3());
+                preparedStatement.setInt(5, deckInfo.getDeckCard4());
+                preparedStatement.setInt(6, deckInfo.getDeckCard5());
+                preparedStatement.setInt(7, deckInfo.getDeckCard1Level());
+                preparedStatement.setInt(8, deckInfo.getDeckCard2Level());
+                preparedStatement.setInt(9, deckInfo.getDeckCard3Level());
+                preparedStatement.setInt(10, deckInfo.getDeckCard4Level());
+                preparedStatement.setInt(11, deckInfo.getDeckCard5Level());
+                preparedStatement.setInt(12, deckInfo.getWon());
+                preparedStatement.setInt(13, deckInfo.getMatchId());
+                preparedStatement.setInt(14, deckInfo.getChampId());
+                
+                preparedStatement.addBatch();
+            }
+            
+            int[] updateCounts = preparedStatement.executeBatch();
+            Webservice.DATABASE_LOGGER.info("Batch insert(DeckInfo) completed. Inserted " + updateCounts.length + " records.");
+        } catch (SQLException e) {
+            throw new RuntimeException("Error inserting batch DeckInfo records", e);
         }
     }
 
     public void createMapInfoTable() {
         createTableIfNotExists("MapInfo",
                 "id INT AUTO_INCREMENT PRIMARY KEY,"
-                        + "mapName VARCHAR(255)"
+                        + "mapName VARCHAR(255) UNIQUE"
         );
     }
 
@@ -306,25 +290,6 @@ public class Database {
                         + "won INT,"
                         + "categoryId INT,"
                         + "goldEarned INT,"
-                        + "talentId INT,"
-                        + "deckCard1 INT,"
-                        + "deckCard2 INT,"
-                        + "deckCard3 INT,"
-                        + "deckCard4 INT,"
-                        + "deckCard5 INT,"
-                        + "deckCard1Level INT,"
-                        + "deckCard2Level INT,"
-                        + "deckCard3Level INT,"
-                        + "deckCard4Level INT,"
-                        + "deckCard5Level INT,"
-                        + "item1 INT,"
-                        + "item2 INT,"
-                        + "item3 INT,"
-                        + "item4 INT,"
-                        + "item1Level INT,"
-                        + "item2Level INT,"
-                        + "item3Level INT,"
-                        + "item4Level INT,"
                         + "killingSpree INT,"
                         + "kills INT,"
                         + "deaths INT,"
@@ -338,6 +303,16 @@ public class Database {
                         + "playerId INT,"
                         + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId),"
                         + "FOREIGN KEY (playerId) REFERENCES PlayerInfo(playerId)"
+        );
+        
+        String uniqueConstraintSQL = "ALTER TABLE ChampInfo ADD CONSTRAINT IF NOT EXISTS unique_match_player UNIQUE (matchId, playerId)";
+        executeSQL(uniqueConstraintSQL);
+    }
+    
+    public void createRegionInfoTable() {
+        createTableIfNotExists("RegionInfo",
+                "id INT AUTO_INCREMENT PRIMARY KEY,"
+                        + "regionName VARCHAR(255) UNIQUE"
         );
     }
 
@@ -357,19 +332,88 @@ public class Database {
     
     public void createBannedChampsTable() {
         createTableIfNotExists("BannedChamps",
-                "matchId INT,"
+                "id INT AUTO_INCREMENT PRIMARY KEY,"
+                        + "matchId INT,"
                         + "champId INT,"
                         + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
         );
+        
+        String uniqueConstraintSQL = "ALTER TABLE BannedChamps ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
+        executeSQL(uniqueConstraintSQL);
     }
 
     public void createPlayerInfoTable() {
         createTableIfNotExists("PlayerInfo",
                 "playerId INT PRIMARY KEY,"
                         + "playerName VARCHAR(255),"
-                        + "region VARCHAR(255),"
-                        + "platformId INT"
+                        + "region INT,"
+                        + "platformId INT,"
+                + "FOREIGN KEY (region) REFERENCES RegionInfo(id)"
         );
+    }
+    
+    public void createDeckInfoTable() {
+        createTableIfNotExists("DeckInfo",
+                "id INT AUTO_INCREMENT PRIMARY KEY,"
+                        + "talentId INT,"
+                        + "deckCard1 INT,"
+                        + "deckCard2 INT,"
+                        + "deckCard3 INT,"
+                        + "deckCard4 INT,"
+                        + "deckCard5 INT,"
+                        + "deckCard1Level INT,"
+                        + "deckCard2Level INT,"
+                        + "deckCard3Level INT,"
+                        + "deckCard4Level INT,"
+                        + "deckCard5Level INT,"
+                        + "won INT,"
+                        + "matchId INT,"
+                        + "champId INT,"
+                        + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
+        );
+        
+        String uniqueConstraintSQL = "ALTER TABLE DeckInfo ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
+        executeSQL(uniqueConstraintSQL);
+    }
+    
+    public void createItemInfoTable() {
+        createTableIfNotExists("ItemInfo",
+                "id INT AUTO_INCREMENT PRIMARY KEY,"
+                        + "item1 INT,"
+                        + "item2 INT,"
+                        + "item3 INT,"
+                        + "item4 INT,"
+                        + "item1Level INT,"
+                        + "item2Level INT,"
+                        + "item3Level INT,"
+                        + "item4Level INT,"
+                        + "won INT,"
+                        + "matchId INT,"
+                        + "champId INT,"
+                        + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
+        );
+        
+        String uniqueConstraintSQL = "ALTER TABLE ItemInfo ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
+        executeSQL(uniqueConstraintSQL);
+    }
+    
+    public int getIdForRegion(String region) {
+        if (!isConnected()) {
+            connect();
+        }
+
+        int id = -1;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT id FROM RegionInfo WHERE regionName = ?")) {
+            preparedStatement.setString(1, region);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next())
+                return resultSet.getInt(1);
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.WARNING, "Could not get id for region " + region);
+        }
+
+        return id;
     }
 
     public int getIdForMap(String mapName) {
@@ -407,6 +451,21 @@ public class Database {
         }
 
         return -1;
+    }
+    
+    private void executeSQL(String sql) {
+        if (!isConnected()) {
+            connect();
+        }
+        
+        Webservice.DATABASE_LOGGER.info("Trying to ALTER TABLE: " + sql);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+            Webservice.DATABASE_LOGGER.info("ALTERED TABLE successfully. Added constraint.");
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.WARNING, "ALTER TABLE statement failed. Key seems to already exist. " +
+                    "This is save to ignore");
+        }
     }
 
     private void createTableIfNotExists(String tableName, String tableDefinition) {

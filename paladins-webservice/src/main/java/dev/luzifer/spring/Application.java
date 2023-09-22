@@ -2,6 +2,8 @@ package dev.luzifer.spring;
 
 import dev.luzifer.Webservice;
 import dev.luzifer.data.access.GameDao;
+import dev.luzifer.data.dto.ChampDto;
+import dev.luzifer.data.dto.GameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
