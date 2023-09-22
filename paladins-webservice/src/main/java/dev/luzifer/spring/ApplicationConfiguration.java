@@ -4,6 +4,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan({"dev.luzifer.data.access", "dev.luzifer.data.match"})
+@ComponentScan({"dev.luzifer.data.access"})
 public class ApplicationConfiguration {
 }
