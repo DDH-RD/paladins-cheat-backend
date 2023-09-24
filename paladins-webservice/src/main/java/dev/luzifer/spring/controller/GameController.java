@@ -27,7 +27,7 @@ public class GameController {
     private static final DeferredResult UNAUTHORIZED_RESULT = new DeferredResult<ResponseEntity<?>>();
 
     static {
-        UNAUTHORIZED_RESULT.setResult(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
+        UNAUTHORIZED_RESULT.setResult(new ResponseEntity<>("yeah no, dis is not your way sir!", HttpStatus.UNAUTHORIZED));
     }
 
     @Autowired
