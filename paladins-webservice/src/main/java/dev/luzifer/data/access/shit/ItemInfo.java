@@ -21,7 +21,6 @@ public class ItemInfo {
     int item2Level;
     int item3Level;
     int item4Level;
-    int won;
     int matchId;
     int champId;
 }

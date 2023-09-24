@@ -24,7 +24,6 @@ public class DeckInfo {
     int deckCard3Level;
     int deckCard4Level;
     int deckCard5Level;
-    int won;
     int matchId;
     int champId;
 }

@@ -86,7 +86,6 @@ public class GameDao {
                     champDto.getDeckCard3Level(),
                     champDto.getDeckCard4Level(),
                     champDto.getDeckCard5Level(),
-                    champDto.getWon(),
                     gameDto.getId(),
                     champDto.getChampId());
             deckInfos[index] = deckInfo;
@@ -99,7 +98,6 @@ public class GameDao {
                     champDto.getItem2Level(),
                     champDto.getItem3Level(),
                     champDto.getItem4Level(),
-                    champDto.getWon(),
                     gameDto.getId(),
                     champDto.getChampId());
             itemInfos[index] = itemInfo;
