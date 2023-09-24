@@ -41,13 +41,12 @@ public class GameController {
             return;
         }
 
-        TaskForce1.getTaskExecutor().execute(() -> {
+        TaskForce1.order(() -> {
             timing(() -> {
                 for (GameDto gameDto : gameDtos) {
                     gameDao.saveGameData(gameDto);
                 }
-                Webservice.REST_LOGGER.info(gameDtos.length + " has been saved to the database.");
-            });
+            }, gameDtos.length + " games has been saved to the database.");
         });
     }
 
@@ -59,8 +58,9 @@ public class GameController {
         }
 
         DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
-        TaskForce1.getTaskExecutor().execute(() -> timing(()
-                -> result.setResult(new ResponseEntity<>(gameDao.getTotalGameCount(), HttpStatus.OK))));
+        TaskForce1.order(() -> timing(()
+                -> result.setResult(new ResponseEntity<>(gameDao.getTotalGameCount(), HttpStatus.OK)),
+                "Game count has been requested."));
         return result;
     }
 
@@ -68,11 +68,13 @@ public class GameController {
         return !Webservice.getApiKey().equals(key);
     }
 
-    private void timing(Runnable runnable) {
+    private void timing(Runnable runnable, String message) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+
         runnable.run();
+
         stopWatch.stop();
-        Webservice.REST_LOGGER.info("This action took: " + stopWatch.getTotalTimeMillis() + " milliseconds.");
+        Webservice.REST_LOGGER.info(message + " (" + stopWatch.getTotalTimeMillis() + "ms)");
     }
 }
