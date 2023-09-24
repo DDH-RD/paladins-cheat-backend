@@ -1,5 +1,6 @@
 package dev.luzifer.data.access;
 
+import dev.luzifer.Webservice;
 import dev.luzifer.data.access.shit.ChampInfo;
 import dev.luzifer.data.access.shit.DeckInfo;
 import dev.luzifer.data.access.shit.GameInfo;
@@ -118,22 +119,32 @@ public class GameDao {
     private int convertMapNameToId(String mapName) {
         int id = mapCache.getOrDefault(mapName, database.getIdForMap(mapName));
         if(id == -1) {
+            Webservice.DATABASE_LOGGER.info("Could not find map id for map name: " + mapName + "! Inserting new map..");
             database.insertMapInfo(mapName);
+            Webservice.DATABASE_LOGGER.info("Inserted new map: " + mapName + "!");
+            Webservice.DATABASE_LOGGER.info("Retrieving id for map: " + mapName + "..");
             id = database.getIdForMap(mapName);
+            Webservice.DATABASE_LOGGER.info("Retrieved id for map: " + mapName + "! Caching map..");
             mapCache.put(mapName, id);
+            Webservice.DATABASE_LOGGER.info("Cached map!");
         }
 
         return id;
     }
-    
+
     private int convertRegionNameToId(String regionName) {
         int id = regionCache.getOrDefault(regionName, database.getIdForRegion(regionName));
-        if(id == -1) {
+        if (id == -1) {
+            Webservice.DATABASE_LOGGER.info("Could not find region id for region name: " + regionName + "! Inserting new region..");
             database.insertRegionInfo(regionName);
+            Webservice.DATABASE_LOGGER.info("Inserted new region: " + regionName + "!");
+            Webservice.DATABASE_LOGGER.info("Retrieving id for region: " + regionName + "..");
             id = database.getIdForRegion(regionName);
+            Webservice.DATABASE_LOGGER.info("Retrieved id for region: " + regionName + "! Caching region..");
             regionCache.put(regionName, id);
+            Webservice.DATABASE_LOGGER.info("Cached region!");
         }
-        
+
         return id;
     }
 }

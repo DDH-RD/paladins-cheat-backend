@@ -12,7 +12,7 @@ public class PingController {
 
     @GetMapping("ping")
     public ResponseEntity<String> ping() {
-        Webservice.REST_LOGGER.info("PING RECEIVED");
+        Webservice.REST_LOGGER.info("Received ping request.");
         return ResponseEntity.ok("pong");
     }
 }

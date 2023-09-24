@@ -37,7 +37,7 @@ public class GameController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void postGames(@PathVariable String apiKey, @RequestBody GameDto[] gameDtos) {
         if (couldNotVerifyApiKey(apiKey)) {
-            Webservice.REST_LOGGER.log(Level.WARNING, "UNAUTHORIZED ACCESS ATTEMPT");
+            Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
             return;
         }
 
@@ -46,6 +46,7 @@ public class GameController {
                 for (GameDto gameDto : gameDtos) {
                     gameDao.saveGameData(gameDto);
                 }
+                Webservice.REST_LOGGER.info(gameDtos.length + " has been saved to the database.");
             });
         });
     }
@@ -53,7 +54,7 @@ public class GameController {
     @GetMapping(ApplicationAccessPoint.GET_COUNT)
     public DeferredResult<ResponseEntity<?>> getGameCount(@PathVariable String apiKey) {
         if (couldNotVerifyApiKey(apiKey)) {
-            Webservice.REST_LOGGER.log(Level.WARNING, "UNAUTHORIZED ACCESS ATTEMPT");
+            Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
             return UNAUTHORIZED_RESULT;
         }
 
@@ -72,6 +73,6 @@ public class GameController {
         stopWatch.start();
         runnable.run();
         stopWatch.stop();
-        Webservice.REST_LOGGER.info("TIMING OF ACTION: " + stopWatch.getTotalTimeMillis() + "ms");
+        Webservice.REST_LOGGER.info("This action took: " + stopWatch.getTotalTimeMillis() + " milliseconds.");
     }
 }

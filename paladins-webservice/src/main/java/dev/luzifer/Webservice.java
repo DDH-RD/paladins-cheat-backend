@@ -34,7 +34,7 @@ public class Webservice {
 
             try {
                 CREDENTIALS_FILE.createNewFile();
-                REST_LOGGER.info("Created credentials file, please fill it with your credentials and restart the application.");
+                REST_LOGGER.info("Created credentials file, please fill it with your credentials and restart the application!");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -53,8 +53,12 @@ public class Webservice {
                 }
             } catch(Exception ignored) {
             }
+
+            REST_LOGGER.info("Shutting down application...");
+            System.exit(0);
         }
 
+        REST_LOGGER.info("Found credentials file, loading credentials...");
         try {
             List<String> lines = Files.readAllLines(CREDENTIALS_FILE.toPath());
             lines.forEach(line -> {
@@ -63,7 +67,7 @@ public class Webservice {
                 if(line.startsWith("database-username:")) DATABASE_USERNAME = line.substring(18);
                 if(line.startsWith("database-password:")) DATABASE_PASSWORD = line.substring(18).toCharArray();
             });
-            REST_LOGGER.info("Loaded credentials from file");
+            REST_LOGGER.info("Loaded credentials! Booting up..");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

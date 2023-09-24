@@ -28,14 +28,22 @@ public class Database {
     }
 
     public void initialize() {
+        Webservice.DATABASE_LOGGER.info("Initializing database..");
+        Webservice.DATABASE_LOGGER.info("Loading jdbc driver..");
+
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            Webservice.DATABASE_LOGGER.info("Loaded JDBC Driver");
+            Webservice.DATABASE_LOGGER.info("Loaded JDBC Driver!");
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
+        Webservice.DATABASE_LOGGER.info("Connecting to database..");
+
         connect();
+
+        Webservice.DATABASE_LOGGER.info("Connection established! Initializing database tables..");
+
         createMapInfoTable();
         createRegionInfoTable();
         createGameInfoTable();
@@ -45,7 +53,7 @@ public class Database {
         createDeckInfoTable();
         createItemInfoTable();
 
-        Webservice.DATABASE_LOGGER.info("Database initialized");
+        Webservice.DATABASE_LOGGER.info("Database initialized!");
     }
 
     protected boolean isConnected() {
@@ -75,9 +83,8 @@ public class Database {
                 "INSERT IGNORE INTO MapInfo (mapName) VALUES (?)")) {
             preparedStatement.setString(1, mapName);
             preparedStatement.executeUpdate();
-            Webservice.DATABASE_LOGGER.info("MapInfo record inserted successfully.");
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting MapInfo record", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting MapInfo record", e);
         }
     }
 
@@ -99,10 +106,9 @@ public class Database {
                 preparedStatement.addBatch();
             }
 
-            int[] updateCounts = preparedStatement.executeBatch();
-            Webservice.DATABASE_LOGGER.info("Batch insert(PlayerInfo) completed. Inserted " + updateCounts.length + " records.");
+            preparedStatement.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting batch PlayerInfo records", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch PlayerInfo records", e);
         }
     }
     
@@ -140,10 +146,9 @@ public class Database {
                 preparedStatement.addBatch();
             }
             
-            int[] updateCounts = preparedStatement.executeBatch();
-            Webservice.DATABASE_LOGGER.info("Batch insert(ChampInfo) completed. Inserted " + updateCounts.length + " records.");
+            preparedStatement.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting batch ChampInfo records", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ChampInfo records", e);
         }
     }
     
@@ -159,10 +164,9 @@ public class Database {
                 preparedStatement.setInt(2, champId);
                 preparedStatement.addBatch();
             }
-            int[] updateCounts = preparedStatement.executeBatch();
-            Webservice.DATABASE_LOGGER.info("Batch insert(BannedChamps) completed. Inserted " + updateCounts.length + " records.");
+            preparedStatement.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting batch BannedChamps records", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting BannedChamps record", e);
         }
     }
     
@@ -175,9 +179,8 @@ public class Database {
                 "INSERT IGNORE INTO RegionInfo (regionName) VALUES (?)")) {
             preparedStatement.setString(1, region);
             preparedStatement.executeUpdate();
-            Webservice.DATABASE_LOGGER.info("RegionInfo record inserted successfully.");
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting RegionInfo record", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting RegionInfo record", e);
         }
     }
     
@@ -201,9 +204,8 @@ public class Database {
             preparedStatement.setDouble(9, gameInfo.getSeason());
             
             preparedStatement.executeUpdate();
-            Webservice.DATABASE_LOGGER.info("GameInfo record inserted successfully.");
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting GameInfo record", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting GameInfo record", e);
         }
     }
     
@@ -231,11 +233,9 @@ public class Database {
 
                 preparedStatement.addBatch();
             }
-
-            int[] updateCounts = preparedStatement.executeBatch();
-            Webservice.DATABASE_LOGGER.info("Batch insert(ItemInfo) completed. Inserted " + updateCounts.length + " records.");
+            preparedStatement.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting batch ItemInfo records", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ItemInfo records", e);
         }
     }
     
@@ -265,11 +265,9 @@ public class Database {
                 
                 preparedStatement.addBatch();
             }
-            
-            int[] updateCounts = preparedStatement.executeBatch();
-            Webservice.DATABASE_LOGGER.info("Batch insert(DeckInfo) completed. Inserted " + updateCounts.length + " records.");
+            preparedStatement.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting batch DeckInfo records", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch DeckInfo records", e);
         }
     }
 
@@ -410,7 +408,7 @@ public class Database {
             if(resultSet.next())
                 return resultSet.getInt(1);
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.WARNING, "Could not get id for region " + region);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get id for region " + region, e);
         }
 
         return id;
@@ -429,7 +427,7 @@ public class Database {
             if(resultSet.next())
                 return resultSet.getInt(1);
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.WARNING, "Could not get id for map " + mapName);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get id for map " + mapName, e);
         }
 
         return id;
@@ -447,7 +445,7 @@ public class Database {
             if(resultSet.next())
                 return resultSet.getInt(1);
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting total games", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get total games", e);
         }
 
         return -1;
@@ -458,13 +456,11 @@ public class Database {
             connect();
         }
         
-        Webservice.DATABASE_LOGGER.info("Trying to ALTER TABLE: " + sql);
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
-            Webservice.DATABASE_LOGGER.info("ALTERED TABLE successfully. Added constraint.");
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.WARNING, "ALTER TABLE statement failed. Key seems to already exist. " +
-                    "This is save to ignore");
+            Webservice.DATABASE_LOGGER.log(Level.WARNING, "Altering table failed..");
+            Webservice.DATABASE_LOGGER.log(Level.INFO, "^^^^^^ Usually this is expected and part of the initialization process.");
         }
     }
 
@@ -476,9 +472,8 @@ public class Database {
         try (Statement statement = connection.createStatement()) {
             String createTableSQL = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + tableDefinition + ")";
             statement.executeUpdate(createTableSQL);
-            Webservice.DATABASE_LOGGER.info(tableName + " table created if not exists.");
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating " + tableName + " table", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error creating " + tableName + " table", e);
         }
     }
 }
