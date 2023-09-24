@@ -228,8 +228,8 @@ public class Database {
                 preparedStatement.setInt(6, itemInfo.getItem2Level());
                 preparedStatement.setInt(7, itemInfo.getItem3Level());
                 preparedStatement.setInt(8, itemInfo.getItem4Level());
-                preparedStatement.setInt(10, itemInfo.getMatchId());
-                preparedStatement.setInt(11, itemInfo.getChampId());
+                preparedStatement.setInt(9, itemInfo.getMatchId());
+                preparedStatement.setInt(10, itemInfo.getChampId());
 
                 preparedStatement.addBatch();
             }
@@ -260,8 +260,8 @@ public class Database {
                 preparedStatement.setInt(9, deckInfo.getDeckCard3Level());
                 preparedStatement.setInt(10, deckInfo.getDeckCard4Level());
                 preparedStatement.setInt(11, deckInfo.getDeckCard5Level());
-                preparedStatement.setInt(13, deckInfo.getMatchId());
-                preparedStatement.setInt(14, deckInfo.getChampId());
+                preparedStatement.setInt(12, deckInfo.getMatchId());
+                preparedStatement.setInt(13, deckInfo.getChampId());
                 
                 preparedStatement.addBatch();
             }

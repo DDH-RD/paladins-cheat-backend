@@ -6,22 +6,27 @@ import org.springframework.boot.SpringApplication;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Logger;
 
-@UtilityClass // test
+@UtilityClass
 public class Webservice {
 
     public static final Logger REST_LOGGER = Logger.getLogger("DEBUG Paladins-REST");
     public static final Logger DATABASE_LOGGER = Logger.getLogger("DEBUG Paladins-Database");
 
     private static final File CREDENTIALS_FILE = new File("webservice.properties");
+    private static final File LOG_FOLDER = new File("logs");
 
     private static String API_KEY;
     private static String DATABASE_URL;
@@ -29,7 +34,33 @@ public class Webservice {
     private static char[] DATABASE_PASSWORD;
 
     static {
+        redirectSystemOutToFile(buildCurrentLogFile().getAbsolutePath());
+        setupCredentialsFile();
+        retrieveCredentials();
+    }
 
+    public static void main(String[] args) {
+        Application application = new Application();
+        SpringApplication.run(application.getClass(), args);
+    }
+
+    public static String getApiKey() {
+        return API_KEY;
+    }
+
+    public static String getDatabaseUrl() {
+        return DATABASE_URL;
+    }
+
+    public static String getDatabaseUsername() {
+        return DATABASE_USERNAME;
+    }
+
+    public static char[] getDatabasePassword() {
+        return DATABASE_PASSWORD;
+    }
+
+    private static void setupCredentialsFile() {
         if(!CREDENTIALS_FILE.exists()) {
 
             try {
@@ -57,7 +88,9 @@ public class Webservice {
             REST_LOGGER.info("Shutting down application...");
             System.exit(0);
         }
+    }
 
+    private static void retrieveCredentials() {
         REST_LOGGER.info("Found credentials file, loading credentials...");
         try {
             List<String> lines = Files.readAllLines(CREDENTIALS_FILE.toPath());
@@ -73,24 +106,87 @@ public class Webservice {
         }
     }
 
-    public static void main(String[] args) {
-        Application application = new Application();
-        SpringApplication.run(application.getClass(), args);
+    private static void redirectSystemOutToFile(String logFileName) {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(logFileName);
+            OutputStream customOutputStream = new TeeOutputStream(fileOutputStream, System.out);
+
+            System.setOut(new PrintStream(customOutputStream, true));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static String getApiKey() {
-        return API_KEY;
+    private static void ensureFile(File file) {
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    public static String getDatabaseUrl() {
-        return DATABASE_URL;
+    private static void ensureFolder(File folder) {
+        if(!folder.exists()) {
+            folder.mkdir();
+        }
     }
 
-    public static String getDatabaseUsername() {
-        return DATABASE_USERNAME;
+    private static File buildCurrentLogFile() {
+        ensureFolder(LOG_FOLDER);
+
+        int session = 0;
+        for (File file : LOG_FOLDER.listFiles()) {
+            if(file.getName().startsWith("session-")) {
+                int currentSession = Integer.parseInt(file.getName().substring(8, file.getName().length() - 4));
+                if(currentSession > session) session = currentSession;
+            }
+        }
+
+        session++;
+        File logFile = new File(LOG_FOLDER, "session-" + session + ".log");
+        ensureFile(logFile);
+        return logFile;
     }
 
-    public static char[] getDatabasePassword() {
-        return DATABASE_PASSWORD;
+    private static class TeeOutputStream extends OutputStream {
+        private final OutputStream main;
+        private final OutputStream second;
+
+        public TeeOutputStream(OutputStream main, OutputStream second) {
+            this.main = main;
+            this.second = second;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            main.write(b);
+            second.write(b);
+        }
+
+        @Override
+        public void write(byte[] b) throws IOException {
+            main.write(b);
+            second.write(b);
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            main.write(b, off, len);
+            second.write(b, off, len);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            main.flush();
+            second.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+            main.close();
+            second.close();
+        }
     }
 }
