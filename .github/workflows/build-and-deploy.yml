@@ -53,7 +53,7 @@ jobs:
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           username: 'paladins'
-          password: 'paladins'
+          password: ${{ secrets.SFTP_PASSWORD }}
           server: '202.61.202.50'
           port: 22
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
