@@ -1,6 +1,7 @@
 package dev.luzifer.data.distribution;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import dev.luzifer.Webservice;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayDeque;
@@ -11,6 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 
 @UtilityClass
 public class TaskForce1 {
@@ -73,10 +75,8 @@ public class TaskForce1 {
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            System.out.println("Uncaught explosion in thread '" + t.getName() + "': " + e.getMessage());
-            for(StackTraceElement element : e.getStackTrace()) {
-                System.out.println("    " + element.toString());
-            }
+            Webservice.REST_LOGGER.log(Level.SEVERE,
+                    "Uncaught explosion in thread '" + t.getName() + "': " + e.getMessage(), e);
         }
     }
 }
