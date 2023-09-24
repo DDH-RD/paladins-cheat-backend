@@ -215,8 +215,9 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO ItemInfo (item1, item2, item3, item4, item1Level, item2Level, item3Level, item4Level, won, matchId, champId) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                "INSERT IGNORE INTO ItemInfo (item1, item2, item3, item4, " +
+                        "item1Level, item2Level, item3Level, item4Level, matchId, champId) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 
             for (ItemInfo itemInfo : itemInfos) {
                 preparedStatement.setInt(1, itemInfo.getItem1());
@@ -245,8 +246,9 @@ public class Database {
         }
         
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO DeckInfo (talentId, deckCard1, deckCard2, deckCard3, deckCard4, deckCard5, deckCard1Level, deckCard2Level, deckCard3Level, deckCard4Level, deckCard5Level, won, matchId, champId)" +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                "INSERT IGNORE INTO DeckInfo (talentId, deckCard1, deckCard2, deckCard3, deckCard4, deckCard5, " +
+                        "deckCard1Level, deckCard2Level, deckCard3Level, deckCard4Level, deckCard5Level, matchId, champId)" +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             for(DeckInfo deckInfo : deckInfos) {
                 preparedStatement.setInt(1, deckInfo.getTalentId());
                 preparedStatement.setInt(2, deckInfo.getDeckCard1());
@@ -364,7 +366,6 @@ public class Database {
                         + "deckCard3Level INT,"
                         + "deckCard4Level INT,"
                         + "deckCard5Level INT,"
-                        + "won INT,"
                         + "matchId INT,"
                         + "champId INT,"
                         + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
@@ -385,7 +386,6 @@ public class Database {
                         + "item2Level INT,"
                         + "item3Level INT,"
                         + "item4Level INT,"
-                        + "won INT,"
                         + "matchId INT,"
                         + "champId INT,"
                         + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
