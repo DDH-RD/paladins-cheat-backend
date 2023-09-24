@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Logger;
 
-@UtilityClass
+@UtilityClass // test
 public class Webservice {
 
     public static final Logger REST_LOGGER = Logger.getLogger("Paladins-REST");
