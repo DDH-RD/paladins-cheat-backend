@@ -65,10 +65,12 @@ public class Webservice {
 
     private static void setupCredentialsFile() {
         if(!CREDENTIALS_FILE.exists()) {
+            REST_LOGGER.info("No credentials file found!");
 
             try {
                 CREDENTIALS_FILE.createNewFile();
-                REST_LOGGER.info("Created credentials file, please fill it with your credentials and restart the application!");
+                REST_LOGGER.info("Created credentials file, " +
+                        "please fill it with your credentials and restart the application!");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
