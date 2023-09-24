@@ -26,8 +26,6 @@ public class Webservice {
     public static final Logger REST_LOGGER = Logger.getLogger("DEBUG Paladins-REST");
     public static final Logger DATABASE_LOGGER = Logger.getLogger("DEBUG Paladins-Database");
 
-    private static final Pattern ANSI_ESCAPE_PATTERN = Pattern.compile("\u001B\\[[;\\d]*m");
-
     private static final File CREDENTIALS_FILE = new File("webservice.properties");
     private static final File LOG_FOLDER = new File("logs");
 
@@ -138,10 +136,6 @@ public class Webservice {
         }
     }
 
-    private static byte[] stripAnsiEscapeCodes(byte[] input) {
-        return ANSI_ESCAPE_PATTERN.matcher(new String(input)).replaceAll("").getBytes();
-    }
-
     private static File buildCurrentLogFile() {
         ensureFolder(LOG_FOLDER);
 
@@ -176,13 +170,13 @@ public class Webservice {
 
         @Override
         public void write(byte[] b) throws IOException {
-            main.write(stripAnsiEscapeCodes(b));
+            main.write(b);
             second.write(b);
         }
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
-            main.write(stripAnsiEscapeCodes(b), off, len);
+            main.write(b, off, len);
             second.write(b, off, len);
         }
 
