@@ -18,13 +18,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 @UtilityClass
 public class Webservice {
 
-    public static final Logger REST_LOGGER = Logger.getLogger("DEBUG Paladins-REST");
-    public static final Logger DATABASE_LOGGER = Logger.getLogger("DEBUG Paladins-Database");
+    public static final Logger REST_LOGGER = Logger.getLogger("Paladins-REST");
+    public static final Logger DATABASE_LOGGER = Logger.getLogger("Paladins-Database");
 
     private static final File CREDENTIALS_FILE = new File("webservice.properties");
     private static final File LOG_FOLDER = new File("logs");
