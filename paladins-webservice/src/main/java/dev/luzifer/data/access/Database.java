@@ -304,7 +304,7 @@ public class Database {
         );
         
         String uniqueConstraintSQL = "ALTER TABLE ChampInfo ADD CONSTRAINT IF NOT EXISTS unique_match_player UNIQUE (matchId, playerId)";
-        executeSQL(uniqueConstraintSQL);
+        executeSQL("ChampInfo", uniqueConstraintSQL);
     }
     
     public void createRegionInfoTable() {
@@ -337,7 +337,7 @@ public class Database {
         );
         
         String uniqueConstraintSQL = "ALTER TABLE BannedChamps ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
-        executeSQL(uniqueConstraintSQL);
+        executeSQL("BannedChamps", uniqueConstraintSQL);
     }
 
     public void createPlayerInfoTable() {
@@ -371,7 +371,7 @@ public class Database {
         );
         
         String uniqueConstraintSQL = "ALTER TABLE DeckInfo ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
-        executeSQL(uniqueConstraintSQL);
+        executeSQL("DeckInfo", uniqueConstraintSQL);
     }
     
     public void createItemInfoTable() {
@@ -392,7 +392,7 @@ public class Database {
         );
         
         String uniqueConstraintSQL = "ALTER TABLE ItemInfo ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
-        executeSQL(uniqueConstraintSQL);
+        executeSQL("ItemInfo", uniqueConstraintSQL);
     }
     
     public int getIdForRegion(String region) {
@@ -451,15 +451,16 @@ public class Database {
         return -1;
     }
     
-    private void executeSQL(String sql) {
+    private void executeSQL(String tableName, String sql) {
         if (!isConnected()) {
             connect();
         }
         
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
+            Webservice.DATABASE_LOGGER.info("Created and altered table: " + tableName + "!");
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.WARNING, "Altering table failed..");
+            Webservice.DATABASE_LOGGER.log(Level.WARNING, "Altering table '" + tableName + "' failed..");
             Webservice.DATABASE_LOGGER.log(Level.INFO, "^^^^^^ Usually this is expected and part of the initialization process.");
         }
     }

@@ -37,11 +37,12 @@ public class Application {
 
     @EventListener(ApplicationStartedEvent.class)
     public void startApplication() {
-        Webservice.REST_LOGGER.info("STARTING APPLICATION");
+        Webservice.REST_LOGGER.info("Booting up application...");
     }
 
     @EventListener(ContextClosedEvent.class)
     public void onContextClosedEvent(ContextClosedEvent event) {
-        Webservice.REST_LOGGER.info("CLOSING APPLICATION: " + event.getApplicationContext().getDisplayName());
+        Webservice.REST_LOGGER.info("Closing application: " + event.getApplicationContext().getDisplayName());
+        Webservice.REST_LOGGER.info("oh no i died :(");
     }
 }
