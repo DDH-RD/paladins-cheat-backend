@@ -26,7 +26,7 @@ public class Webservice {
     public static final Logger REST_LOGGER = Logger.getLogger("DEBUG Paladins-REST");
     public static final Logger DATABASE_LOGGER = Logger.getLogger("DEBUG Paladins-Database");
 
-    private static Pattern ANSI_ESCAPE_PATTERN = Pattern.compile("\u001B\\[[;\\d]*m");
+    private static final Pattern ANSI_ESCAPE_PATTERN = Pattern.compile("\u001B\\[[;\\d]*m");
 
     private static final File CREDENTIALS_FILE = new File("webservice.properties");
     private static final File LOG_FOLDER = new File("logs");
