@@ -8,12 +8,10 @@ import dev.luzifer.data.access.shit.ItemInfo;
 import dev.luzifer.data.access.shit.PlayerInfo;
 import dev.luzifer.data.dto.ChampDto;
 import dev.luzifer.data.dto.GameDto;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Component("gameDao")
 public class GameDao {
 
     private final Map<String, Integer> mapCache = new HashMap<>();
