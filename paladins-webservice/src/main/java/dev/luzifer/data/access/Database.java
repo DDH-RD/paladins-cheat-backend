@@ -82,13 +82,18 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO MapInfo (mapName) VALUES (?)")) {
+                "INSERT INTO MapInfo (mapName) VALUES (?)")) {
             preparedStatement.setString(1, mapName);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting MapInfo record", e);
-            return new DatabaseResult<>(null, "Error inserting MapInfo record: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for mapName " + mapName,
+                        DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting MapInfo record", e);
+                return new DatabaseResult<>(null, "Error inserting MapInfo record: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
@@ -100,7 +105,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO PlayerInfo (playerId, playerName, region, platformId) " +
+                "INSERT INTO PlayerInfo (playerId, playerName, region, platformId) " +
                         "VALUES (?, ?, ?, ?)")) {
 
             for (PlayerInfo playerInfo : playerInfos) {
@@ -114,9 +119,14 @@ public class Database {
 
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch PlayerInfo records", e);
-            return new DatabaseResult<>(null, "Error inserting batch PlayerInfo records: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for playerId " + playerInfos[0].getPlayerId(),
+                        DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch PlayerInfo records", e);
+                return new DatabaseResult<>(null, "Error inserting batch PlayerInfo records: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
@@ -128,7 +138,7 @@ public class Database {
         }
         
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
+                "INSERT INTO ChampInfo (champId, leagueTier, leaguePoints, champLevel, " +
                         "won, categoryId, goldEarned, killingSpree, kills, deaths, assists, " +
                         "damageDone, damageTaken, damageShielded, heal, selfHeal, matchId, playerId) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
@@ -158,9 +168,14 @@ public class Database {
             
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ChampInfo records", e);
-            return new DatabaseResult<>(null, "Error inserting batch ChampInfo records: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for matchId " + champInfos[0].getMatchId() +
+                        " and playerId " + champInfos[0].getPlayerId(), DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ChampInfo records", e);
+                return new DatabaseResult<>(null, "Error inserting batch ChampInfo records: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
@@ -172,7 +187,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO BannedChamps (matchId, champId) VALUES (?, ?)")) {
+                "INSERT INTO BannedChamps (matchId, champId) VALUES (?, ?)")) {
             for(int champId : gameInfo.getBannedChamps()) {
                 preparedStatement.setInt(1, gameInfo.getMatchId());
                 preparedStatement.setInt(2, champId);
@@ -180,9 +195,14 @@ public class Database {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting BannedChamps record", e);
-            return new DatabaseResult<>(null, "Error inserting BannedChamps record: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for matchId " + gameInfo.getMatchId(),
+                        DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting BannedChamps record", e);
+                return new DatabaseResult<>(null, "Error inserting BannedChamps record: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
@@ -198,9 +218,14 @@ public class Database {
             preparedStatement.setString(1, region);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting RegionInfo record", e);
-            return new DatabaseResult<>(null, "Error inserting RegionInfo record: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for regionName " + region,
+                        DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting RegionInfo record", e);
+                return new DatabaseResult<>(null, "Error inserting RegionInfo record: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
@@ -246,7 +271,7 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO ItemInfo (item1, item2, item3, item4, " +
+                "INSERT INTO ItemInfo (item1, item2, item3, item4, " +
                         "item1Level, item2Level, item3Level, item4Level, matchId, champId) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 
@@ -266,9 +291,14 @@ public class Database {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ItemInfo records", e);
-            return new DatabaseResult<>(null, "Error inserting batch ItemInfo records: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for matchId " + itemInfos[0].getMatchId() +
+                        " and champId " + itemInfos[0].getChampId(), DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ItemInfo records", e);
+                return new DatabaseResult<>(null, "Error inserting batch ItemInfo records: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
@@ -280,7 +310,7 @@ public class Database {
         }
         
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO DeckInfo (talentId, deckCard1, deckCard2, deckCard3, deckCard4, deckCard5, " +
+                "INSERT INTO DeckInfo (talentId, deckCard1, deckCard2, deckCard3, deckCard4, deckCard5, " +
                         "deckCard1Level, deckCard2Level, deckCard3Level, deckCard4Level, deckCard5Level, matchId, champId)" +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             for(DeckInfo deckInfo : deckInfos) {
@@ -302,9 +332,14 @@ public class Database {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch DeckInfo records", e);
-            return new DatabaseResult<>(null, "Error inserting batch DeckInfo records: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for matchId " + deckInfos[0].getMatchId() +
+                        " and champId " + deckInfos[0].getChampId(), DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch DeckInfo records", e);
+                return new DatabaseResult<>(null, "Error inserting batch DeckInfo records: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
