@@ -31,7 +31,7 @@ public class DebugController {
             try {
                 byte[] logBytes = Files.readAllBytes(logFile.toPath());
 
-                response.setHeader("Content-Disposition", "attachment; filename=logfile.log");
+                response.setHeader("Content-Disposition", "attachment; filename=logfile.txt");
                 response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
                 OutputStream outputStream = response.getOutputStream();
