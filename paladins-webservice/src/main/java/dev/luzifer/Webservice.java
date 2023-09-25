@@ -1,6 +1,7 @@
 package dev.luzifer;
 
 import dev.luzifer.spring.Application;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import org.springframework.boot.SpringApplication;
 
@@ -27,6 +28,8 @@ public class Webservice {
 
     private static final File CREDENTIALS_FILE = new File("webservice.properties");
     private static final File LOG_FOLDER = new File("logs");
+    @Getter
+    private static final File CURRENT_LOG_FILE = buildCurrentLogFile();
 
     private static String API_KEY;
     private static String DATABASE_URL;
@@ -34,7 +37,7 @@ public class Webservice {
     private static char[] DATABASE_PASSWORD;
 
     static {
-        redirectSystemOutToFile(buildCurrentLogFile().getAbsolutePath());
+        redirectSystemOutToFile(CURRENT_LOG_FILE.getAbsolutePath());
         setupCredentialsFile();
         retrieveCredentials();
     }
