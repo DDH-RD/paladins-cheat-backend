@@ -18,6 +18,8 @@ import java.util.logging.Level;
 
 public class Database {
 
+    private static final int DUPLICATE_KEY_ERROR_CODE = 1062;
+
     private Connection connection;
 
     private static Connection createConnection() throws SQLException {
@@ -74,7 +76,7 @@ public class Database {
         }
     }
 
-    public void insertMapInfo(String mapName) {
+    public DatabaseResult<Void> insertMapInfo(String mapName) {
         if (!isConnected()) {
             connect();
         }
@@ -85,10 +87,14 @@ public class Database {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting MapInfo record", e);
+            return new DatabaseResult<>(null, "Error inserting MapInfo record: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
 
-    public void insertBatchPlayerInfos(PlayerInfo[] playerInfos) {
+    public DatabaseResult<Void> insertBatchPlayerInfos(PlayerInfo[] playerInfos) {
         if (!isConnected()) {
             connect();
         }
@@ -109,10 +115,14 @@ public class Database {
             preparedStatement.executeBatch();
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch PlayerInfo records", e);
+            return new DatabaseResult<>(null, "Error inserting batch PlayerInfo records: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
     
-    public void insertBatchChampInfos(ChampInfo[] champInfos) {
+    public DatabaseResult<Void> insertBatchChampInfos(ChampInfo[] champInfos) {
         if (!isConnected()) {
             connect();
         }
@@ -149,10 +159,14 @@ public class Database {
             preparedStatement.executeBatch();
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ChampInfo records", e);
+            return new DatabaseResult<>(null, "Error inserting batch ChampInfo records: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
     
-    public void insertBannedChamps(GameInfo gameInfo) {
+    public DatabaseResult<Void> insertBannedChamps(GameInfo gameInfo) {
         if (!isConnected()) {
             connect();
         }
@@ -167,30 +181,38 @@ public class Database {
             preparedStatement.executeBatch();
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting BannedChamps record", e);
+            return new DatabaseResult<>(null, "Error inserting BannedChamps record: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
     
-    public void insertRegionInfo(String region) {
+    public DatabaseResult<Void> insertRegionInfo(String region) {
         if (!isConnected()) {
             connect();
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO RegionInfo (regionName) VALUES (?)")) {
+                "INSERT INTO RegionInfo (regionName) VALUES (?)")) {
             preparedStatement.setString(1, region);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting RegionInfo record", e);
+            return new DatabaseResult<>(null, "Error inserting RegionInfo record: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
     
-    public void insertGameInfo(GameInfo gameInfo) {
+    public DatabaseResult<Void> insertGameInfo(GameInfo gameInfo) {
         if (!isConnected()) {
             connect();
         }
         
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT IGNORE INTO GameInfo (matchId, ranked, averageRank, mapId, " +
+                "INSERT INTO GameInfo (matchId, ranked, averageRank, mapId, " +
                         "team1Points, team2Points, duration, timestamp, " +
                         "season) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             preparedStatement.setInt(1, gameInfo.getMatchId());
@@ -205,11 +227,20 @@ public class Database {
             
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting GameInfo record", e);
+            if(e.getErrorCode() == DUPLICATE_KEY_ERROR_CODE) {
+                return new DatabaseResult<>(null, "Duplicate entry for matchId " + gameInfo.getMatchId(),
+                        DatabaseResult.DatabaseResultType.DUPLICATE);
+            } else {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting GameInfo record", e);
+                return new DatabaseResult<>(null, "Error inserting GameInfo record: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
     
-    public void insertBatchItemInfos(ItemInfo[] itemInfos) {
+    public DatabaseResult<Void> insertBatchItemInfos(ItemInfo[] itemInfos) {
         if (!isConnected()) {
             connect();
         }
@@ -236,10 +267,14 @@ public class Database {
             preparedStatement.executeBatch();
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch ItemInfo records", e);
+            return new DatabaseResult<>(null, "Error inserting batch ItemInfo records: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
     
-    public void insertBatchDeckInfos(DeckInfo[] deckInfos) {
+    public DatabaseResult<Void> insertBatchDeckInfos(DeckInfo[] deckInfos) {
         if(!isConnected()) {
             connect();
         }
@@ -268,7 +303,11 @@ public class Database {
             preparedStatement.executeBatch();
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error inserting batch DeckInfo records", e);
+            return new DatabaseResult<>(null, "Error inserting batch DeckInfo records: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
         }
+
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
 
     public void createMapInfoTable() {
@@ -393,7 +432,7 @@ public class Database {
         executeSQL("ItemInfo", uniqueConstraintSQL);
     }
     
-    public int getIdForRegion(String region) {
+    public DatabaseResult<Integer> getIdForRegion(String region) {
         if (!isConnected()) {
             connect();
         }
@@ -404,15 +443,16 @@ public class Database {
             preparedStatement.setString(1, region);
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next())
-                return resultSet.getInt(1);
+                return new DatabaseResult<>(resultSet.getInt(1), null, DatabaseResult.DatabaseResultType.SUCCESS);
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get id for region " + region, e);
+            return new DatabaseResult<>(null, "Could not get id for region " + region, DatabaseResult.DatabaseResultType.ERROR);
         }
 
-        return id;
+        return new DatabaseResult<>(id, null, DatabaseResult.DatabaseResultType.NOT_FOUND);
     }
 
-    public int getIdForMap(String mapName) {
+    public DatabaseResult<Integer> getIdForMap(String mapName) {
         if (!isConnected()) {
             connect();
         }
@@ -423,30 +463,65 @@ public class Database {
             preparedStatement.setString(1, mapName);
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next())
-                return resultSet.getInt(1);
+                return new DatabaseResult<>(resultSet.getInt(1), null, DatabaseResult.DatabaseResultType.SUCCESS);
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get id for map " + mapName, e);
+            return new DatabaseResult<>(null, "Could not get id for map " + mapName, DatabaseResult.DatabaseResultType.ERROR);
         }
 
-        return id;
+        return new DatabaseResult<>(id, null, DatabaseResult.DatabaseResultType.NOT_FOUND);
     }
 
-    public int getTotalGames() {
+    public DatabaseResult<Integer> getTotalGames() {
+        return executeCountQuery("GameInfo", "Could not get total games");
+    }
+
+    public DatabaseResult<Integer> getTotalChamps() {
+        return executeCountQuery("ChampInfo", "Could not get total champs");
+    }
+
+    public DatabaseResult<Integer> getTotalPlayers() {
+        return executeCountQuery("PlayerInfo", "Could not get total players");
+    }
+
+    public DatabaseResult<Integer> getTotalDecks() {
+        return executeCountQuery("DeckInfo", "Could not get total decks");
+    }
+
+    public DatabaseResult<Integer> getTotalItemCrafts() {
+        return executeCountQuery("ItemInfo", "Could not get total item crafts");
+    }
+
+    public DatabaseResult<Integer> getTotalBannedChamps() {
+        return executeCountQuery("BannedChamps", "Could not get total banned champs");
+    }
+
+    public DatabaseResult<Integer> getTotalMaps() {
+        return executeCountQuery("MapInfo", "Could not get total maps");
+    }
+
+    public DatabaseResult<Integer> getTotalRegions() {
+        return executeCountQuery("RegionInfo", "Could not get total regions");
+    }
+
+    private DatabaseResult<Integer> executeCountQuery(String tableName, String errorMessage) {
         if (!isConnected()) {
             connect();
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT COUNT(*) FROM GameInfo")) {
+                "SELECT COUNT(*) FROM " + tableName)) {
             preparedStatement.executeQuery();
             ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next())
-                return resultSet.getInt(1);
+            if (resultSet.next()) {
+                return new DatabaseResult<>(resultSet.getInt(1), null, DatabaseResult.DatabaseResultType.SUCCESS);
+            }
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get total games", e);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, errorMessage, e);
+            return new DatabaseResult<>(null, errorMessage, DatabaseResult.DatabaseResultType.ERROR);
         }
 
-        return -1;
+        return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.NOT_FOUND);
     }
     
     private void executeSQL(String tableName, String sql) {

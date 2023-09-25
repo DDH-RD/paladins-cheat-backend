@@ -25,7 +25,7 @@ public class GameDao {
         database.initialize();
     }
 
-    public void saveGameData(GameDto gameDto) {
+    public DatabaseResult<Void> saveGameData(GameDto gameDto) {
 
         GameInfo gameInfo = new GameInfo(
                 gameDto.getId(),
@@ -39,7 +39,11 @@ public class GameDao {
                 gameDto.getTimestamp(),
                 gameDto.getSeason());
 
-        database.insertGameInfo(gameInfo);
+        DatabaseResult<Void> gameInfoResult = database.insertGameInfo(gameInfo);
+        if(gameInfoResult.getDatabaseResultType() != DatabaseResult.DatabaseResultType.SUCCESS) {
+            return gameInfoResult;
+        }
+
         database.insertBannedChamps(gameInfo);
 
         ChampInfo[] champInfos = new ChampInfo[gameDto.getChamps().length];
@@ -108,33 +112,75 @@ public class GameDao {
         database.insertBatchChampInfos(champInfos);
         database.insertBatchDeckInfos(deckInfos);
         database.insertBatchItemInfos(itemInfos);
+
+        return gameInfoResult;
     }
 
     public int getTotalGameCount() {
-        return database.getTotalGames();
+        return database.getTotalGames().getResult().orElse(-1);
+    }
+
+    public int getTotalChampCount() {
+        return database.getTotalChamps().getResult().orElse(-1);
+    }
+
+    public int getTotalPlayerCount() {
+        return database.getTotalPlayers().getResult().orElse(-1);
+    }
+
+    public int getTotalDeckCount() {
+        return database.getTotalDecks().getResult().orElse(-1);
+    }
+
+    public int getTotalItemCount() {
+        return database.getTotalItemCrafts().getResult().orElse(-1);
+    }
+
+    public int getTotalBannedChampCount() {
+        return database.getTotalBannedChamps().getResult().orElse(-1);
+    }
+
+    public int getTotalMapCount() {
+        return database.getTotalMaps().getResult().orElse(-1);
+    }
+
+    public int getTotalRegionCount() {
+        return database.getTotalRegions().getResult().orElse(-1);
     }
 
     private int convertMapNameToId(String mapName) {
-        int id = mapCache.getOrDefault(mapName, database.getIdForMap(mapName));
-        if(id == -1) {
-            Webservice.DATABASE_LOGGER.info("Could not find map id! Inserting new map.. [" + mapName + "]");
-            database.insertMapInfo(mapName);
-            id = database.getIdForMap(mapName);
-            mapCache.put(mapName, id);
+        if (mapCache.containsKey(mapName)) {
+            return mapCache.get(mapName);
         }
 
-        return id;
+        int mapId = database.getIdForMap(mapName).getResult().orElse(-1);
+
+        if (mapId == -1) {
+            Webservice.DATABASE_LOGGER.info("Could not find map id! Inserting new map.. [" + mapName + "]");
+            database.insertMapInfo(mapName);
+
+            return convertMapNameToId(mapName);
+        }
+
+        mapCache.put(mapName, mapId);
+        return mapId;
     }
 
     private int convertRegionNameToId(String regionName) {
-        int id = regionCache.getOrDefault(regionName, database.getIdForRegion(regionName));
-        if (id == -1) {
-            Webservice.DATABASE_LOGGER.info("Could not find region id! Inserting new region.. [" + regionName + "]");
-            database.insertRegionInfo(regionName);
-            id = database.getIdForRegion(regionName);
-            regionCache.put(regionName, id);
+        if (regionCache.containsKey(regionName)) {
+            return regionCache.get(regionName);
         }
 
-        return id;
+        int regionId = database.getIdForRegion(regionName).getResult().orElse(-1);
+
+        if (regionId == -1) {
+            Webservice.DATABASE_LOGGER.info("Could not find region id! Inserting new region.. [" + regionName + "]");
+            database.insertRegionInfo(regionName);
+
+            return convertRegionNameToId(regionName);
+        }
+
+        regionCache.put(regionName, regionId);
+        return regionId;
     }
 }

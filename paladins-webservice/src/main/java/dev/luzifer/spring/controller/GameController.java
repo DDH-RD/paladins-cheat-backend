@@ -1,6 +1,7 @@
 package dev.luzifer.spring.controller;
 
 import dev.luzifer.Webservice;
+import dev.luzifer.data.access.DatabaseResult;
 import dev.luzifer.data.distribution.TaskForce1;
 import dev.luzifer.data.dto.GameDto;
 import dev.luzifer.spring.ApplicationAccessPoint;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 @RestController
@@ -43,24 +45,76 @@ public class GameController {
 
         TaskForce1.order(() -> {
             timing(() -> {
+                int duplicated = 0;
+                int success = 0;
+                int error = 0;
+                int notFound = 0;
                 for (GameDto gameDto : gameDtos) {
-                    gameDao.saveGameData(gameDto);
+                    DatabaseResult<Void> result = gameDao.saveGameData(gameDto);
+                    switch (result.getDatabaseResultType()) {
+                        case DUPLICATE -> duplicated++;
+                        case SUCCESS -> success++;
+                        case ERROR -> error++;
+                        case NOT_FOUND -> notFound++;
+                        default ->
+                                throw new IllegalStateException("Unknown DatabaseResultType: " + result.getDatabaseResultType());
+                    }
                 }
-            }, gameDtos.length + " games has been saved to the database. ");
+                shootFormattedDebugMessage(duplicated, success, error, notFound);
+            }, "Post games request with initially " + gameDtos.length + " games has been processed.");
         });
     }
 
     @GetMapping(ApplicationAccessPoint.GET_COUNT)
     public DeferredResult<ResponseEntity<?>> getGameCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalGameCount, "Game count has been requested.");
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT_CHAMPS)
+    public DeferredResult<ResponseEntity<?>> getChampCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalChampCount, "Champ count has been requested.");
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT_ITEM_CRAFTS)
+    public DeferredResult<ResponseEntity<?>> getItemCraftCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalItemCount, "Item craft count has been requested.");
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT_DECKS)
+    public DeferredResult<ResponseEntity<?>> getDeckCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalDeckCount, "Deck count has been requested.");
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT_PLAYERS)
+    public DeferredResult<ResponseEntity<?>> getPlayerCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalPlayerCount, "Player count has been requested.");
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT_BANNED_CHAMPS)
+    public DeferredResult<ResponseEntity<?>> getBannedChampCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalBannedChampCount, "Banned champ count has been requested.");
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT_REGIONS)
+    public DeferredResult<ResponseEntity<?>> getRegionCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalRegionCount, "Region count has been requested.");
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_COUNT_MAPS)
+    public DeferredResult<ResponseEntity<?>> getMapCount(@PathVariable String apiKey) {
+        return getCountResponse(apiKey, gameDao::getTotalMapCount, "Map count has been requested.");
+    }
+
+    private DeferredResult<ResponseEntity<?>> getCountResponse(String apiKey, Supplier<Integer> countSupplier, String logMessage) {
         if (couldNotVerifyApiKey(apiKey)) {
             Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
             return UNAUTHORIZED_RESULT;
         }
 
         DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
-        TaskForce1.order(() -> timing(()
-                -> result.setResult(new ResponseEntity<>(gameDao.getTotalGameCount(), HttpStatus.OK)),
-                "Game count has been requested."));
+        TaskForce1.order(() -> timing(
+                () -> result.setResult(new ResponseEntity<>(countSupplier.get(), HttpStatus.OK)),
+                logMessage));
         return result;
     }
 
@@ -75,6 +129,27 @@ public class GameController {
         runnable.run();
 
         stopWatch.stop();
+
+        if(message == null) return;
         Webservice.REST_LOGGER.info(message + " (" + stopWatch.getTotalTimeMillis() + "ms)");
+    }
+
+    private void shootFormattedDebugMessage(int duplicated, int success, int error, int notFound) {
+        StringBuilder message = new StringBuilder();
+        message.append(success).append(" games has been saved to the database.\n");
+
+        if (notFound > 0) {
+            message.append(" | ").append(notFound).append(" games were not inserted\n");
+        }
+
+        if (error > 0) {
+            message.append("     | ").append(error).append(" games were inserted with errors\n");
+        }
+
+        if (duplicated > 0) {
+            message.append("     | ").append(duplicated).append(" games were duplicated\n");
+        }
+
+        Webservice.REST_LOGGER.info(message.toString());
     }
 }
