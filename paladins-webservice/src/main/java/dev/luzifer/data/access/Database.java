@@ -569,7 +569,7 @@ public class Database {
             Webservice.DATABASE_LOGGER.info("Created and altered table: " + tableName + "!");
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.WARNING, "Altering table '" + tableName + "' failed..");
-            Webservice.DATABASE_LOGGER.log(Level.INFO, "^^^^^^ Usually this is expected and part of the initialization process.");
+            Webservice.DATABASE_LOGGER.log(Level.INFO, "^^^^^^^^^^^^^^ [Expected Error]");
         }
     }
 
@@ -578,9 +578,19 @@ public class Database {
             connect();
         }
 
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName, null)) {
+            if (resultSet.next()) {
+                Webservice.DATABASE_LOGGER.info("Table " + tableName + " already exists!");
+                return;
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error checking if " + tableName + " table exists", e);
+        }
+
         try (Statement statement = connection.createStatement()) {
             String createTableSQL = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + tableDefinition + ")";
             statement.executeUpdate(createTableSQL);
+            Webservice.DATABASE_LOGGER.info("Created table: " + tableName + "!");
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error creating " + tableName + " table", e);
         }
