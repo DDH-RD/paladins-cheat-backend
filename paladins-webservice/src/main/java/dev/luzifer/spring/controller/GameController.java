@@ -32,6 +32,8 @@ public class GameController {
 
     @Autowired
     private GameDao gameDao;
+    
+    private long lastUpdate = System.currentTimeMillis();
 
     @PostMapping(ApplicationAccessPoint.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -46,7 +48,7 @@ public class GameController {
                 for (GameDto gameDto : gameDtos) {
                     gameDao.saveGameData(gameDto);
                 }
-            }, gameDtos.length + " games has been saved to the database.");
+            }, gameDtos.length + " games has been saved to the database. " + getSuffix());
         });
     }
 
@@ -66,6 +68,14 @@ public class GameController {
 
     private boolean couldNotVerifyApiKey(String key) {
         return !Webservice.getApiKey().equals(key);
+    }
+    
+    private String getSuffix() {
+        if(System.currentTimeMillis() - lastUpdate > 300000) { // 5 min
+            lastUpdate = System.currentTimeMillis();
+            return "(Datenstand:" + gameDao.getTotalGameCount() + ")";
+        }
+        return "";
     }
 
     private void timing(Runnable runnable, String message) {
