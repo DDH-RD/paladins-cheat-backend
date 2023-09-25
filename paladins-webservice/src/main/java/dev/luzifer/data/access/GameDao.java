@@ -18,7 +18,7 @@ public class GameDao {
 
     private final Map<String, Integer> mapCache = new HashMap<>();
     private final Map<String, Integer> regionCache = new HashMap<>();
-    
+
     private final Database database = new Database();
 
     public void initializeDatabase() {
@@ -27,91 +27,20 @@ public class GameDao {
 
     public DatabaseResult<Void> saveGameData(GameDto gameDto) {
 
-        GameInfo gameInfo = new GameInfo(
-                gameDto.getId(),
-                gameDto.getRanked(),
-                gameDto.getAverageRank(),
-                convertMapNameToId(gameDto.getMapName()),
-                gameDto.getBannedChamps(),
-                gameDto.getTeam1Points(),
-                gameDto.getTeam2Points(),
-                gameDto.getDuration(),
-                gameDto.getTimestamp(),
-                gameDto.getSeason());
-
+        GameInfo gameInfo = getGameInfo(gameDto);
         DatabaseResult<Void> gameInfoResult = database.insertGameInfo(gameInfo);
+
         if(gameInfoResult.getDatabaseResultType() != DatabaseResult.DatabaseResultType.SUCCESS) {
             return gameInfoResult;
         }
-
-        database.insertBannedChamps(gameInfo);
 
         ChampInfo[] champInfos = new ChampInfo[gameDto.getChamps().length];
         PlayerInfo[] playerInfos = new PlayerInfo[gameDto.getChamps().length];
         DeckInfo[] deckInfos = new DeckInfo[gameDto.getChamps().length];
         ItemInfo[] itemInfos = new ItemInfo[gameDto.getChamps().length];
 
-        int index = 0;
-        for(ChampDto champDto : gameDto.getChamps()) {
-            ChampInfo champInfo = new ChampInfo(champDto.getChampId(),
-                    champDto.getLeagueTier(),
-                    champDto.getLeaguePoints(),
-                    champDto.getChampLevel(),
-                    champDto.getWon(),
-                    champDto.getCategoryId(),
-                    champDto.getGoldEarned(),
-                    champDto.getKillingSpree(),
-                    champDto.getKills(),
-                    champDto.getDeaths(),
-                    champDto.getAssists(),
-                    champDto.getDamageDone(),
-                    champDto.getDamageTaken(),
-                    champDto.getDamageShielded(),
-                    champDto.getHeal(),
-                    champDto.getSelfHeal(),
-                    gameDto.getId(),
-                    champDto.getPlayerId());
-            champInfos[index] = champInfo;
-
-            PlayerInfo playerInfo = new PlayerInfo(champDto.getPlayerId(),
-                    champDto.getPlayerName(),
-                    convertRegionNameToId(champDto.getRegion()),
-                    champDto.getPlatformId());
-            playerInfos[index] = playerInfo;
-            
-            DeckInfo deckInfo = new DeckInfo(champDto.getTalentId(),
-                    champDto.getDeckCard1(),
-                    champDto.getDeckCard2(),
-                    champDto.getDeckCard3(),
-                    champDto.getDeckCard4(),
-                    champDto.getDeckCard5(),
-                    champDto.getDeckCard1Level(),
-                    champDto.getDeckCard2Level(),
-                    champDto.getDeckCard3Level(),
-                    champDto.getDeckCard4Level(),
-                    champDto.getDeckCard5Level(),
-                    gameDto.getId(),
-                    champDto.getChampId());
-            deckInfos[index] = deckInfo;
-            
-            ItemInfo itemInfo = new ItemInfo(champDto.getItem1(),
-                    champDto.getItem2(),
-                    champDto.getItem3(),
-                    champDto.getItem4(),
-                    champDto.getItem1Level(),
-                    champDto.getItem2Level(),
-                    champDto.getItem3Level(),
-                    champDto.getItem4Level(),
-                    gameDto.getId(),
-                    champDto.getChampId());
-            itemInfos[index] = itemInfo;
-            index++;
-        }
-
-        database.insertBatchPlayerInfos(playerInfos);
-        database.insertBatchChampInfos(champInfos);
-        database.insertBatchDeckInfos(deckInfos);
-        database.insertBatchItemInfos(itemInfos);
+        fillInfoArrays(gameDto, champInfos, playerInfos, deckInfos, itemInfos);
+        insertInfosToDatabase(gameInfo, champInfos, playerInfos, deckInfos, itemInfos);
 
         return gameInfoResult;
     }
@@ -146,6 +75,103 @@ public class GameDao {
 
     public int getTotalRegionCount() {
         return database.getTotalRegions().getResult().orElse(-1);
+    }
+
+    private void fillInfoArrays(GameDto gameDto, ChampInfo[] champInfos, PlayerInfo[] playerInfos, DeckInfo[] deckInfos, ItemInfo[] itemInfos) {
+        int index = 0;
+        for(ChampDto champDto : gameDto.getChamps()) {
+            ChampInfo champInfo = getChampInfo(gameDto, champDto);
+            champInfos[index] = champInfo;
+
+            PlayerInfo playerInfo = getPlayerInfo(champDto);
+            playerInfos[index] = playerInfo;
+
+            DeckInfo deckInfo = getDeckInfo(gameDto, champDto);
+            deckInfos[index] = deckInfo;
+
+            ItemInfo itemInfo = getItemInfo(gameDto, champDto);
+            itemInfos[index] = itemInfo;
+            index++;
+        }
+    }
+
+    private void insertInfosToDatabase(GameInfo gameInfo, ChampInfo[] champInfos, PlayerInfo[] playerInfos, DeckInfo[] deckInfos, ItemInfo[] itemInfos) {
+        database.insertBannedChamps(gameInfo);
+        database.insertBatchPlayerInfos(playerInfos);
+        database.insertBatchChampInfos(champInfos);
+        database.insertBatchDeckInfos(deckInfos);
+        database.insertBatchItemInfos(itemInfos);
+    }
+
+    private GameInfo getGameInfo(GameDto gameDto) {
+        return new GameInfo(
+                gameDto.getId(),
+                gameDto.getRanked(),
+                gameDto.getAverageRank(),
+                convertMapNameToId(gameDto.getMapName()),
+                gameDto.getBannedChamps(),
+                gameDto.getTeam1Points(),
+                gameDto.getTeam2Points(),
+                gameDto.getDuration(),
+                gameDto.getTimestamp(),
+                gameDto.getSeason());
+    }
+
+    private ChampInfo getChampInfo(GameDto gameDto, ChampDto champDto) {
+        return new ChampInfo(champDto.getChampId(),
+                champDto.getLeagueTier(),
+                champDto.getLeaguePoints(),
+                champDto.getChampLevel(),
+                champDto.getWon(),
+                champDto.getCategoryId(),
+                champDto.getGoldEarned(),
+                champDto.getKillingSpree(),
+                champDto.getKills(),
+                champDto.getDeaths(),
+                champDto.getAssists(),
+                champDto.getDamageDone(),
+                champDto.getDamageTaken(),
+                champDto.getDamageShielded(),
+                champDto.getHeal(),
+                champDto.getSelfHeal(),
+                gameDto.getId(),
+                champDto.getPlayerId());
+    }
+
+    private PlayerInfo getPlayerInfo(ChampDto champDto) {
+        return new PlayerInfo(champDto.getPlayerId(),
+                champDto.getPlayerName(),
+                convertRegionNameToId(champDto.getRegion()),
+                champDto.getPlatformId());
+    }
+
+    private DeckInfo getDeckInfo(GameDto gameDto, ChampDto champDto) {
+        return new DeckInfo(champDto.getTalentId(),
+                champDto.getDeckCard1(),
+                champDto.getDeckCard2(),
+                champDto.getDeckCard3(),
+                champDto.getDeckCard4(),
+                champDto.getDeckCard5(),
+                champDto.getDeckCard1Level(),
+                champDto.getDeckCard2Level(),
+                champDto.getDeckCard3Level(),
+                champDto.getDeckCard4Level(),
+                champDto.getDeckCard5Level(),
+                gameDto.getId(),
+                champDto.getChampId());
+    }
+
+    private ItemInfo getItemInfo(GameDto gameDto, ChampDto champDto) {
+        return new ItemInfo(champDto.getItem1(),
+                champDto.getItem2(),
+                champDto.getItem3(),
+                champDto.getItem4(),
+                champDto.getItem1Level(),
+                champDto.getItem2Level(),
+                champDto.getItem3Level(),
+                champDto.getItem4Level(),
+                gameDto.getId(),
+                champDto.getChampId());
     }
 
     private int convertMapNameToId(String mapName) {
