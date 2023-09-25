@@ -20,7 +20,7 @@ public class DebugController {
     @GetMapping(ApplicationAccessPoint.LATEST_LOG_DOWNLOAD)
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<byte[]> downloadLatestLog(@PathVariable String apiKey, HttpServletResponse response) {
-        if(!couldNotVerifyApiKey(apiKey)) {
+        if(couldNotVerifyApiKey(apiKey)) {
             Webservice.REST_LOGGER.info("Received unauthorized request to download latest log.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
