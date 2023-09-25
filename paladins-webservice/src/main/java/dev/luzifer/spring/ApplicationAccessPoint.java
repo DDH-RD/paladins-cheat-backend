@@ -9,7 +9,7 @@ public class ApplicationAccessPoint {
 
     // debug
     public static final String DEBUG = API_KEY + "/debug"; // /{apiKey}/debug
-    public static final String LATEST_LOG_DOWNLOAD = DEBUG + "/latestlog"; // /{apiKey}/debug/latestlog
+    public static final String LATEST_LOG_DOWNLOAD = "/latestlog"; // /{apiKey}/debug/latestlog
 
     // game
     public static final String GAME = API_KEY + "/game"; // /{apiKey}/game
