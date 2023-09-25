@@ -30,25 +30,7 @@ public class Application {
 
     @EventListener(ApplicationReadyEvent.class)
     public void connectToDatabase() {
-        shootFormattedDebugMessage(1, 2, 3, 4);
         gameDao.initializeDatabase();
-    }
-
-    private void shootFormattedDebugMessage(int duplicated, int success, int error, int notFound) {
-
-        Webservice.REST_LOGGER.info(success + " game(s) has been saved to the database.");
-
-        if (notFound > 0) {
-            Webservice.REST_LOGGER.warning(">     | " + notFound + " game(s) were not inserted");
-        }
-
-        if (error > 0) {
-            Webservice.REST_LOGGER.warning(">             | " + error + " game(s) had errors");
-        }
-
-        if (duplicated > 0) {
-            Webservice.REST_LOGGER.warning(">             | " + duplicated + " game(s) are duplicates");
-        }
     }
 
     @EventListener(ApplicationStartedEvent.class)
