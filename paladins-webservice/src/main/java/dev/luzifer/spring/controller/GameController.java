@@ -135,21 +135,22 @@ public class GameController {
     }
 
     private void shootFormattedDebugMessage(int duplicated, int success, int error, int notFound) {
-        StringBuilder message = new StringBuilder();
-        message.append(success).append(" games has been saved to the database.\n");
+
+        Webservice.REST_LOGGER.info("_".repeat(50));
+        Webservice.REST_LOGGER.info(success + " games has been saved to the database.");
 
         if (notFound > 0) {
-            message.append(" | ").append(notFound).append(" games were not inserted\n");
+            Webservice.REST_LOGGER.warning(" | " + notFound + " games were not inserted");
         }
 
         if (error > 0) {
-            message.append("     | ").append(error).append(" games were inserted with errors\n");
+            Webservice.REST_LOGGER.warning("     | " + error + " games had errors");
         }
 
         if (duplicated > 0) {
-            message.append("     | ").append(duplicated).append(" games were duplicated\n");
+            Webservice.REST_LOGGER.warning("     | " + duplicated + " games are duplicates");
         }
 
-        Webservice.REST_LOGGER.info(message.toString());
+        Webservice.REST_LOGGER.info("_".repeat(100));
     }
 }
