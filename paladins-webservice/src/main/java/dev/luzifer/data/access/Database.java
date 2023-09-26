@@ -345,6 +345,25 @@ public class Database {
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
     }
 
+    public DatabaseResult<Long> getLatestMatchId() {
+        if (!isConnected()) {
+            connect();
+        }
+
+        long matchId = -1;
+        try (Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT matchId FROM GameInfo ORDER BY matchId DESC LIMIT 1");
+            if(resultSet.next())
+                return new DatabaseResult<>(resultSet.getLong(1), null, DatabaseResult.DatabaseResultType.SUCCESS);
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get latest match id", e);
+            return new DatabaseResult<>(null, "Could not get latest match id: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+
+        return new DatabaseResult<>(matchId, null, DatabaseResult.DatabaseResultType.NOT_FOUND);
+    }
+
     public void createMapInfoTable() {
         createTableIfNotExists("MapInfo",
                 "id INT AUTO_INCREMENT PRIMARY KEY,"

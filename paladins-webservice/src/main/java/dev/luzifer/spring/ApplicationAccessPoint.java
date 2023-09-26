@@ -16,6 +16,9 @@ public class ApplicationAccessPoint {
     public static final String POST = "/post"; // /{apiKey}/game/post
     public static final String GET = "/get"; // /{apiKey}/game/get
 
+    // latest match id
+    public static final String GET_LATEST_MATCH_ID = GET + "/latestmatechsomatchid"; // /{apiKey}/game/get/latestmatchid
+
     // count
     public static final String GET_COUNT = GET + "/count"; // /{apiKey}/game/get/count
     public static final String GET_COUNT_CHAMPS = GET_COUNT + "/champs"; // /{apiKey}/game/get/count/champs

@@ -45,6 +45,10 @@ public class GameDao {
         return gameInfoResult;
     }
 
+    public long getLatestMatchId() {
+        return database.getLatestMatchId().getResult().orElse(-1L);
+    }
+
     public int getTotalGameCount() {
         return database.getTotalGames().getResult().orElse(-1);
     }

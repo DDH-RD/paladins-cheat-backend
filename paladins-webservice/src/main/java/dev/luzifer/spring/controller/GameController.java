@@ -69,6 +69,20 @@ public class GameController {
         });
     }
 
+    @GetMapping(ApplicationAccessPoint.GET_LATEST_MATCH_ID)
+    public DeferredResult<ResponseEntity<?>> getLatestMatchId(@PathVariable String apiKey) {
+        if (couldNotVerifyApiKey(apiKey)) {
+            Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
+            return UNAUTHORIZED_RESULT;
+        }
+
+        DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+        TaskForce1.order(() -> timing(
+                () -> result.setResult(new ResponseEntity<>(gameDao.getLatestMatchId(), HttpStatus.OK)),
+                "Latest match id has been requested."));
+        return result;
+    }
+
     @GetMapping(ApplicationAccessPoint.GET_COUNT)
     public DeferredResult<ResponseEntity<?>> getGameCount(@PathVariable String apiKey) {
         return getCountResponse(apiKey, gameDao::getTotalGameCount, "Game count has been requested.");
