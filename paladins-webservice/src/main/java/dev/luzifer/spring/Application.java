@@ -40,7 +40,7 @@ public class Application {
 
     @EventListener(ContextClosedEvent.class)
     public void onContextClosedEvent(ContextClosedEvent event) {
-        Webservice.REST_LOGGER.info("Closing application: " + event.getApplicationContext().getDisplayName());
+        Webservice.REST_LOGGER.info("Closing application: " + event.getApplicationContext().getApplicationName());
         Webservice.REST_LOGGER.info("oh no i died :(");
     }
 }
