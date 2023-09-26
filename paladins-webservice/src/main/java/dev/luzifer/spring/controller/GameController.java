@@ -59,6 +59,10 @@ public class GameController {
                         default ->
                                 throw new IllegalStateException("Unknown DatabaseResultType: " + result.getDatabaseResultType());
                     }
+
+                    if(result.getDatabaseResultType() == DatabaseResult.DatabaseResultType.DUPLICATE) {
+                        Webservice.DATABASE_LOGGER.warning(result.getMessage());
+                    }
                 }
                 shootFormattedDebugMessage(duplicated, success, error, notFound);
             }, "Post games request with initially " + gameDtos.length + " games has been processed.");
