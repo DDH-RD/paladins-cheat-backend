@@ -454,7 +454,7 @@ public class Database {
                         + "FOREIGN KEY (playerId) REFERENCES PlayerInfo(playerId)"
         );
         
-        String uniqueConstraintSQL = "ALTER TABLE ChampInfo ADD CONSTRAINT IF NOT EXISTS unique_match_player UNIQUE (matchId, playerId)";
+        String uniqueConstraintSQL = "ALTER TABLE ChampInfo ADD CONSTRAINT unique_match_player UNIQUE (matchId, playerId)";
         executeSQL("ChampInfo", uniqueConstraintSQL);
     }
     
@@ -487,7 +487,7 @@ public class Database {
                         + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
         );
         
-        String uniqueConstraintSQL = "ALTER TABLE BannedChamps ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
+        String uniqueConstraintSQL = "ALTER TABLE BannedChamps ADD CONSTRAINT unique_match_champ UNIQUE (matchId, champId)";
         executeSQL("BannedChamps", uniqueConstraintSQL);
     }
 
@@ -520,7 +520,7 @@ public class Database {
                         + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
         );
         
-        String uniqueConstraintSQL = "ALTER TABLE DeckInfo ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
+        String uniqueConstraintSQL = "ALTER TABLE DeckInfo ADD CONSTRAINT unique_match_champ UNIQUE (matchId, champId)";
         executeSQL("DeckInfo", uniqueConstraintSQL);
     }
     
@@ -540,7 +540,7 @@ public class Database {
                         + "FOREIGN KEY (matchId) REFERENCES GameInfo(matchId)"
         );
         
-        String uniqueConstraintSQL = "ALTER TABLE ItemInfo ADD CONSTRAINT IF NOT EXISTS unique_match_champ UNIQUE (matchId, champId)";
+        String uniqueConstraintSQL = "ALTER TABLE ItemInfo ADD CONSTRAINT unique_match_champ UNIQUE (matchId, champId)";
         executeSQL("ItemInfo", uniqueConstraintSQL);
     }
     
@@ -646,10 +646,9 @@ public class Database {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(sql);
-                Webservice.DATABASE_LOGGER.info("Created and altered table: " + tableName + "!");
+                Webservice.DATABASE_LOGGER.info("Altered table '" + tableName + "'!");
             } catch (SQLException e) {
-                Webservice.DATABASE_LOGGER.log(Level.WARNING, "Altering table '" + tableName + "' failed..");
-                Webservice.DATABASE_LOGGER.log(Level.INFO, "^^^^^^^^^^^^^^ [Expected Error]");
+                Webservice.DATABASE_LOGGER.log(Level.WARNING, "Key constraint for table '" + tableName + "' already exists, skipping..");
             }
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
@@ -660,7 +659,7 @@ public class Database {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try (ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName, null)) {
                 if (resultSet.next()) {
-                    Webservice.DATABASE_LOGGER.info("Table " + tableName + " already exists!");
+                    Webservice.DATABASE_LOGGER.info("Tried to create table: " + tableName + ", but it already exists.");
                     return;
                 }
             } catch (SQLException e) {

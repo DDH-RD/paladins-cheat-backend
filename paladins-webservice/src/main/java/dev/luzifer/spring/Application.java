@@ -10,6 +10,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 
 @SpringBootApplication(exclude = HibernateJpaAutoConfiguration.class)
@@ -35,7 +36,7 @@ public class Application {
 
     @EventListener(ApplicationStartedEvent.class)
     public void startApplication() {
-        Webservice.REST_LOGGER.info("Booting up application...");
+        Webservice.REST_LOGGER.info("Booting up application.. ");
     }
 
     @EventListener(ContextClosedEvent.class)
