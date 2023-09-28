@@ -5,7 +5,6 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -29,21 +28,7 @@
     <VBox fx:id="contentHolder" style="-fx-background-color: #e3e2e2;" VBox.vgrow="SOMETIMES" />
     <HBox fx:id="footerHBox" alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0" spacing="5.0" style="-fx-border-color: #b9b7b7; -fx-background-color: #e3e2e2;" BorderPane.alignment="CENTER">
       <children>
-         <Label fx:id="gameCount" opacity="0.75" text="Label" />
-         <Separator opacity="0.75" orientation="VERTICAL" prefHeight="200.0" />
-         <Label fx:id="champCount" opacity="0.75" text="Label" />
-         <Separator opacity="0.75" orientation="VERTICAL" prefHeight="200.0" />
-         <Label fx:id="itemCount" opacity="0.75" text="Label" />
-         <Separator opacity="0.75" orientation="VERTICAL" prefHeight="200.0" />
-         <Label fx:id="deckCount" opacity="0.75" text="Label" />
-         <Separator opacity="0.75" orientation="VERTICAL" prefHeight="200.0" />
-         <Label fx:id="playerCount" opacity="0.75" text="Label" />
-         <Separator opacity="0.75" orientation="VERTICAL" prefHeight="200.0" />
-         <Label fx:id="bannedChampsCount" opacity="0.75" text="Label" />
-         <Separator opacity="0.75" orientation="VERTICAL" prefHeight="200.0" />
-         <Label fx:id="mapCount" opacity="0.75" text="Label" />
-         <Separator opacity="0.75" orientation="VERTICAL" prefHeight="200.0" />
-         <Label fx:id="regionCount" opacity="0.75" text="Label" />
+         <Label fx:id="gameCount" opacity="0.75" text="Games: -1" />
       </children>
       <VBox.margin>
          <Insets />
