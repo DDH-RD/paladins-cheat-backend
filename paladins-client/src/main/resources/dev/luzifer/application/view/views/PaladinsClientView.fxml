@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.Separator?>
 <VBox prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.luzifer.application.view.views.PaladinsClientView">
     <MenuBar fx:id="headerMenuBar" BorderPane.alignment="CENTER">
         <menus>
@@ -26,14 +27,13 @@
         </menus>
     </MenuBar>
     <VBox fx:id="contentHolder" style="-fx-background-color: #e3e2e2;" VBox.vgrow="SOMETIMES" />
-    <HBox fx:id="footerHBox" alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0" spacing="5.0" style="-fx-border-color: #b9b7b7; -fx-background-color: #e3e2e2;" BorderPane.alignment="CENTER">
-      <children>
-         <Label fx:id="gameCount" opacity="0.75" text="Games: -1" />
-      </children>
-      <VBox.margin>
-         <Insets />
-      </VBox.margin>
-      <padding>
-         <Insets left="5.0" />
-      </padding></HBox>
+    <HBox fx:id="footerHBox" alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0" spacing="10"
+          style="-fx-border-color: #b9b7b7; -fx-background-color: #e3e2e2;" BorderPane.alignment="CENTER">
+        <padding>
+            <Insets left="5.0"/>
+        </padding>
+        <Label fx:id="gameCountLabel" opacity="0.75" text="Games: -1"/>
+        <Separator orientation="VERTICAL" style="-fx-min-height: 2px"/>
+        <Label fx:id="champCountLabel" opacity="0.75" text="Games: -1"/>
+    </HBox>
 </VBox>

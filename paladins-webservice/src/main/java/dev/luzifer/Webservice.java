@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -18,6 +19,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 @UtilityClass
@@ -98,13 +100,13 @@ public class Webservice {
     private static void retrieveCredentials() {
         REST_LOGGER.info("Found credentials file, loading credentials...");
         try {
-            List<String> lines = Files.readAllLines(CREDENTIALS_FILE.toPath());
-            lines.forEach(line -> {
-                if(line.startsWith("api-key:")) API_KEY = line.substring(8);
-                if(line.startsWith("database-url:")) DATABASE_URL = line.substring(13);
-                if(line.startsWith("database-username:")) DATABASE_USERNAME = line.substring(18);
-                if(line.startsWith("database-password:")) DATABASE_PASSWORD = line.substring(18).toCharArray();
-            });
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(CREDENTIALS_FILE));
+
+            API_KEY = properties.getProperty("api-key");
+            DATABASE_URL = properties.getProperty("database-url");
+            DATABASE_USERNAME = properties.getProperty("database-username");
+            DATABASE_PASSWORD = properties.getProperty("database-password").toCharArray();
             REST_LOGGER.info("Loaded credentials! Booting up..");
         } catch (IOException e) {
             throw new RuntimeException(e);

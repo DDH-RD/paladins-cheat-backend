@@ -1,6 +1,8 @@
 package dev.luzifer;
 
 import dev.luzifer.application.PaladinsClient;
+import dev.luzifer.webclient.Webclient;
+import dev.luzifer.webclient.WebclientCredentials;
 import javafx.application.Application;
 import me.skiincraft.api.paladins.Paladins;
 import me.skiincraft.api.paladins.PaladinsBuilder;
@@ -20,6 +22,7 @@ public class Main {
     private static final File PROPERTIES_FILE = new File("paladins.properties");
 
     private static final Paladins PALADINS_API;
+    private static final Webclient WEBCLIENT;
 
     static {
         ensurePropertiesFile();
@@ -36,6 +39,10 @@ public class Main {
                 .setDevId(Integer.parseInt(properties.getProperty("dev_id")))
                 .setAuthKey(properties.getProperty("auth_key"))
                 .build();
+
+        WEBCLIENT = new Webclient(new WebclientCredentials(
+                properties.getProperty("api_key"),
+                properties.getProperty("ip_address")));
     }
 
     public static void main(String[] args) {
@@ -44,6 +51,10 @@ public class Main {
 
     public static Paladins getPaladinsApi() {
         return PALADINS_API;
+    }
+
+    public static Webclient getWebclient() {
+        return WEBCLIENT;
     }
 
     private static void ensurePropertiesFile() {
