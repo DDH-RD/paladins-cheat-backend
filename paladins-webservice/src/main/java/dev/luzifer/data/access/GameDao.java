@@ -188,7 +188,7 @@ public class GameDao {
                 champDto.getChampId());
     }
 
-    private int convertMapNameToId(String mapName) {
+    public int convertMapNameToId(String mapName) {
         if (mapCache.containsKey(mapName)) {
             return mapCache.get(mapName);
         }
@@ -206,7 +206,7 @@ public class GameDao {
         return mapId;
     }
 
-    private int convertRegionNameToId(String regionName) {
+    public int convertRegionNameToId(String regionName) {
         if (regionCache.containsKey(regionName)) {
             return regionCache.get(regionName);
         }

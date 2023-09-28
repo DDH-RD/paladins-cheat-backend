@@ -100,6 +100,22 @@ public class GameController {
         return result;
     }
 
+    @GetMapping(ApplicationAccessPoint.GET_EVALUATION_BEST_BANS_FOR_MAP)
+    public DeferredResult<ResponseEntity<?>> getBestBansForMap(@PathVariable String apiKey, @PathVariable String map) {
+        if (couldNotVerifyApiKey(apiKey)) {
+            Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
+            return UNAUTHORIZED_RESULT;
+        }
+
+        DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+        TaskForce1.order(() -> timing(
+                () -> result.setResult(new ResponseEntity<>(new BestBansEvaluation(gameDao)
+                        .evaluateForMap(map).getResult(),
+                        HttpStatus.OK)),
+                "Best bans for map " + map + " have been requested."));
+        return result;
+    }
+
     @GetMapping(ApplicationAccessPoint.GET_COUNT)
     public DeferredResult<ResponseEntity<?>> getGameCount(@PathVariable String apiKey) {
         return getCountResponse(apiKey, gameDao::getTotalGameCount, "Game count has been requested.");

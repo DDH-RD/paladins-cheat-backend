@@ -23,6 +23,17 @@ public class BestBansEvaluation {
                 .collect(Collectors.toList()));
     }
 
+    public EvaluationResult<List<Integer>> evaluateForMap(String map) {
+        List<Integer> bans = fetchBansForMap(map);
+        Map<Integer, Integer> banCount = countBans(bans);
+
+        return new EvaluationResult<>(banCount.entrySet().stream()
+                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
+                .limit(8)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList()));
+    }
+
     private Map<Integer, Integer> countBans(List<Integer> bans) {
         return bans.stream()
                 .collect(Collectors.toMap(ban -> ban, ban -> 1, Integer::sum));
@@ -30,5 +41,10 @@ public class BestBansEvaluation {
 
     private List<Integer> fetchBans() {
         return gameDao.getBans();
+    }
+
+    private List<Integer> fetchBansForMap(String map) {
+        int mapId = gameDao.convertMapNameToId(map);
+        return gameDao.getBansForMap(mapId);
     }
 }
