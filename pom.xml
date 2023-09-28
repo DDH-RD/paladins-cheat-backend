@@ -17,6 +17,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>paladins-webservice</module>
+        <module>paladins-client</module>
     </modules>
 
     <properties>
