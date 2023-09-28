@@ -14,12 +14,12 @@ public class ApplicationAccessPoint {
 
     public static final String API_KEY = "/{apiKey}"; // /{apiKey}
 
-    // main paths
+    // debug
     public static final String DEBUG = API_KEY + "/debug"; // /{apiKey}/debug
-    public static final String GAME = API_KEY + "/game"; // /{apiKey}/game
-
     public static final String LATEST_LOG_DOWNLOAD = "/latestlog"; // /{apiKey}/debug/latestlog
 
+    // game - main paths
+    public static final String GAME = API_KEY + "/game"; // /{apiKey}/game
     public static final String POST = "/post"; // /{apiKey}/game/post
     public static final String GET = "/get"; // /{apiKey}/game/get
 
