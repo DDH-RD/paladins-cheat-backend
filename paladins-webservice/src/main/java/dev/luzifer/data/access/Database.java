@@ -47,18 +47,15 @@ public class Database {
 
     public void initialize() {
         Webservice.DATABASE_LOGGER.info("Initializing database..");
-        Webservice.DATABASE_LOGGER.info("Loading jdbc driver..");
+        Webservice.DATABASE_LOGGER.info("Connection pool details:");
+        Webservice.DATABASE_LOGGER.info(" | Database driver: " + DATA_SOURCE.getDriverClassName());
+        Webservice.DATABASE_LOGGER.info(" | Database URL: " + DATA_SOURCE.getUrl());
+        Webservice.DATABASE_LOGGER.info(" | Database username: " + DATA_SOURCE.getUsername());
+        Webservice.DATABASE_LOGGER.info(" | Database password: " + DATA_SOURCE.getPassword().replaceAll(".", "*"));
+        Webservice.DATABASE_LOGGER.info(" | Max connections: " + DATA_SOURCE.getMaxTotal());
+        Webservice.DATABASE_LOGGER.info(" | Max idle connections: " + DATA_SOURCE.getMaxIdle());
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            Webservice.DATABASE_LOGGER.info("Loaded JDBC Driver!");
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        Webservice.DATABASE_LOGGER.info("Connecting to database..");
-        Webservice.DATABASE_LOGGER.info("Connection established! Initializing database tables..");
-
+        Webservice.DATABASE_LOGGER.info("Creating tables..");
         createMapInfoTable();
         createRegionInfoTable();
         createGameInfoTable();
@@ -646,9 +643,9 @@ public class Database {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(sql);
-                Webservice.DATABASE_LOGGER.info("Altered table '" + tableName + "'!");
+                Webservice.DATABASE_LOGGER.info("   | Altered table '" + tableName + "'!");
             } catch (SQLException e) {
-                Webservice.DATABASE_LOGGER.log(Level.WARNING, "Key constraint for table '" + tableName + "' already exists, skipping..");
+                Webservice.DATABASE_LOGGER.log(Level.WARNING, "   | Key constraint for table '" + tableName + "' already exists, skipping..");
             }
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
@@ -659,7 +656,7 @@ public class Database {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try (ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName, null)) {
                 if (resultSet.next()) {
-                    Webservice.DATABASE_LOGGER.info("Tried to create table: " + tableName + ", but it already exists.");
+                    Webservice.DATABASE_LOGGER.info("| Tried to create table: " + tableName + ", but it already exists.");
                     return;
                 }
             } catch (SQLException e) {
@@ -669,7 +666,7 @@ public class Database {
             try (Statement statement = connection.createStatement()) {
                 String createTableSQL = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + tableDefinition + ")";
                 statement.executeUpdate(createTableSQL);
-                Webservice.DATABASE_LOGGER.info("Created table: " + tableName + "!");
+                Webservice.DATABASE_LOGGER.info(" | Created table: " + tableName + "!");
             } catch (SQLException e) {
                 Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error creating " + tableName + " table", e);
             }

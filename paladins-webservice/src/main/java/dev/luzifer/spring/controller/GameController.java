@@ -31,14 +31,13 @@ public class GameController extends AbstractController {
         TaskForce1.order(() -> {
             timing(() -> {
                 int duplicated = 0;
-                int success = 0;
                 int error = 0;
                 int notFound = 0;
                 for (GameDto gameDto : gameDtos) {
                     DatabaseResult<Void> result = gameDao.saveGameData(gameDto);
                     switch (result.getDatabaseResultType()) {
+                        case SUCCESS -> {}
                         case DUPLICATE -> duplicated++;
-                        case SUCCESS -> success++;
                         case ERROR -> error++;
                         case NOT_FOUND -> notFound++;
                         default ->
@@ -49,7 +48,7 @@ public class GameController extends AbstractController {
                         Webservice.DATABASE_LOGGER.warning(result.getMessage());
                     }
                 }
-                shootFormattedDebugMessage(duplicated, success, error, notFound);
+                shootFormattedDebugMessage(duplicated, error, notFound);
             }, "Post games request with initially " + gameDtos.length + " games has been processed.");
         });
     }
@@ -68,22 +67,22 @@ public class GameController extends AbstractController {
         return result;
     }
 
-    private void shootFormattedDebugMessage(int duplicated, int success, int error, int notFound) {
+    private void shootFormattedDebugMessage(int duplicated, int error, int notFound) {
         if(isZero(duplicated) && isZero(error) && isZero(notFound)) {
             return;
         }
 
         Webservice.REST_LOGGER.info("Failed to save " + (duplicated + error + notFound) + " game(s).");
         if (notFound > 0) {
-            Webservice.REST_LOGGER.warning(">     | " + notFound + " game(s) were not found(?)");
+            Webservice.REST_LOGGER.warning("  | " + notFound + " game(s) were not found(?)");
         }
 
         if (error > 0) {
-            Webservice.REST_LOGGER.warning(">     | " + error + " game(s) had errors");
+            Webservice.REST_LOGGER.warning("  | " + error + " game(s) had errors");
         }
 
         if (duplicated > 0) {
-            Webservice.REST_LOGGER.warning(">     | " + duplicated + " game(s) are duplicates");
+            Webservice.REST_LOGGER.warning("  | " + duplicated + " game(s) are duplicates");
         }
     }
 
