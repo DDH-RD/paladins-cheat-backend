@@ -1,12 +1,11 @@
 package dev.luzifer.application.view.views;
 
 import dev.luzifer.application.view.View;
-import dev.luzifer.application.view.views.component.PlayerSearchComponent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.MenuBar;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -14,13 +13,10 @@ import java.util.ResourceBundle;
 public class PaladinsClientView extends View<PaladinsClientViewModel> {
 
     @FXML
-    private MenuBar headerMenuBar;
+    private VBox contentHolder;
 
     @FXML
-    private GridPane contentHolder;
-
-    @FXML
-    private HBox footerHBox;
+    private Label gameCount;
 
     public PaladinsClientView(PaladinsClientViewModel viewModel) {
         super(viewModel);
@@ -29,12 +25,13 @@ public class PaladinsClientView extends View<PaladinsClientViewModel> {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
-        setContent(new PlayerSearchComponent());
+        Platform.runLater(() -> {
+            System.out.println(contentHolder.getHeight());
+            System.out.println(contentHolder.getWidth());
+        });
     }
 
-    private void setContent(Pane pane) {
-        pane.prefWidthProperty().bind(contentHolder.widthProperty());
-        pane.prefHeightProperty().bind(contentHolder.heightProperty());
+    public void setContent(Pane pane) {
         contentHolder.getChildren().setAll(pane);
     }
 }

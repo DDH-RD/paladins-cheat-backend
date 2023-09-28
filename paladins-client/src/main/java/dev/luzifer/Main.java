@@ -32,12 +32,9 @@ public class Main {
             System.exit(1);
         }
 
-        int devId = Integer.parseInt(properties.getProperty("dev_id"));
-        String authKey = properties.getProperty("auth_key");
-
         PALADINS_API = new PaladinsBuilder()
-                .setDevId(devId)
-                .setAuthKey(authKey)
+                .setDevId(Integer.parseInt(properties.getProperty("dev_id")))
+                .setAuthKey(properties.getProperty("auth_key"))
                 .build();
     }
 
