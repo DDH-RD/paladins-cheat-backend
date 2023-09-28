@@ -373,7 +373,8 @@ public class Database {
         }
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT champId FROM BannedChamps WHERE matchId IN (SELECT matchId FROM GameInfo WHERE mapId = ?)")) {
+                "SELECT champId FROM BannedChamps WHERE matchId IN " +
+                        "(SELECT DISTINCT matchId FROM GameInfo WHERE mapId = ?)")) {
             preparedStatement.setInt(1, mapId);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> bans = new ArrayList<>();
