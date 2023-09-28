@@ -13,6 +13,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
@@ -343,6 +346,46 @@ public class Database {
         }
 
         return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.SUCCESS);
+    }
+
+    public DatabaseResult<List<Integer>> getBans() {
+        if (!isConnected()) {
+            connect();
+        }
+
+        try (Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT champId FROM BannedChamps");
+            List<Integer> bans = new ArrayList<>();
+            while(resultSet.next()) {
+                bans.add(resultSet.getInt(1));
+            }
+            return new DatabaseResult<>(bans, null, DatabaseResult.DatabaseResultType.SUCCESS);
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get bans", e);
+            return new DatabaseResult<>(Collections.emptyList(), "Could not get bans: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
+    public DatabaseResult<List<Integer>> getBansForMap(int mapId) {
+        if (!isConnected()) {
+            connect();
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT champId FROM BannedChamps WHERE matchId IN (SELECT matchId FROM GameInfo WHERE mapId = ?)")) {
+            preparedStatement.setInt(1, mapId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> bans = new ArrayList<>();
+            while(resultSet.next()) {
+                bans.add(resultSet.getInt(1));
+            }
+            return new DatabaseResult<>(bans, null, DatabaseResult.DatabaseResultType.SUCCESS);
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get bans for map " + mapId, e);
+            return new DatabaseResult<>(Collections.emptyList(), "Could not get bans for map " + mapId + ": " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
     }
 
     public DatabaseResult<Long> getLatestMatchId() {

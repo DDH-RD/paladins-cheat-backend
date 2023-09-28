@@ -4,6 +4,7 @@ import dev.luzifer.Webservice;
 import dev.luzifer.data.access.DatabaseResult;
 import dev.luzifer.data.distribution.TaskForce1;
 import dev.luzifer.data.dto.GameDto;
+import dev.luzifer.data.evaluation.BestBansEvaluation;
 import dev.luzifer.spring.ApplicationAccessPoint;
 import dev.luzifer.data.access.GameDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,22 @@ public class GameController {
         TaskForce1.order(() -> timing(
                 () -> result.setResult(new ResponseEntity<>(gameDao.getLatestMatchId(), HttpStatus.OK)),
                 "Latest match id has been requested."));
+        return result;
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_EVALUATION_BEST_BANS)
+    public DeferredResult<ResponseEntity<?>> getBestBans(@PathVariable String apiKey) {
+        if (couldNotVerifyApiKey(apiKey)) {
+            Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
+            return UNAUTHORIZED_RESULT;
+        }
+
+        DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+        TaskForce1.order(() -> timing(
+                () -> result.setResult(new ResponseEntity<>(new BestBansEvaluation(gameDao)
+                        .evaluate().getResult(),
+                        HttpStatus.OK)),
+                "Best bans have been requested."));
         return result;
     }
 

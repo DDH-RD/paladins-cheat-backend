@@ -5,6 +5,13 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ApplicationAccessPoint {
 
+    /*
+     * Note für später: Die Webpfade werden direkt nach game einen season parameter bekommen.
+     * Wenn dieser 0 ist, werden alle Seasons in betracht gezogen.
+     * Wenn dieser 1 ist, werden nur die Daten der aktuellen Season in betracht gezogen.
+     * Andernfalls wird die Season mit der entsprechenden ID in betracht gezogen.
+     */
+
     public static final String API_KEY = "/{apiKey}"; // /{apiKey}
 
     // debug
@@ -18,6 +25,11 @@ public class ApplicationAccessPoint {
 
     // latest match id
     public static final String GET_LATEST_MATCH_ID = GET + "/latestmatchid"; // /{apiKey}/game/get/latestmatchid
+
+    // evaluation
+    public static final String GET_EVALUATION = GET + "/evaluation"; // /{apiKey}/game/get/evaluation
+    public static final String GET_EVALUATION_BEST_BANS = GET_EVALUATION + "/bestbans"; // /{apiKey}/game/get/evaluation/bestbans
+    public static final String GET_EVALUATION_BEST_BANS_FOR_MAP = GET_EVALUATION + "/bestbans/{map}"; // /{apiKey}/game/get/evaluation/bestbans/{map}
 
     // count
     public static final String GET_COUNT = GET + "/count"; // /{apiKey}/game/get/count

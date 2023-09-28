@@ -10,7 +10,9 @@ import dev.luzifer.data.dto.ChampDto;
 import dev.luzifer.data.dto.GameDto;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component("gameDao")
@@ -79,6 +81,14 @@ public class GameDao {
 
     public int getTotalRegionCount() {
         return database.getTotalRegions().getResult().orElse(-1);
+    }
+
+    public List<Integer> getBans() {
+        return database.getBans().getResult().orElse(Collections.emptyList());
+    }
+
+    public List<Integer> getBansForMap(int mapId) {
+        return database.getBansForMap(mapId).getResult().orElse(Collections.emptyList());
     }
 
     private void fillInfoArrays(GameDto gameDto, ChampInfo[] champInfos, PlayerInfo[] playerInfos, DeckInfo[] deckInfos, ItemInfo[] itemInfos) {
