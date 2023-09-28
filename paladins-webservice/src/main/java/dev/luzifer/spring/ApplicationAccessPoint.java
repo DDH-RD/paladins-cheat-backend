@@ -14,32 +14,36 @@ public class ApplicationAccessPoint {
 
     public static final String API_KEY = "/{apiKey}"; // /{apiKey}
 
-    // debug
+    // main paths
     public static final String DEBUG = API_KEY + "/debug"; // /{apiKey}/debug
+    public static final String GAME = API_KEY + "/game"; // /{apiKey}/game
+
     public static final String LATEST_LOG_DOWNLOAD = "/latestlog"; // /{apiKey}/debug/latestlog
 
-    // game
-    public static final String GAME = API_KEY + "/game"; // /{apiKey}/game
     public static final String POST = "/post"; // /{apiKey}/game/post
     public static final String GET = "/get"; // /{apiKey}/game/get
 
     // latest match id
     public static final String GET_LATEST_MATCH_ID = GET + "/latestmatchid"; // /{apiKey}/game/get/latestmatchid
 
-    // evaluation
-    public static final String GET_EVALUATION = GET + "/evaluation"; // /{apiKey}/game/get/evaluation
-    public static final String GET_EVALUATION_BEST_BANS = GET_EVALUATION + "/bestbans"; // /{apiKey}/game/get/evaluation/bestbans
-    public static final String GET_EVALUATION_BEST_BANS_FOR_MAP = GET_EVALUATION + "/bestbans/{map}"; // /{apiKey}/game/get/evaluation/bestbans/{map}
+    // evaluation - main path
+    public static final String GET_EVALUATION = GAME + GET + "/evaluation"; // /{apiKey}/game/get/evaluation
 
-    // count
-    public static final String GET_COUNT = GET + "/count"; // /{apiKey}/game/get/count
-    public static final String GET_COUNT_CHAMPS = GET_COUNT + "/champs"; // /{apiKey}/game/get/count/champs
-    public static final String GET_COUNT_ITEM_CRAFTS = GET_COUNT + "/itemcrafts"; // /{apiKey}/game/get/count/itemcrafts
-    public static final String GET_COUNT_DECKS = GET_COUNT + "/decks"; // /{apiKey}/game/get/count/decks
-    public static final String GET_COUNT_PLAYERS = GET_COUNT + "/players"; // /{apiKey}/game/get/count/players
-    public static final String GET_COUNT_BANNED_CHAMPS = GET_COUNT + "/bannedchamps"; // /{apiKey}/game/get/count/bannedchamps
-    public static final String GET_COUNT_REGIONS = GET_COUNT + "/regions"; // /{apiKey}/game/get/count/regions
-    public static final String GET_COUNT_MAPS = GET_COUNT + "/maps"; // /{apiKey}/game/get/count/maps
+    // evaluations
+    public static final String GET_EVALUATION_BEST_BANS = "/bestbans"; // /{apiKey}/game/get/evaluation/bestbans
+    public static final String GET_EVALUATION_BEST_BANS_FOR_MAP = "/bestbans/{map}"; // /{apiKey}/game/get/evaluation/bestbans/{map}
+
+    // count - main path
+    public static final String GET_COUNT = GAME + GET + "/count"; // /{apiKey}/game/get/count
+
+    // counts
+    public static final String GET_COUNT_CHAMPS = "/champs"; // /{apiKey}/game/get/count/champs
+    public static final String GET_COUNT_ITEM_CRAFTS = "/itemcrafts"; // /{apiKey}/game/get/count/itemcrafts
+    public static final String GET_COUNT_DECKS = "/decks"; // /{apiKey}/game/get/count/decks
+    public static final String GET_COUNT_PLAYERS = "/players"; // /{apiKey}/game/get/count/players
+    public static final String GET_COUNT_BANNED_CHAMPS = "/bannedchamps"; // /{apiKey}/game/get/count/bannedchamps
+    public static final String GET_COUNT_REGIONS = "/regions"; // /{apiKey}/game/get/count/regions
+    public static final String GET_COUNT_MAPS = "/maps"; // /{apiKey}/game/get/count/maps
 
 
 }

@@ -1,4 +1,4 @@
-package dev.luzifer.spring.controller;
+package dev.luzifer.spring.controller.debug;
 
 import dev.luzifer.Webservice;
 import org.springframework.http.ResponseEntity;
