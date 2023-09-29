@@ -26,9 +26,9 @@
             </Menu>
         </menus>
     </MenuBar>
-    <VBox fx:id="contentHolder" style="-fx-background-color: #e3e2e2;" VBox.vgrow="SOMETIMES" />
+    <VBox fx:id="contentHolder" style="-fx-background-color: #e3e2e2;" VBox.vgrow="SOMETIMES" alignment="CENTER"/>
     <HBox fx:id="footerHBox" alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0" spacing="10"
-          style="-fx-border-color: #b9b7b7; -fx-background-color: #e3e2e2;" BorderPane.alignment="CENTER">
+          style="-fx-border-color: #b9b7b7; -fx-background-color: #e3e2e2;">
         <padding>
             <Insets left="5.0"/>
         </padding>
