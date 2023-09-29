@@ -618,24 +618,21 @@ public class Database {
     }
 
     private DatabaseResult<Integer> executeCountQuery(String tableName, String errorMessage) {
-        try(Connection connection = DATA_SOURCE.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT COUNT(*) FROM " + tableName)) {
-                preparedStatement.executeQuery();
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    return new DatabaseResult<>(resultSet.getInt(1), null, DatabaseResult.DatabaseResultType.SUCCESS);
-                }
-            } catch (SQLException e) {
-                Webservice.DATABASE_LOGGER.log(Level.SEVERE, errorMessage, e);
-                return new DatabaseResult<>(null, errorMessage, DatabaseResult.DatabaseResultType.ERROR);
+        try (Connection connection = DATA_SOURCE.getConnection();
+             Statement statement = connection.createStatement()) {
+
+            String sql = "SHOW TABLE STATUS LIKE '" + tableName + "'";
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            if (resultSet.next()) {
+                long rowCountEstimate = resultSet.getLong("Rows");
+                return new DatabaseResult<>((int) rowCountEstimate, null, DatabaseResult.DatabaseResultType.SUCCESS);
             }
 
             return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.NOT_FOUND);
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
-            return new DatabaseResult<>(null, "Error getting connection: " + e.getMessage(),
-                    DatabaseResult.DatabaseResultType.ERROR);
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, errorMessage, e);
+            return new DatabaseResult<>(null, errorMessage, DatabaseResult.DatabaseResultType.ERROR);
         }
     }
     
