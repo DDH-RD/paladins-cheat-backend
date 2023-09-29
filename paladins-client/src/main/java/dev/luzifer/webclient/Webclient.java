@@ -5,11 +5,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Webclient {
 
     private static final String COUNT_URL = "/game/get/count";
     private static final String COUNT_CHAMPS_URL = COUNT_URL + "/champs";
+
+    private static final String BEST_BANS_FOR_MAP = "/game/get/evaluation/bestbans/";
+
     private static final int PORT = 8080;
 
     private final WebclientCredentials credentials;
@@ -28,6 +33,25 @@ public class Webclient {
     public int makeCountChampsRequest() {
         String countChampsUrl = url + COUNT_CHAMPS_URL;
         return Integer.parseInt(makeRequest(countChampsUrl));
+    }
+
+    public List<Integer> makeBestBansForMapRequest(String mapName) {
+        mapName = mapName.replace("Ranked ", "");
+        mapName = mapName.replaceAll(" ", "%20");
+
+        String bestBansForMapUrl = url + BEST_BANS_FOR_MAP + mapName;
+        return convertStringToIntList(makeRequest(bestBansForMapUrl));
+    }
+
+    private List<Integer> convertStringToIntList(String string) {
+        string = string.replaceAll("\\[", "");
+        string = string.replaceAll("]", "");
+        String[] stringArray = string.split(",");
+        List<Integer> intList = new ArrayList<>();
+        for(String s : stringArray) {
+            intList.add(Integer.parseInt(s));
+        }
+        return intList;
     }
 
     private String makeRequest(String url) {
