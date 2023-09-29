@@ -17,11 +17,9 @@ public class Webclient {
 
     private static final int PORT = 8080;
 
-    private final WebclientCredentials credentials;
     private final String url;
 
     public Webclient(WebclientCredentials credentials) {
-        this.credentials = credentials;
         this.url = "http://" + credentials.getIpAdress() + ":" + PORT + "/" +  credentials.getApiKey();
     }
 
