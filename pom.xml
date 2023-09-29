@@ -18,7 +18,6 @@
     <modules>
         <module>paladins-webservice</module>
         <module>paladins-client</module>
-        <module>paladins-discord-bot</module>
     </modules>
 
     <properties>
