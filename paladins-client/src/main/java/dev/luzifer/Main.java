@@ -6,6 +6,7 @@ import dev.luzifer.webclient.WebclientCredentials;
 import javafx.application.Application;
 import me.skiincraft.api.paladins.Paladins;
 import me.skiincraft.api.paladins.PaladinsBuilder;
+import me.skiincraft.api.paladins.internal.session.Session;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,6 +23,7 @@ public class Main {
     private static final File PROPERTIES_FILE = new File("paladins.properties");
 
     private static final Paladins PALADINS_API;
+    private static final Session SESSION;
     private static final Webclient WEBCLIENT;
 
     static {
@@ -40,6 +42,8 @@ public class Main {
                 .setAuthKey(properties.getProperty("auth_key"))
                 .build();
 
+        SESSION = PALADINS_API.createSession().get();
+
         WEBCLIENT = new Webclient(new WebclientCredentials(
                 properties.getProperty("api_key"),
                 properties.getProperty("ip_address")));
@@ -49,8 +53,8 @@ public class Main {
         Application.launch(PaladinsClient.class, args);
     }
 
-    public static Paladins getPaladinsApi() {
-        return PALADINS_API;
+    public static Session getSession() {
+        return SESSION;
     }
 
     public static Webclient getWebclient() {
