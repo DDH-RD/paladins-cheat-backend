@@ -91,6 +91,14 @@ public class GameDao {
         return database.getBansForMap(mapId).getResult().orElse(Collections.emptyList());
     }
 
+    public List<Integer> getBansForCategory(int categoryId) {
+        return database.getBansForCategory(categoryId).getResult().orElse(Collections.emptyList());
+    }
+
+    public List<Integer> getBansForCategoryOnMap(int categoryId, int mapId) {
+        return database.getBansForCategoryOnMap(categoryId, mapId).getResult().orElse(Collections.emptyList());
+    }
+
     private void fillInfoArrays(GameDto gameDto, ChampInfo[] champInfos, PlayerInfo[] playerInfos, DeckInfo[] deckInfos, ItemInfo[] itemInfos) {
         int index = 0;
         for(ChampDto champDto : gameDto.getChamps()) {

@@ -398,6 +398,56 @@ public class Database {
         }
     }
 
+    public DatabaseResult<List<Integer>> getBansForCategory(int categoryId) {
+        try(Connection connection = DATA_SOURCE.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT champId FROM BannedChamps WHERE matchId IN " +
+                            "(SELECT DISTINCT matchId FROM ChampInfo WHERE categoryId = ?)")) {
+                preparedStatement.setInt(1, categoryId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                List<Integer> bans = new ArrayList<>();
+                while(resultSet.next()) {
+                    bans.add(resultSet.getInt(1));
+                }
+                return new DatabaseResult<>(bans, null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get bans for category " + categoryId, e);
+                return new DatabaseResult<>(Collections.emptyList(), "Could not get bans for category " + categoryId + ": " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(null, "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
+    public DatabaseResult<List<Integer>> getBansForCategoryOnMap(int categoryId, int mapId) {
+        try(Connection connection = DATA_SOURCE.getConnection()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT champId FROM BannedChamps WHERE matchId IN " +
+                            "(SELECT DISTINCT matchId FROM ChampInfo WHERE categoryId = ?) AND matchId IN " +
+                            "(SELECT DISTINCT matchId FROM GameInfo WHERE mapId = ?)")) {
+                preparedStatement.setInt(1, categoryId);
+                preparedStatement.setInt(2, mapId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                List<Integer> bans = new ArrayList<>();
+                while(resultSet.next()) {
+                    bans.add(resultSet.getInt(1));
+                }
+                return new DatabaseResult<>(bans, null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get bans for category " + categoryId + " on map " + mapId, e);
+                return new DatabaseResult<>(Collections.emptyList(), "Could not get bans for category " + categoryId + " on map " + mapId + ": " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(null, "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
     public DatabaseResult<Long> getLatestMatchId() {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             long matchId = -1;

@@ -49,4 +49,36 @@ public class EvaluationController extends AbstractController {
                 "Best bans for map " + map + " have been requested."));
         return result;
     }
+
+    @GetMapping(ApplicationAccessPoint.GET_EVALUATION_BEST_BANS_FOR_CATEGORY)
+    public DeferredResult<ResponseEntity<?>> getBestBansForCategory(@PathVariable String apiKey, @PathVariable int categoryId) {
+        if (couldNotVerifyApiKey(apiKey)) {
+            Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
+            return UNAUTHORIZED_RESULT;
+        }
+
+        DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+        TaskForce1.order(() -> timing(
+                () -> result.setResult(new ResponseEntity<>(new BestBansEvaluation(gameDao)
+                        .evaluateForCategory(categoryId).getResult(),
+                        HttpStatus.OK)),
+                "Best bans for category " + categoryId + " have been requested."));
+        return result;
+    }
+
+    @GetMapping(ApplicationAccessPoint.GET_EVALUATION_BEST_BANS_FOR_CATEGORY_ON_MAP)
+    public DeferredResult<ResponseEntity<?>> getBestBansForCategoryOnMap(@PathVariable String apiKey, @PathVariable int categoryId, @PathVariable String map) {
+        if (couldNotVerifyApiKey(apiKey)) {
+            Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
+            return UNAUTHORIZED_RESULT;
+        }
+
+        DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+        TaskForce1.order(() -> timing(
+                () -> result.setResult(new ResponseEntity<>(new BestBansEvaluation(gameDao)
+                        .evaluateForCategoryOnMap(categoryId, map).getResult(),
+                        HttpStatus.OK)),
+                "Best bans for category " + categoryId + " on map " + map + " have been requested."));
+        return result;
+    }
 }

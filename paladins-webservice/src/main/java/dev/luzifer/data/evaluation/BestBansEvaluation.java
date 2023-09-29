@@ -34,6 +34,28 @@ public class BestBansEvaluation {
                 .collect(Collectors.toList()));
     }
 
+    public EvaluationResult<List<Integer>> evaluateForCategory(int categoryId) {
+        List<Integer> bans = fetchBansForCategory(categoryId);
+        Map<Integer, Integer> banCount = countBans(bans);
+
+        return new EvaluationResult<>(banCount.entrySet().stream()
+                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
+                .limit(8)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList()));
+    }
+
+    public EvaluationResult<List<Integer>> evaluateForCategoryOnMap(int categoryId, String map) {
+        List<Integer> bans = fetchBansForCategoryOnMap(categoryId, map);
+        Map<Integer, Integer> banCount = countBans(bans);
+
+        return new EvaluationResult<>(banCount.entrySet().stream()
+                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
+                .limit(8)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList()));
+    }
+
     private Map<Integer, Integer> countBans(List<Integer> bans) {
         return bans.stream()
                 .collect(Collectors.toMap(ban -> ban, ban -> 1, Integer::sum));
@@ -46,5 +68,14 @@ public class BestBansEvaluation {
     private List<Integer> fetchBansForMap(String map) {
         int mapId = gameDao.convertMapNameToId(map);
         return gameDao.getBansForMap(mapId);
+    }
+
+    private List<Integer> fetchBansForCategory(int categoryId) {
+        return gameDao.getBansForCategory(categoryId);
+    }
+
+    private List<Integer> fetchBansForCategoryOnMap(int categoryId, String map) {
+        int mapId = gameDao.convertMapNameToId(map);
+        return gameDao.getBansForCategoryOnMap(categoryId, mapId);
     }
 }

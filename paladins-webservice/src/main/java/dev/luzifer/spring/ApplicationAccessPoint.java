@@ -32,6 +32,8 @@ public class ApplicationAccessPoint {
     // evaluations
     public static final String GET_EVALUATION_BEST_BANS = "/bestbans"; // /{apiKey}/game/get/evaluation/bestbans
     public static final String GET_EVALUATION_BEST_BANS_FOR_MAP = "/bestbans/{map}"; // /{apiKey}/game/get/evaluation/bestbans/{map}
+    public static final String GET_EVALUATION_BEST_BANS_FOR_CATEGORY = "/bestbans/{categoryId}"; // /{apiKey}/game/get/evaluation/bestbans/{categoryId}
+    public static final String GET_EVALUATION_BEST_BANS_FOR_CATEGORY_ON_MAP = "/bestbans/{categoryId}/{map}"; // /{apiKey}/game/get/evaluation/bestbans/{categoryId}/{map}
 
     // count - main path
     public static final String GET_COUNT = GAME + GET + "/count"; // /{apiKey}/game/get/count
