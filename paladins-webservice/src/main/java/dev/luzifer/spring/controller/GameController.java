@@ -17,6 +17,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.logging.Level;
 
+@RestController
 @RequestMapping(ApplicationAccessPoint.GAME)
 public class GameController extends AbstractController {
 
