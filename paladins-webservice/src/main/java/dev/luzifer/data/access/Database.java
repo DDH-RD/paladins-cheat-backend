@@ -19,7 +19,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
@@ -444,6 +446,134 @@ public class Database {
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
             return new DatabaseResult<>(null, "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
+    public DatabaseResult<Map<Integer, List<Integer>>> getChamps() {
+        try(Connection connection = DATA_SOURCE.getConnection()) {
+            try(PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId")) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                Map<Integer, List<Integer>> champInfoMap = new HashMap<>();
+
+                while(resultSet.next()) {
+                    int points = resultSet.getInt("points");
+                    int champId = resultSet.getInt("champId");
+
+                    if(!champInfoMap.containsKey(points)) {
+                        champInfoMap.put(points, new ArrayList<>());
+                    }
+
+                    champInfoMap.get(points).add(champId);
+                }
+
+                return new DatabaseResult<>(champInfoMap, null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get champs", e);
+                return new DatabaseResult<>(Collections.emptyMap(), "Could not get champs: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(null, "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
+    public DatabaseResult<Map<Integer, List<Integer>>> getChampsOfCategory(int categoryId) {
+        try(Connection connection = DATA_SOURCE.getConnection()) {
+            try(PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId WHERE c.categoryId = ?")) {
+                preparedStatement.setInt(1, categoryId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                Map<Integer, List<Integer>> champInfoMap = new HashMap<>();
+
+                while(resultSet.next()) {
+                    int points = resultSet.getInt("points");
+                    int champId = resultSet.getInt("champId");
+
+                    if(!champInfoMap.containsKey(points)) {
+                        champInfoMap.put(points, new ArrayList<>());
+                    }
+
+                    champInfoMap.get(points).add(champId);
+                }
+
+                return new DatabaseResult<>(champInfoMap, null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get champs of category " + categoryId, e);
+                return new DatabaseResult<>(Collections.emptyMap(), "Could not get champs of category " + categoryId + ": " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(Collections.emptyMap(), "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
+    public DatabaseResult<Map<Integer, List<Integer>>> getChampsOnMap(int mapId) {
+        try(Connection connection = DATA_SOURCE.getConnection()) {
+            try(PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId WHERE g.mapId = ?")) {
+                preparedStatement.setInt(1, mapId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                Map<Integer, List<Integer>> champInfoMap = new HashMap<>();
+
+                while(resultSet.next()) {
+                    int points = resultSet.getInt("points");
+                    int champId = resultSet.getInt("champId");
+
+                    if(!champInfoMap.containsKey(points)) {
+                        champInfoMap.put(points, new ArrayList<>());
+                    }
+
+                    champInfoMap.get(points).add(champId);
+                }
+
+                return new DatabaseResult<>(champInfoMap, null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get champs on map " + mapId, e);
+                return new DatabaseResult<>(Collections.emptyMap(), "Could not get champs on map " + mapId + ": " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(Collections.emptyMap(), "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
+    public DatabaseResult<Map<Integer, List<Integer>>> getChampsOfCategoryOnMap(int categoryId, int mapId) {
+        try(Connection connection = DATA_SOURCE.getConnection()) {
+            try(PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId WHERE c.categoryId = ? AND g.mapId = ?")) {
+                preparedStatement.setInt(1, categoryId);
+                preparedStatement.setInt(2, mapId);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                Map<Integer, List<Integer>> champInfoMap = new HashMap<>();
+
+                while(resultSet.next()) {
+                    int points = resultSet.getInt("points");
+                    int champId = resultSet.getInt("champId");
+
+                    if(!champInfoMap.containsKey(points)) {
+                        champInfoMap.put(points, new ArrayList<>());
+                    }
+
+                    champInfoMap.get(points).add(champId);
+                }
+
+                return new DatabaseResult<>(champInfoMap, null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get champs of category " + categoryId + " on map " + mapId, e);
+                return new DatabaseResult<>(Collections.emptyMap(), "Could not get champs of category " + categoryId + " on map " + mapId + ": " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(Collections.emptyMap(), "Error getting connection: " + e.getMessage(),
                     DatabaseResult.DatabaseResultType.ERROR);
         }
     }
