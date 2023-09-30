@@ -50,6 +50,6 @@ jobs:
           server: '202.61.202.50'
           port: 22
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          local_path: '*.jar
+          local_path: '*.jar'
           remote_path: '/home/paladins/webservice'
           sftp-only: true
