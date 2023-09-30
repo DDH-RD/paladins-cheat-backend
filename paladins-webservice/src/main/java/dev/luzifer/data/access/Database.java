@@ -453,7 +453,13 @@ public class Database {
     public DatabaseResult<Map<Integer, List<Integer>>> getChamps() {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try(PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId")) {
+                    "SELECT champId FROM ChampInfo WHERE matchId IN " +
+                            "(SELECT matchId FROM GameInfo WHERE " +
+                            "((won = 1 AND CASE WHEN won = 1 THEN GREATEST(team1Points, team2Points) " +
+                            "ELSE LEAST(team1Points, team2Points) END) " +
+                            "OR (won = 0 AND CASE WHEN won = 1 " +
+                            "THEN LEAST(team1Points, team2Points) " +
+                            "ELSE GREATEST(team1Points, team2Points) END)))")) {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 Map<Integer, List<Integer>> champInfoMap = new HashMap<>();
 
@@ -484,7 +490,13 @@ public class Database {
     public DatabaseResult<Map<Integer, List<Integer>>> getChampsOfCategory(int categoryId) {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try(PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId WHERE c.categoryId = ?")) {
+                    "SELECT champId FROM ChampInfo WHERE categoryId = ? AND matchId IN " +
+                            "(SELECT matchId FROM GameInfo WHERE " +
+                            "((won = 1 AND CASE WHEN won = 1 THEN GREATEST(team1Points, team2Points) " +
+                            "ELSE LEAST(team1Points, team2Points) END) " +
+                            "OR (won = 0 AND CASE WHEN won = 1 " +
+                            "THEN LEAST(team1Points, team2Points) " +
+                            "ELSE GREATEST(team1Points, team2Points) END)))")) {
                 preparedStatement.setInt(1, categoryId);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 Map<Integer, List<Integer>> champInfoMap = new HashMap<>();
@@ -516,7 +528,13 @@ public class Database {
     public DatabaseResult<Map<Integer, List<Integer>>> getChampsOnMap(int mapId) {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try(PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId WHERE g.mapId = ?")) {
+                    "SELECT champId FROM ChampInfo WHERE matchId IN " +
+                            "(SELECT matchId FROM GameInfo WHERE mapId = ? AND " +
+                            "((won = 1 AND CASE WHEN won = 1 THEN GREATEST(team1Points, team2Points) " +
+                            "ELSE LEAST(team1Points, team2Points) END) " +
+                            "OR (won = 0 AND CASE WHEN won = 1 " +
+                            "THEN LEAST(team1Points, team2Points) " +
+                            "ELSE GREATEST(team1Points, team2Points) END)))")) {
                 preparedStatement.setInt(1, mapId);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 Map<Integer, List<Integer>> champInfoMap = new HashMap<>();
@@ -548,7 +566,13 @@ public class Database {
     public DatabaseResult<Map<Integer, List<Integer>>> getChampsOfCategoryOnMap(int categoryId, int mapId) {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try(PreparedStatement preparedStatement = connection.prepareStatement(
-                    "SELECT c.*, g.points FROM ChampInfo c INNER JOIN GameInfo g ON c.matchId = g.matchId WHERE c.categoryId = ? AND g.mapId = ?")) {
+                    "SELECT champId FROM ChampInfo WHERE categoryId = ? AND matchId IN " +
+                            "(SELECT matchId FROM GameInfo WHERE mapId = ? AND " +
+                            "((won = 1 AND CASE WHEN won = 1 THEN GREATEST(team1Points, team2Points) " +
+                            "ELSE LEAST(team1Points, team2Points) END) " +
+                            "OR (won = 0 AND CASE WHEN won = 1 " +
+                            "THEN LEAST(team1Points, team2Points) " +
+                            "ELSE GREATEST(team1Points, team2Points) END)))")) {
                 preparedStatement.setInt(1, categoryId);
                 preparedStatement.setInt(2, mapId);
                 ResultSet resultSet = preparedStatement.executeQuery();
