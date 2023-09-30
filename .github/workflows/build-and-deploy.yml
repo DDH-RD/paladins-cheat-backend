@@ -25,12 +25,23 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
+      - name: Upload Webservice
+        uses: actions/upload-artifact@v3
+        with:
+          name: paladins-webservice
+          path: D:\a\paladins-cheat-backend\paladins-cheat-backend\paladins-webservice\target\paladins-webservice.jar
+
   deploy:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download Webservice
+        uses: actions/download-artifact@v3
+        with:
+          name: paladins-webservice
+
       - name: Deploy Webservice
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -39,6 +50,6 @@ jobs:
           server: '202.61.202.50'
           port: 22
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          local_path: 'D:\a\paladins-cheat-backend\paladins-cheat-backend\paladins-webservice\target\paladins-webservice.jar'
+          local_path: '*.jar
           remote_path: '/home/paladins/webservice'
           sftp-only: true
