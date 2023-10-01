@@ -46,6 +46,15 @@ public class GameDao {
 
         return gameInfoResult;
     }
+    
+    /**
+     * This method checks if the given matchIds are already in the database and returns the ones that are not.
+     * @param matchIds
+     * @return
+     */
+    public List<Integer> getFreeMatchIds(List<Integer> matchIds) {
+        return database.getFreeMatchIds(matchIds).getResult().orElse(Collections.emptyList());
+    }
 
     public long getLatestMatchId() {
         return database.getLatestMatchId().getResult().orElse(-1L);
