@@ -12,7 +12,6 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.BaseObjectPool;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

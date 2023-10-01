@@ -78,8 +78,4 @@ public class DebugController extends AbstractController {
         Webservice.REST_LOGGER.severe("Could not find latest log file.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-
-    private boolean couldNotVerifyApiKey(String key) {
-        return !Webservice.getApiKey().equals(key);
-    }
 }
