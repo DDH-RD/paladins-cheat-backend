@@ -27,7 +27,7 @@ public class DebugController extends AbstractController {
    @Autowired
    private GameDao gameDao;
     
-    @GetMapping(ApplicationAccessPoint.FREE_MATCH_IDS)
+    @PostMapping(ApplicationAccessPoint.FREE_MATCH_IDS)
     @ResponseStatus(HttpStatus.OK)
     public DeferredResult<?> getFreeMatchIds(@PathVariable String apiKey, @RequestBody Integer[] matchIds) {
         if(couldNotVerifyApiKey(apiKey)) {
