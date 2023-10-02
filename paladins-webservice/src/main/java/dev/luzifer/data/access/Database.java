@@ -403,7 +403,7 @@ public class Database {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT champId FROM BannedChamps WHERE matchId IN " +
-                            "(SELECT DISTINCT matchId FROM ChampInfo WHERE categoryId = ?)")) {
+                            "(SELECT matchId FROM ChampInfo WHERE categoryId = ?)")) {
                 preparedStatement.setInt(1, categoryId);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 List<Integer> bans = new ArrayList<>();
@@ -427,7 +427,7 @@ public class Database {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT champId FROM BannedChamps WHERE matchId IN " +
-                            "(SELECT DISTINCT matchId FROM ChampInfo WHERE categoryId = ?) AND matchId IN " +
+                            "(SELECT matchId FROM ChampInfo WHERE categoryId = ?) AND matchId IN " +
                             "(SELECT DISTINCT matchId FROM GameInfo WHERE mapId = ?)")) {
                 preparedStatement.setInt(1, categoryId);
                 preparedStatement.setInt(2, mapId);
