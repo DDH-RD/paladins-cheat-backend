@@ -19,8 +19,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
@@ -522,34 +524,41 @@ public class Database {
                     DatabaseResult.DatabaseResultType.ERROR);
         }
     }
-    
+
+    /**
+     * This method returns all IDs which are not in the database.
+     *
+     * @param list List of matchIds
+     * @return DatabaseResult with a list of free matchIds
+     */
     public DatabaseResult<List<Integer>> getFreeMatchIds(List<Integer> list) {
-        if (list.isEmpty()) {
-            return new DatabaseResult<>(Collections.emptyList(), null, DatabaseResult.DatabaseResultType.SUCCESS);
-        }
-        
         try (Connection connection = DATA_SOURCE.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT matchId FROM GameInfo WHERE matchId NOT IN (" + String.join(", ", Collections.nCopies(list.size(), "?")) + ")")) {
-            
+                     "SELECT matchId FROM GameInfo WHERE matchId IN (" + String.join(",", Collections.nCopies(list.size(), "?")) + ")")) {
+
             for (int i = 0; i < list.size(); i++) {
                 preparedStatement.setInt(i + 1, list.get(i));
             }
-            
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                List<Integer> matchIds = new ArrayList<>();
-                while (resultSet.next()) {
-                    matchIds.add(resultSet.getInt(1));
-                }
-                return new DatabaseResult<>(matchIds, null, DatabaseResult.DatabaseResultType.SUCCESS);
-            } catch (SQLException e) {
-                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error executing query", e);
-                return new DatabaseResult<>(Collections.emptyList(), "Error executing query: " + e.getMessage(),
-                        DatabaseResult.DatabaseResultType.ERROR);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Set<Integer> existingMatchIds = new HashSet<>();
+
+            while (resultSet.next()) {
+                existingMatchIds.add(resultSet.getInt("matchId"));
             }
+
+            List<Integer> freeMatchIds = new ArrayList<>();
+
+            for (int matchId : list) {
+                if (!existingMatchIds.contains(matchId)) {
+                    freeMatchIds.add(matchId);
+                }
+            }
+
+            return new DatabaseResult<>(freeMatchIds, null, DatabaseResult.DatabaseResultType.SUCCESS);
         } catch (SQLException e) {
-            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
-            return new DatabaseResult<>(Collections.emptyList(), "Error getting connection: " + e.getMessage(),
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error while querying matchIds", e);
+            return new DatabaseResult<>(Collections.emptyList(), "Error while querying matchIds: " + e.getMessage(),
                     DatabaseResult.DatabaseResultType.ERROR);
         }
     }
