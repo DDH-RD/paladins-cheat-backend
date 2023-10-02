@@ -12,7 +12,6 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.BaseObjectPool;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -520,6 +519,37 @@ public class Database {
         } catch (SQLException e) {
             Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
             return new DatabaseResult<>(Collections.emptyMap(), "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+    
+    public DatabaseResult<List<Integer>> getFreeMatchIds(List<Integer> list) {
+        if (list.isEmpty()) {
+            return new DatabaseResult<>(Collections.emptyList(), null, DatabaseResult.DatabaseResultType.SUCCESS);
+        }
+        
+        try (Connection connection = DATA_SOURCE.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT matchId FROM GameInfo WHERE matchId NOT IN (" + String.join(", ", Collections.nCopies(list.size(), "?")) + ")")) {
+            
+            for (int i = 0; i < list.size(); i++) {
+                preparedStatement.setInt(i + 1, list.get(i));
+            }
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Integer> matchIds = new ArrayList<>();
+                while (resultSet.next()) {
+                    matchIds.add(resultSet.getInt(1));
+                }
+                return new DatabaseResult<>(matchIds, null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error executing query", e);
+                return new DatabaseResult<>(Collections.emptyList(), "Error executing query: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(Collections.emptyList(), "Error getting connection: " + e.getMessage(),
                     DatabaseResult.DatabaseResultType.ERROR);
         }
     }
