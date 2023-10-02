@@ -824,12 +824,11 @@ public class Database {
         try (Connection connection = DATA_SOURCE.getConnection();
              Statement statement = connection.createStatement()) {
 
-            String sql = "SHOW TABLE STATUS LIKE '" + tableName + "'";
+            String sql = "SELECT COUNT(*) FROM " + tableName;
             ResultSet resultSet = statement.executeQuery(sql);
 
             if (resultSet.next()) {
-                long rowCountEstimate = resultSet.getLong("Rows");
-                return new DatabaseResult<>((int) rowCountEstimate, null, DatabaseResult.DatabaseResultType.SUCCESS);
+                return new DatabaseResult<>(resultSet.getInt(1), null, DatabaseResult.DatabaseResultType.SUCCESS);
             }
 
             return new DatabaseResult<>(null, null, DatabaseResult.DatabaseResultType.NOT_FOUND);

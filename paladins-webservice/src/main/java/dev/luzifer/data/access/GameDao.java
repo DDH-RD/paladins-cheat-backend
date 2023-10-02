@@ -11,20 +11,24 @@ import dev.luzifer.data.dto.GameDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component("gameDao")
 public class GameDao {
 
     private final Map<String, Integer> mapCache = new HashMap<>();
     private final Map<String, Integer> regionCache = new HashMap<>();
+    private final EnumMap<DatabaseTable, Integer> countCache = new EnumMap<>(DatabaseTable.class);
 
     private final Database database = new Database();
 
     public void initializeDatabase() {
         database.initialize();
+        initializeCountCache();
     }
 
     public DatabaseResult<Void> saveGameData(GameDto gameDto) {
@@ -44,6 +48,15 @@ public class GameDao {
         fillInfoArrays(gameDto, champInfos, playerInfos, deckInfos, itemInfos);
         insertInfosToDatabase(gameInfo, champInfos, playerInfos, deckInfos, itemInfos);
 
+        countCache.put(DatabaseTable.GAME_INFO, countCache.get(DatabaseTable.GAME_INFO) + 1);
+        countCache.put(DatabaseTable.CHAMP_INFO, countCache.get(DatabaseTable.CHAMP_INFO) + gameDto.getChamps().length);
+        countCache.put(DatabaseTable.PLAYER_INFO, countCache.get(DatabaseTable.PLAYER_INFO) + gameDto.getChamps().length);
+        countCache.put(DatabaseTable.DECK_INFO, countCache.get(DatabaseTable.DECK_INFO) + gameDto.getChamps().length);
+        countCache.put(DatabaseTable.ITEM_INFO, countCache.get(DatabaseTable.ITEM_INFO) + gameDto.getChamps().length);
+        countCache.put(DatabaseTable.BANNED_CHAMPS, countCache.get(DatabaseTable.BANNED_CHAMPS) + gameDto.getBannedChamps().length);
+        countCache.put(DatabaseTable.MAP_INFO, countCache.get(DatabaseTable.MAP_INFO) + 1);
+        countCache.put(DatabaseTable.REGION_INFO, countCache.get(DatabaseTable.REGION_INFO) + 1);
+
         return gameInfoResult;
     }
 
@@ -52,35 +65,35 @@ public class GameDao {
     }
 
     public int getTotalGameCount() {
-        return database.getTotalGames().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.GAME_INFO).orElseGet(() -> database.getTotalGames().getResult().orElse(-1));
     }
 
     public int getTotalChampCount() {
-        return database.getTotalChamps().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.CHAMP_INFO).orElseGet(() -> database.getTotalChamps().getResult().orElse(-1));
     }
 
     public int getTotalPlayerCount() {
-        return database.getTotalPlayers().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.PLAYER_INFO).orElseGet(() -> database.getTotalPlayers().getResult().orElse(-1));
     }
 
     public int getTotalDeckCount() {
-        return database.getTotalDecks().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.DECK_INFO).orElseGet(() -> database.getTotalDecks().getResult().orElse(-1));
     }
 
     public int getTotalItemCount() {
-        return database.getTotalItemCrafts().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.ITEM_INFO).orElseGet(() -> database.getTotalItemCrafts().getResult().orElse(-1));
     }
 
     public int getTotalBannedChampCount() {
-        return database.getTotalBannedChamps().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.BANNED_CHAMPS).orElseGet(() -> database.getTotalBannedChamps().getResult().orElse(-1));
     }
 
     public int getTotalMapCount() {
-        return database.getTotalMaps().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.MAP_INFO).orElseGet(() -> database.getTotalMaps().getResult().orElse(-1));
     }
 
     public int getTotalRegionCount() {
-        return database.getTotalRegions().getResult().orElse(-1);
+        return getCachedCount(DatabaseTable.REGION_INFO).orElseGet(() -> database.getTotalRegions().getResult().orElse(-1));
     }
 
     public List<Integer> getBans() {
@@ -113,6 +126,24 @@ public class GameDao {
 
     public Map<Integer, List<Integer>> getChampsForCategoryOnMap(int categoryId, int mapId) {
         return database.getChampsOfCategoryOnMap(categoryId, mapId).getResult().orElse(Collections.emptyMap());
+    }
+
+    private Optional<Integer> getCachedCount(DatabaseTable table) {
+        if(countCache.containsKey(table)) {
+            return Optional.of(countCache.get(table));
+        }
+        return Optional.empty();
+    }
+
+    private void initializeCountCache() {
+        countCache.put(DatabaseTable.GAME_INFO, getTotalGameCount());
+        countCache.put(DatabaseTable.CHAMP_INFO, getTotalChampCount());
+        countCache.put(DatabaseTable.PLAYER_INFO, getTotalPlayerCount());
+        countCache.put(DatabaseTable.DECK_INFO, getTotalDeckCount());
+        countCache.put(DatabaseTable.ITEM_INFO, getTotalItemCount());
+        countCache.put(DatabaseTable.BANNED_CHAMPS, getTotalBannedChampCount());
+        countCache.put(DatabaseTable.MAP_INFO, getTotalMapCount());
+        countCache.put(DatabaseTable.REGION_INFO, getTotalRegionCount());
     }
 
     private void fillInfoArrays(GameDto gameDto, ChampInfo[] champInfos, PlayerInfo[] playerInfos, DeckInfo[] deckInfos, ItemInfo[] itemInfos) {
