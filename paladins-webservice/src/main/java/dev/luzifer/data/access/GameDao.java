@@ -212,6 +212,10 @@ public class GameDao {
                 champDto.getChampId());
     }
 
+    public boolean isValidMap(String map) {
+        return database.getIdForMap(map).getResult().orElse(-1) != -1;
+    }
+
     public int convertMapNameToId(String mapName) {
         if (mapCache.containsKey(mapName)) {
             return mapCache.get(mapName);

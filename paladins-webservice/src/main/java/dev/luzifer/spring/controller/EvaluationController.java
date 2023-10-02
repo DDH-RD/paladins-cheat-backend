@@ -21,10 +21,21 @@ import java.util.logging.Level;
 public class EvaluationController extends AbstractController {
 
     @GetMapping(ApplicationAccessPoint.GET_EVALUATION_BEST_BANS)
-    public DeferredResult<ResponseEntity<?>> getBestBans(@PathVariable String apiKey, @RequestParam(required = false) String map, @RequestParam(required = false) Integer category) {
+    public DeferredResult<ResponseEntity<?>> getBestBans(@PathVariable String apiKey,
+                                                         @RequestParam(required = false) String map,
+                                                         @RequestParam(required = false) Integer category) {
         if (couldNotVerifyApiKey(apiKey)) {
             Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
             return UNAUTHORIZED_RESULT;
+        }
+
+        if(map != null && !gameDao.isValidMap(map)) {
+            DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+            TaskForce1.order(() -> timing(
+                    () -> result.setResult(new ResponseEntity<>("Map " + map + " is not valid!",
+                            HttpStatus.BAD_REQUEST)),
+                    "Best champs for category " + category + " on map " + map + " have been requested."));
+            return result;
         }
 
         if(map != null && category != null) {
@@ -67,10 +78,21 @@ public class EvaluationController extends AbstractController {
     }
 
     @GetMapping(ApplicationAccessPoint.GET_EVALUATION_BEST_CHAMPS)
-    public DeferredResult<ResponseEntity<?>> getBestChamps(@PathVariable String apiKey, @RequestParam(required = false) String map, @RequestParam(required = false) Integer category) {
+    public DeferredResult<ResponseEntity<?>> getBestChamps(@PathVariable String apiKey,
+                                                           @RequestParam(required = false) String map,
+                                                           @RequestParam(required = false) Integer category) {
         if (couldNotVerifyApiKey(apiKey)) {
             Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
             return UNAUTHORIZED_RESULT;
+        }
+
+        if(map != null && !gameDao.isValidMap(map)) {
+            DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+            TaskForce1.order(() -> timing(
+                    () -> result.setResult(new ResponseEntity<>("Map " + map + " is not valid!",
+                            HttpStatus.BAD_REQUEST)),
+                    "Best champs for category " + category + " on map " + map + " have been requested."));
+            return result;
         }
 
         if(map != null && category != null) {
