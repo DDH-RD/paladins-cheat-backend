@@ -796,6 +796,27 @@ public class Database {
         }
     }
 
+    public DatabaseResult<String[]> getAllMaps() {
+        try(Connection connection = DATA_SOURCE.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery("SELECT mapName FROM MapInfo");
+                List<String> maps = new ArrayList<>();
+                while(resultSet.next()) {
+                    maps.add(resultSet.getString(1));
+                }
+                return new DatabaseResult<>(maps.toArray(new String[0]), null, DatabaseResult.DatabaseResultType.SUCCESS);
+            } catch (SQLException e) {
+                Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Could not get maps", e);
+                return new DatabaseResult<>(null, "Could not get maps: " + e.getMessage(),
+                        DatabaseResult.DatabaseResultType.ERROR);
+            }
+        } catch (SQLException e) {
+            Webservice.DATABASE_LOGGER.log(Level.SEVERE, "Error getting connection", e);
+            return new DatabaseResult<>(null, "Error getting connection: " + e.getMessage(),
+                    DatabaseResult.DatabaseResultType.ERROR);
+        }
+    }
+
     public DatabaseResult<Integer> getIdForMap(String mapName) {
         try(Connection connection = DATA_SOURCE.getConnection()) {
             int id = -1;

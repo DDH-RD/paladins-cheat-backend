@@ -78,4 +78,23 @@ public class DebugController extends AbstractController {
         Webservice.REST_LOGGER.severe("Could not find latest log file.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+    @GetMapping(ApplicationAccessPoint.ALL_MAPS)
+    @ResponseStatus(HttpStatus.OK)
+    public DeferredResult<?> getAllMaps(@PathVariable String apiKey) {
+        if(couldNotVerifyApiKey(apiKey)) {
+            Webservice.REST_LOGGER.info("Received unauthorized request to get all maps.");
+
+            DeferredResult<Object> result = new DeferredResult<>();
+            result.setResult(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
+            return result;
+        }
+
+        DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
+        TaskForce1.order(() -> timing(
+                () -> result.setResult(new ResponseEntity<>(gameDao.getAllMaps(),
+                        HttpStatus.OK)),
+                "All maps have been requested."));
+        return result;
+    }
 }

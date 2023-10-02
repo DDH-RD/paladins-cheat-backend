@@ -59,6 +59,10 @@ public class GameDao {
 
         return gameInfoResult;
     }
+
+    public String[] getAllMaps() {
+        return database.getAllMaps().getResult().orElse(new String[0]);
+    }
     
     /**
      * This method checks if the given matchIds are already in the database and returns the ones that are not.

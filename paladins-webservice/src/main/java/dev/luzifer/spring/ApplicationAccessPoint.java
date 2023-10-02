@@ -18,6 +18,7 @@ public class ApplicationAccessPoint {
     public static final String DEBUG = API_KEY + "/debug"; // /{apiKey}/debug
     public static final String LATEST_LOG_DOWNLOAD = "/latestlog"; // /{apiKey}/debug/latestlog
     public static final String FREE_MATCH_IDS = "/freematchids"; // /{apiKey}/debug/freematchids
+    public static final String ALL_MAPS = "/allmaps"; // /{apiKey}/debug/allmaps
 
     // game - main paths
     public static final String GAME = API_KEY + "/game"; // /{apiKey}/game
