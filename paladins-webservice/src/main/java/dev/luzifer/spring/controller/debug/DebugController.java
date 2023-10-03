@@ -79,6 +79,7 @@ public class DebugController extends AbstractController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping(ApplicationAccessPoint.ALL_MAPS)
     @ResponseStatus(HttpStatus.OK)
     public DeferredResult<?> getAllMaps(@PathVariable String apiKey) {
