@@ -24,8 +24,8 @@ import java.util.List;
 @RequestMapping(ApplicationAccessPoint.DEBUG)
 public class DebugController extends AbstractController {
 
-   @Autowired
-   private GameDao gameDao;
+    @Autowired
+    private GameDao gameDao;
     
     @PostMapping(ApplicationAccessPoint.FREE_MATCH_IDS)
     @ResponseStatus(HttpStatus.OK)
