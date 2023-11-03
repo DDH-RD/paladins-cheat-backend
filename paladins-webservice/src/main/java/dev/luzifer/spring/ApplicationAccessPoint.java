@@ -13,6 +13,9 @@ public class ApplicationAccessPoint {
      */
 
     public static final String API_KEY = "/{apiKey}"; // /{apiKey}
+    
+    // login
+    public static final String API_KEY_REQUEST_PASSWORD = "/login"; // /login/{password}
 
     // debug
     public static final String DEBUG = API_KEY + "/debug"; // /{apiKey}/debug

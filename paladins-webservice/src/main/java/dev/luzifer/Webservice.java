@@ -33,6 +33,7 @@ public class Webservice {
     @Getter
     private static final File CURRENT_LOG_FILE = buildCurrentLogFile();
 
+    private static String API_KEY_PASSWORD;
     private static String API_KEY;
     private static String DATABASE_URL;
     private static String DATABASE_USERNAME;
@@ -48,7 +49,11 @@ public class Webservice {
         Application application = new Application();
         SpringApplication.run(application.getClass(), args);
     }
-
+    
+    public static String getApiKeyPassword() {
+        return API_KEY_PASSWORD;
+    }
+    
     public static String getApiKey() {
         return API_KEY;
     }
@@ -103,6 +108,7 @@ public class Webservice {
             Properties properties = new Properties();
             properties.load(new FileInputStream(CREDENTIALS_FILE));
 
+            API_KEY_PASSWORD = properties.getProperty("api-key-password");
             API_KEY = properties.getProperty("api-key");
             DATABASE_URL = properties.getProperty("database-url");
             DATABASE_USERNAME = properties.getProperty("database-username");
