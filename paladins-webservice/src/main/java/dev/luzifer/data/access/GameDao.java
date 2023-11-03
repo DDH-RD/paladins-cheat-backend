@@ -117,14 +117,6 @@ public class GameDao {
         return database.getBansForMap(mapId).getResult().orElse(Collections.emptyList());
     }
 
-    public List<Integer> getBansForCategory(int categoryId) {
-        return database.getBansForCategory(categoryId).getResult().orElse(Collections.emptyList());
-    }
-
-    public List<Integer> getBansForCategoryOnMap(int categoryId, int mapId) {
-        return database.getBansForCategoryOnMap(categoryId, mapId).getResult().orElse(Collections.emptyList());
-    }
-
     public Map<Integer, List<Integer>> getChamps() {
         return database.getChamps().getResult().orElse(Collections.emptyMap());
     }

@@ -40,16 +40,6 @@ public class EvaluationController extends AbstractController {
             return result;
         }
 
-        if(map != null && category != null) {
-            DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
-            TaskForce1.order(() -> timing(
-                    () -> result.setResult(new ResponseEntity<>(new BestBansEvaluation(gameDao)
-                            .evaluateForCategoryOnMap(category, map).getResult(),
-                            HttpStatus.OK)),
-                    "Best bans for category " + category + " on map " + map + " have been requested."));
-            return result;
-        }
-
         if(map != null) {
             DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
             TaskForce1.order(() -> timing(
@@ -57,16 +47,6 @@ public class EvaluationController extends AbstractController {
                             .evaluateForMap(map).getResult(),
                             HttpStatus.OK)),
                     "Best bans for map " + map + " have been requested."));
-            return result;
-        }
-
-        if(category != null) {
-            DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
-            TaskForce1.order(() -> timing(
-                    () -> result.setResult(new ResponseEntity<>(new BestBansEvaluation(gameDao)
-                            .evaluateForCategory(category).getResult(),
-                            HttpStatus.OK)),
-                    "Best bans for category " + category + " have been requested."));
             return result;
         }
 
@@ -81,8 +61,7 @@ public class EvaluationController extends AbstractController {
 
     @GetMapping(ApplicationAccessPoint.GET_EVALUATION_BEST_CHAMPS)
     public DeferredResult<ResponseEntity<?>> getBestChamps(@PathVariable String apiKey,
-                                                           @RequestParam(required = false) String map,
-                                                           @RequestParam(required = false) Integer category) {
+                                                           @RequestParam(required = false) String map) {
         if (couldNotVerifyApiKey(apiKey)) {
             Webservice.REST_LOGGER.log(Level.WARNING, "I've registered an unauthorized access attempt.");
             return UNAUTHORIZED_RESULT;
@@ -93,17 +72,7 @@ public class EvaluationController extends AbstractController {
             TaskForce1.order(() -> timing(
                     () -> result.setResult(new ResponseEntity<>("Map " + map + " is not valid!",
                             HttpStatus.BAD_REQUEST)),
-                    "Best champs for category " + category + " on map " + map + " have been requested."));
-            return result;
-        }
-
-        if(map != null && category != null) {
-            DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
-            TaskForce1.order(() -> timing(
-                    () -> result.setResult(new ResponseEntity<>(new BestChampEvaluation(gameDao)
-                            .evaluateForCategoryOnMap(category, map).getResult(),
-                            HttpStatus.OK)),
-                    "Best champs for category " + category + " on map " + map + " have been requested."));
+                    "Best champs for map " + map + " have been requested."));
             return result;
         }
 
@@ -114,16 +83,6 @@ public class EvaluationController extends AbstractController {
                             .evaluateForMap(map).getResult(),
                             HttpStatus.OK)),
                     "Best champs for map " + map + " have been requested."));
-            return result;
-        }
-
-        if(category != null) {
-            DeferredResult<ResponseEntity<?>> result = new DeferredResult<>();
-            TaskForce1.order(() -> timing(
-                    () -> result.setResult(new ResponseEntity<>(new BestChampEvaluation(gameDao)
-                            .evaluateForCategory(category).getResult(),
-                            HttpStatus.OK)),
-                    "Best champs for category " + category + " have been requested."));
             return result;
         }
 
