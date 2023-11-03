@@ -15,6 +15,8 @@ public class PublicController {
         if(!Webservice.getApiKeyPassword().equals(password)) {
             return ResponseEntity.badRequest().body("Wrong password!");
         }
+
+        Webservice.REST_LOGGER.info("Received request for api key. (NO-TIMING)");
         
         return ResponseEntity.ok(Webservice.getApiKey());
     }
