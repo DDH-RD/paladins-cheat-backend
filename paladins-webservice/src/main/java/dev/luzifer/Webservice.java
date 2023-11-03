@@ -32,6 +32,7 @@ public class Webservice {
     private static final File LOG_FOLDER = new File("logs");
     @Getter
     private static final File CURRENT_LOG_FILE = buildCurrentLogFile();
+    private static final File LATEST_LOG_FILE = new File(LOG_FOLDER, "latest.log");
 
     private static String API_KEY_PASSWORD;
     private static String API_KEY;
@@ -40,6 +41,7 @@ public class Webservice {
     private static char[] DATABASE_PASSWORD;
 
     static {
+        setupLatestLogFile();
         redirectSystemOutToFile(CURRENT_LOG_FILE.getAbsolutePath());
         setupCredentialsFile();
         retrieveCredentials();
@@ -118,11 +120,22 @@ public class Webservice {
             throw new RuntimeException(e);
         }
     }
+    
+    private static void setupLatestLogFile() {
+        ensureFolder(LOG_FOLDER);
+        ensureFile(LATEST_LOG_FILE);
+
+        try {
+            Files.write(LATEST_LOG_FILE.toPath(), List.of());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static void redirectSystemOutToFile(String logFileName) {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(logFileName);
-            OutputStream customOutputStream = new TeeOutputStream(fileOutputStream, System.out);
+            OutputStream customOutputStream = new TeeOutputStream(fileOutputStream, System.out, new FileOutputStream(LATEST_LOG_FILE));
 
             System.setOut(new PrintStream(customOutputStream, true));
         } catch (FileNotFoundException e) {
@@ -166,40 +179,57 @@ public class Webservice {
     private static class TeeOutputStream extends OutputStream {
         private final OutputStream main;
         private final OutputStream second;
-
-        public TeeOutputStream(OutputStream main, OutputStream second) {
+        private final OutputStream[] more;
+        
+        public TeeOutputStream(OutputStream main, OutputStream second, OutputStream... more) {
             this.main = main;
             this.second = second;
+            this.more = more;
         }
 
         @Override
         public void write(int b) throws IOException {
             main.write(b);
             second.write(b);
+            for (OutputStream outputStream : more) {
+                outputStream.write(b);
+            }
         }
 
         @Override
         public void write(byte[] b) throws IOException {
             main.write(b);
             second.write(b);
+            for (OutputStream outputStream : more) {
+                outputStream.write(b);
+            }
         }
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
             main.write(b, off, len);
             second.write(b, off, len);
+            for (OutputStream outputStream : more) {
+                outputStream.write(b, off, len);
+            }
         }
 
         @Override
         public void flush() throws IOException {
             main.flush();
             second.flush();
+            for (OutputStream outputStream : more) {
+                outputStream.flush();
+            }
         }
 
         @Override
         public void close() throws IOException {
             main.close();
             second.close();
+            for (OutputStream outputStream : more) {
+                outputStream.close();
+            }
         }
     }
 }
