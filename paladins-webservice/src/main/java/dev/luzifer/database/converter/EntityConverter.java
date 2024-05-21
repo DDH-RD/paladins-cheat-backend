@@ -36,7 +36,6 @@ public class EntityConverter {
     champInfo.setLeagueTier(champDto.getLeagueTier());
     champInfo.setLeaguePoints(champDto.getLeaguePoints());
     champInfo.setPlayer(convertToPlayerInfo(champDto));
-    champInfo.setCategoryId(champDto.getCategoryId());
     champInfo.setWon(champDto.getWon());
     champInfo.setSelfHeal(champDto.getSelfHeal());
     champInfo.setHeal(champDto.getHeal());

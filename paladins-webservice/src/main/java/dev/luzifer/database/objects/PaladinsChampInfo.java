@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class PaladinsChampInfo {
 
-  @Id private int id;
+  @Id int id;
 
-  private int categoryId;
+  int categoryId;
 }

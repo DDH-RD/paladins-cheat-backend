@@ -23,7 +23,6 @@ public class ChampInfo {
   int leaguePoints;
   int champLevel;
   int won;
-  int categoryId;
   int goldEarned;
   int killingSpree;
   int kills;
