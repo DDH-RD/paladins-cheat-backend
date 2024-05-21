@@ -17,7 +17,7 @@
         <mapping class="dev.luzifer.database.objects.ItemInfo"/>
         <mapping class="dev.luzifer.database.objects.PlayerInfo"/>
         <mapping class="dev.luzifer.database.objects.RegionInfo"/>
-        <mapping class="dev.luzifer.database.objects.ChampInfo"/>
+        <mapping class="dev.luzifer.database.objects.PlayedChampInfo"/>
         <mapping class="dev.luzifer.database.objects.flaws.GameInfo"/>
         <mapping class="dev.luzifer.database.objects.DeckInfo"/>
     </session-factory>

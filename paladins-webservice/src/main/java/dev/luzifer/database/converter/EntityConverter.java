@@ -2,7 +2,7 @@ package dev.luzifer.database.converter;
 
 import dev.luzifer.database.dto.ChampDto;
 import dev.luzifer.database.dto.GameDto;
-import dev.luzifer.database.objects.ChampInfo;
+import dev.luzifer.database.objects.PlayedChampInfo;
 import dev.luzifer.database.objects.DeckInfo;
 import dev.luzifer.database.objects.ItemInfo;
 import dev.luzifer.database.objects.MapInfo;
@@ -29,25 +29,25 @@ public class EntityConverter {
     return gameInfo;
   }
 
-  public ChampInfo convertToChampInfo(ChampDto champDto) {
-    ChampInfo champInfo = new ChampInfo();
-    champInfo.setChampId(champDto.getChampId());
-    champInfo.setChampLevel(champDto.getChampLevel());
-    champInfo.setLeagueTier(champDto.getLeagueTier());
-    champInfo.setLeaguePoints(champDto.getLeaguePoints());
-    champInfo.setPlayer(convertToPlayerInfo(champDto));
-    champInfo.setWon(champDto.getWon());
-    champInfo.setSelfHeal(champDto.getSelfHeal());
-    champInfo.setHeal(champDto.getHeal());
-    champInfo.setDamageDone(champDto.getDamageDone());
-    champInfo.setDamageTaken(champDto.getDamageTaken());
-    champInfo.setDamageShielded(champDto.getDamageShielded());
-    champInfo.setDeaths(champDto.getDeaths());
-    champInfo.setKills(champDto.getKills());
-    champInfo.setKillingSpree(champDto.getKillingSpree());
-    champInfo.setAssists(champDto.getAssists());
-    champInfo.setGoldEarned(champDto.getGoldEarned());
-    return champInfo;
+  public PlayedChampInfo convertToChampInfo(ChampDto champDto) {
+    PlayedChampInfo playedChampInfo = new PlayedChampInfo();
+    playedChampInfo.setChampId(champDto.getChampId());
+    playedChampInfo.setChampLevel(champDto.getChampLevel());
+    playedChampInfo.setLeagueTier(champDto.getLeagueTier());
+    playedChampInfo.setLeaguePoints(champDto.getLeaguePoints());
+    playedChampInfo.setPlayer(convertToPlayerInfo(champDto));
+    playedChampInfo.setWon(champDto.getWon());
+    playedChampInfo.setSelfHeal(champDto.getSelfHeal());
+    playedChampInfo.setHeal(champDto.getHeal());
+    playedChampInfo.setDamageDone(champDto.getDamageDone());
+    playedChampInfo.setDamageTaken(champDto.getDamageTaken());
+    playedChampInfo.setDamageShielded(champDto.getDamageShielded());
+    playedChampInfo.setDeaths(champDto.getDeaths());
+    playedChampInfo.setKills(champDto.getKills());
+    playedChampInfo.setKillingSpree(champDto.getKillingSpree());
+    playedChampInfo.setAssists(champDto.getAssists());
+    playedChampInfo.setGoldEarned(champDto.getGoldEarned());
+    return playedChampInfo;
   }
 
   public PaladinsChampInfo convertToPaladinsChampInfo(ChampDto champDto) {

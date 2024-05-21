@@ -27,5 +27,5 @@ public class ItemInfo {
 
   @ManyToOne
   @JoinColumn(name = "champId", referencedColumnName = "id")
-  ChampInfo champ;
+  PlayedChampInfo champ;
 }

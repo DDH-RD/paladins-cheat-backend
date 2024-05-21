@@ -30,5 +30,5 @@ public class DeckInfo {
 
   @OneToOne
   @JoinColumn(name = "champId", referencedColumnName = "id")
-  ChampInfo champ;
+  PlayedChampInfo champ;
 }

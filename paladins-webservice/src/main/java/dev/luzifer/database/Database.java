@@ -3,7 +3,7 @@ package dev.luzifer.database;
 import dev.luzifer.database.converter.EntityConverter;
 import dev.luzifer.database.dto.ChampDto;
 import dev.luzifer.database.dto.GameDto;
-import dev.luzifer.database.objects.ChampInfo;
+import dev.luzifer.database.objects.PlayedChampInfo;
 import dev.luzifer.database.objects.DeckInfo;
 import dev.luzifer.database.objects.ItemInfo;
 import dev.luzifer.database.objects.MapInfo;
@@ -11,7 +11,7 @@ import dev.luzifer.database.objects.PaladinsChampInfo;
 import dev.luzifer.database.objects.PlayerInfo;
 import dev.luzifer.database.objects.RegionInfo;
 import dev.luzifer.database.objects.flaws.GameInfo;
-import dev.luzifer.database.repositories.ChampInfoRepository;
+import dev.luzifer.database.repositories.PlayedChampInfoRepository;
 import dev.luzifer.database.repositories.DeckInfoRepository;
 import dev.luzifer.database.repositories.GameInfoRepository;
 import dev.luzifer.database.repositories.ItemInfoRepository;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class Database {
 
   private final GameInfoRepository gameInfoRepository;
-  private final ChampInfoRepository champInfoRepository;
+  private final PlayedChampInfoRepository champInfoRepository;
   private final ItemInfoRepository itemInfoRepository;
   private final DeckInfoRepository deckInfoRepository;
   private final MapInfoRepository mapInfoRepository;
@@ -40,7 +40,7 @@ public class Database {
   @Autowired
   public Database(
       GameInfoRepository gameInfoRepository,
-      ChampInfoRepository champInfoRepository,
+      PlayedChampInfoRepository champInfoRepository,
       ItemInfoRepository itemInfoRepository,
       DeckInfoRepository deckInfoRepository,
       MapInfoRepository mapInfoRepository,
@@ -62,7 +62,7 @@ public class Database {
   public void saveGames(GameDto[] gameDtos) {
     List<GameInfo> gameInfos = new ArrayList<>();
     List<MapInfo> mapInfos = new ArrayList<>();
-    List<ChampInfo> champInfos = new ArrayList<>();
+    List<PlayedChampInfo> playedChampInfos = new ArrayList<>();
     List<ItemInfo> itemInfos = new ArrayList<>();
     List<DeckInfo> deckInfos = new ArrayList<>();
     List<PlayerInfo> playerInfos = new ArrayList<>();
@@ -74,7 +74,7 @@ public class Database {
       mapInfos.add(entityConverter.convertToMapInfo(gameDto.getMapName()));
 
       for (ChampDto champDto : gameDto.getChamps()) {
-        champInfos.add(entityConverter.convertToChampInfo(champDto));
+        playedChampInfos.add(entityConverter.convertToChampInfo(champDto));
         itemInfos.add(entityConverter.convertToItemInfo(champDto));
         deckInfos.add(entityConverter.convertToDeckInfo(champDto));
         playerInfos.add(entityConverter.convertToPlayerInfo(champDto));
@@ -85,7 +85,7 @@ public class Database {
 
     gameInfoRepository.saveAll(gameInfos);
     mapInfoRepository.saveAll(mapInfos);
-    champInfoRepository.saveAll(champInfos);
+    champInfoRepository.saveAll(playedChampInfos);
     itemInfoRepository.saveAll(itemInfos);
     deckInfoRepository.saveAll(deckInfos);
     playerInfoRepository.saveAll(playerInfos);

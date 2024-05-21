@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class ChampInfo {
+public class PlayedChampInfo {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
