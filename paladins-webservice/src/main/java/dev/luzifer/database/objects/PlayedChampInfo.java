@@ -35,10 +35,10 @@ public class PlayedChampInfo {
   int selfHeal;
 
   @ManyToOne
-  @JoinColumn(name = "matchId", referencedColumnName = "id")
+  @JoinColumn(name = "matchId", referencedColumnName = "matchId")
   GameInfo match;
 
   @OneToOne
-  @JoinColumn(name = "playerId", referencedColumnName = "id")
+  @JoinColumn(name = "playerId", referencedColumnName = "playerId")
   PlayerInfo player;
 }

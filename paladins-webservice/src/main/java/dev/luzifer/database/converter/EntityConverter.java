@@ -2,11 +2,11 @@ package dev.luzifer.database.converter;
 
 import dev.luzifer.database.dto.ChampDto;
 import dev.luzifer.database.dto.GameDto;
-import dev.luzifer.database.objects.PlayedChampInfo;
 import dev.luzifer.database.objects.DeckInfo;
 import dev.luzifer.database.objects.ItemInfo;
 import dev.luzifer.database.objects.MapInfo;
 import dev.luzifer.database.objects.PaladinsChampInfo;
+import dev.luzifer.database.objects.PlayedChampInfo;
 import dev.luzifer.database.objects.PlayerInfo;
 import dev.luzifer.database.objects.RegionInfo;
 import dev.luzifer.database.objects.flaws.GameInfo;
