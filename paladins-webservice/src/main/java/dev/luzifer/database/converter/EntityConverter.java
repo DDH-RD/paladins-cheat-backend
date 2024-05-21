@@ -6,6 +6,7 @@ import dev.luzifer.database.objects.ChampInfo;
 import dev.luzifer.database.objects.DeckInfo;
 import dev.luzifer.database.objects.ItemInfo;
 import dev.luzifer.database.objects.MapInfo;
+import dev.luzifer.database.objects.PaladinsChampInfo;
 import dev.luzifer.database.objects.PlayerInfo;
 import dev.luzifer.database.objects.RegionInfo;
 import dev.luzifer.database.objects.flaws.GameInfo;
@@ -48,6 +49,13 @@ public class EntityConverter {
     champInfo.setAssists(champDto.getAssists());
     champInfo.setGoldEarned(champDto.getGoldEarned());
     return champInfo;
+  }
+
+  public PaladinsChampInfo convertToPaladinsChampInfo(ChampDto champDto) {
+    PaladinsChampInfo paladinsChampInfo = new PaladinsChampInfo();
+    paladinsChampInfo.setId(champDto.getChampId());
+    paladinsChampInfo.setCategoryId(champDto.getCategoryId());
+    return paladinsChampInfo;
   }
 
   public MapInfo convertToMapInfo(String mapName) {

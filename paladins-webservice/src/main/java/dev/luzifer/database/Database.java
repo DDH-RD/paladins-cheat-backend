@@ -7,6 +7,7 @@ import dev.luzifer.database.objects.ChampInfo;
 import dev.luzifer.database.objects.DeckInfo;
 import dev.luzifer.database.objects.ItemInfo;
 import dev.luzifer.database.objects.MapInfo;
+import dev.luzifer.database.objects.PaladinsChampInfo;
 import dev.luzifer.database.objects.PlayerInfo;
 import dev.luzifer.database.objects.RegionInfo;
 import dev.luzifer.database.objects.flaws.GameInfo;
@@ -15,6 +16,7 @@ import dev.luzifer.database.repositories.DeckInfoRepository;
 import dev.luzifer.database.repositories.GameInfoRepository;
 import dev.luzifer.database.repositories.ItemInfoRepository;
 import dev.luzifer.database.repositories.MapInfoRepository;
+import dev.luzifer.database.repositories.PaladinsChampInfoRepository;
 import dev.luzifer.database.repositories.PlayerInfoRepository;
 import dev.luzifer.database.repositories.RegionInfoRepository;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class Database {
   private final MapInfoRepository mapInfoRepository;
   private final PlayerInfoRepository playerInfoRepository;
   private final RegionInfoRepository regionInfoRepository;
+  private final PaladinsChampInfoRepository paladinsChampInfoRepository;
   private final EntityConverter entityConverter;
 
   @Autowired
@@ -43,6 +46,7 @@ public class Database {
       MapInfoRepository mapInfoRepository,
       PlayerInfoRepository playerInfoRepository,
       RegionInfoRepository regionInfoRepository,
+      PaladinsChampInfoRepository paladinsChampInfoRepository,
       EntityConverter entityConverter) {
     this.gameInfoRepository = gameInfoRepository;
     this.champInfoRepository = champInfoRepository;
@@ -51,6 +55,7 @@ public class Database {
     this.mapInfoRepository = mapInfoRepository;
     this.playerInfoRepository = playerInfoRepository;
     this.regionInfoRepository = regionInfoRepository;
+    this.paladinsChampInfoRepository = paladinsChampInfoRepository;
     this.entityConverter = entityConverter;
   }
 
@@ -62,6 +67,7 @@ public class Database {
     List<DeckInfo> deckInfos = new ArrayList<>();
     List<PlayerInfo> playerInfos = new ArrayList<>();
     List<RegionInfo> regionInfos = new ArrayList<>();
+    List<PaladinsChampInfo> paladinsChampInfos = new ArrayList<>();
 
     for (GameDto gameDto : gameDtos) {
       gameInfos.add(entityConverter.convertToGameInfo(gameDto));
@@ -73,6 +79,7 @@ public class Database {
         deckInfos.add(entityConverter.convertToDeckInfo(champDto));
         playerInfos.add(entityConverter.convertToPlayerInfo(champDto));
         regionInfos.add(entityConverter.convertToRegionInfo(champDto.getRegion()));
+        paladinsChampInfos.add(entityConverter.convertToPaladinsChampInfo(champDto));
       }
     }
 
@@ -83,6 +90,7 @@ public class Database {
     deckInfoRepository.saveAll(deckInfos);
     playerInfoRepository.saveAll(playerInfos);
     regionInfoRepository.saveAll(regionInfos);
+    paladinsChampInfoRepository.saveAll(paladinsChampInfos);
   }
 
   public long countGameInfos() {
