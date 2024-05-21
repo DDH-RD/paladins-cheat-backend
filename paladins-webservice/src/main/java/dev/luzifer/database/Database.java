@@ -3,22 +3,22 @@ package dev.luzifer.database;
 import dev.luzifer.database.converter.EntityConverter;
 import dev.luzifer.database.dto.ChampDto;
 import dev.luzifer.database.dto.GameDto;
-import dev.luzifer.database.objects.PlayedChampInfo;
-import dev.luzifer.database.objects.DeckInfo;
-import dev.luzifer.database.objects.ItemInfo;
-import dev.luzifer.database.objects.MapInfo;
-import dev.luzifer.database.objects.PaladinsChampInfo;
-import dev.luzifer.database.objects.PlayerInfo;
-import dev.luzifer.database.objects.RegionInfo;
-import dev.luzifer.database.objects.flaws.GameInfo;
-import dev.luzifer.database.repositories.PlayedChampInfoRepository;
-import dev.luzifer.database.repositories.DeckInfoRepository;
-import dev.luzifer.database.repositories.GameInfoRepository;
-import dev.luzifer.database.repositories.ItemInfoRepository;
-import dev.luzifer.database.repositories.MapInfoRepository;
-import dev.luzifer.database.repositories.PaladinsChampInfoRepository;
-import dev.luzifer.database.repositories.PlayerInfoRepository;
-import dev.luzifer.database.repositories.RegionInfoRepository;
+import dev.luzifer.database.objects.PlayedChamp;
+import dev.luzifer.database.objects.Deck;
+import dev.luzifer.database.objects.ItemDraft;
+import dev.luzifer.database.objects.Map;
+import dev.luzifer.database.objects.PaladinsChamp;
+import dev.luzifer.database.objects.Player;
+import dev.luzifer.database.objects.Region;
+import dev.luzifer.database.objects.flaws.Match;
+import dev.luzifer.database.repositories.PlayedChampRepository;
+import dev.luzifer.database.repositories.DeckRepository;
+import dev.luzifer.database.repositories.MatchRepository;
+import dev.luzifer.database.repositories.ItemDraftRepository;
+import dev.luzifer.database.repositories.MapRepository;
+import dev.luzifer.database.repositories.PaladinsChampRepository;
+import dev.luzifer.database.repositories.PlayerRepository;
+import dev.luzifer.database.repositories.RegionRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,73 +27,73 @@ import org.springframework.stereotype.Service;
 @Service
 public class Database {
 
-  private final GameInfoRepository gameInfoRepository;
-  private final PlayedChampInfoRepository champInfoRepository;
-  private final ItemInfoRepository itemInfoRepository;
-  private final DeckInfoRepository deckInfoRepository;
-  private final MapInfoRepository mapInfoRepository;
-  private final PlayerInfoRepository playerInfoRepository;
-  private final RegionInfoRepository regionInfoRepository;
-  private final PaladinsChampInfoRepository paladinsChampInfoRepository;
+  private final MatchRepository matchRepository;
+  private final PlayedChampRepository champInfoRepository;
+  private final ItemDraftRepository itemDraftRepository;
+  private final DeckRepository deckRepository;
+  private final MapRepository mapRepository;
+  private final PlayerRepository playerRepository;
+  private final RegionRepository regionRepository;
+  private final PaladinsChampRepository paladinsChampRepository;
   private final EntityConverter entityConverter;
 
   @Autowired
   public Database(
-      GameInfoRepository gameInfoRepository,
-      PlayedChampInfoRepository champInfoRepository,
-      ItemInfoRepository itemInfoRepository,
-      DeckInfoRepository deckInfoRepository,
-      MapInfoRepository mapInfoRepository,
-      PlayerInfoRepository playerInfoRepository,
-      RegionInfoRepository regionInfoRepository,
-      PaladinsChampInfoRepository paladinsChampInfoRepository,
+      MatchRepository matchRepository,
+      PlayedChampRepository champInfoRepository,
+      ItemDraftRepository itemDraftRepository,
+      DeckRepository deckRepository,
+      MapRepository mapRepository,
+      PlayerRepository playerRepository,
+      RegionRepository regionRepository,
+      PaladinsChampRepository paladinsChampRepository,
       EntityConverter entityConverter) {
-    this.gameInfoRepository = gameInfoRepository;
+    this.matchRepository = matchRepository;
     this.champInfoRepository = champInfoRepository;
-    this.itemInfoRepository = itemInfoRepository;
-    this.deckInfoRepository = deckInfoRepository;
-    this.mapInfoRepository = mapInfoRepository;
-    this.playerInfoRepository = playerInfoRepository;
-    this.regionInfoRepository = regionInfoRepository;
-    this.paladinsChampInfoRepository = paladinsChampInfoRepository;
+    this.itemDraftRepository = itemDraftRepository;
+    this.deckRepository = deckRepository;
+    this.mapRepository = mapRepository;
+    this.playerRepository = playerRepository;
+    this.regionRepository = regionRepository;
+    this.paladinsChampRepository = paladinsChampRepository;
     this.entityConverter = entityConverter;
   }
 
   public void saveGames(GameDto[] gameDtos) {
-    List<GameInfo> gameInfos = new ArrayList<>();
-    List<MapInfo> mapInfos = new ArrayList<>();
-    List<PlayedChampInfo> playedChampInfos = new ArrayList<>();
-    List<ItemInfo> itemInfos = new ArrayList<>();
-    List<DeckInfo> deckInfos = new ArrayList<>();
-    List<PlayerInfo> playerInfos = new ArrayList<>();
-    List<RegionInfo> regionInfos = new ArrayList<>();
-    List<PaladinsChampInfo> paladinsChampInfos = new ArrayList<>();
+    List<Match> matches = new ArrayList<>();
+    List<Map> maps = new ArrayList<>();
+    List<PlayedChamp> playedChamps = new ArrayList<>();
+    List<ItemDraft> itemDrafts = new ArrayList<>();
+    List<Deck> decks = new ArrayList<>();
+    List<Player> players = new ArrayList<>();
+    List<Region> regions = new ArrayList<>();
+    List<PaladinsChamp> paladinsChamps = new ArrayList<>();
 
     for (GameDto gameDto : gameDtos) {
-      gameInfos.add(entityConverter.convertToGameInfo(gameDto));
-      mapInfos.add(entityConverter.convertToMapInfo(gameDto.getMapName()));
+      matches.add(entityConverter.convertToGameInfo(gameDto));
+      maps.add(entityConverter.convertToMapInfo(gameDto.getMapName()));
 
       for (ChampDto champDto : gameDto.getChamps()) {
-        playedChampInfos.add(entityConverter.convertToChampInfo(champDto));
-        itemInfos.add(entityConverter.convertToItemInfo(champDto));
-        deckInfos.add(entityConverter.convertToDeckInfo(champDto));
-        playerInfos.add(entityConverter.convertToPlayerInfo(champDto));
-        regionInfos.add(entityConverter.convertToRegionInfo(champDto.getRegion()));
-        paladinsChampInfos.add(entityConverter.convertToPaladinsChampInfo(champDto));
+        playedChamps.add(entityConverter.convertToChampInfo(champDto));
+        itemDrafts.add(entityConverter.convertToItemInfo(champDto));
+        decks.add(entityConverter.convertToDeckInfo(champDto));
+        players.add(entityConverter.convertToPlayerInfo(champDto));
+        regions.add(entityConverter.convertToRegionInfo(champDto.getRegion()));
+        paladinsChamps.add(entityConverter.convertToPaladinsChampInfo(champDto));
       }
     }
 
-    gameInfoRepository.saveAll(gameInfos);
-    mapInfoRepository.saveAll(mapInfos);
-    champInfoRepository.saveAll(playedChampInfos);
-    itemInfoRepository.saveAll(itemInfos);
-    deckInfoRepository.saveAll(deckInfos);
-    playerInfoRepository.saveAll(playerInfos);
-    regionInfoRepository.saveAll(regionInfos);
-    paladinsChampInfoRepository.saveAll(paladinsChampInfos);
+    matchRepository.saveAll(matches);
+    mapRepository.saveAll(maps);
+    champInfoRepository.saveAll(playedChamps);
+    itemDraftRepository.saveAll(itemDrafts);
+    deckRepository.saveAll(decks);
+    playerRepository.saveAll(players);
+    regionRepository.saveAll(regions);
+    paladinsChampRepository.saveAll(paladinsChamps);
   }
 
   public long countGameInfos() {
-    return gameInfoRepository.count();
+    return matchRepository.count();
   }
 }

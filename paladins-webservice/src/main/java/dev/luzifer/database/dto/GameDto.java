@@ -9,7 +9,7 @@ public class GameDto {
   private String mapName;
   private int ranked;
   private int averageRank;
-  private int[] bannedChamps;
+  private BannedChampDto[] bannedChamps;
   private int team1Points;
   private int team2Points;
   private ChampDto[] champs;

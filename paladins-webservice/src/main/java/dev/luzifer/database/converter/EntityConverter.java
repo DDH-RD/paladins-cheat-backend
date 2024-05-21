@@ -1,111 +1,134 @@
 package dev.luzifer.database.converter;
 
+import dev.luzifer.database.dto.BannedChampDto;
 import dev.luzifer.database.dto.ChampDto;
 import dev.luzifer.database.dto.GameDto;
-import dev.luzifer.database.objects.DeckInfo;
-import dev.luzifer.database.objects.ItemInfo;
-import dev.luzifer.database.objects.MapInfo;
-import dev.luzifer.database.objects.PaladinsChampInfo;
-import dev.luzifer.database.objects.PlayedChampInfo;
-import dev.luzifer.database.objects.PlayerInfo;
-import dev.luzifer.database.objects.RegionInfo;
-import dev.luzifer.database.objects.flaws.GameInfo;
+import dev.luzifer.database.objects.BannedChamp;
+import dev.luzifer.database.objects.Deck;
+import dev.luzifer.database.objects.ItemDraft;
+import dev.luzifer.database.objects.Map;
+import dev.luzifer.database.objects.PaladinsChamp;
+import dev.luzifer.database.objects.PlayedChamp;
+import dev.luzifer.database.objects.Player;
+import dev.luzifer.database.objects.Region;
+import dev.luzifer.database.objects.flaws.Match;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EntityConverter {
 
-  public GameInfo convertToGameInfo(GameDto gameDto) {
-    GameInfo gameInfo = new GameInfo();
-    gameInfo.setAverageRank(gameDto.getAverageRank());
-    gameInfo.setMap(convertToMapInfo(gameDto.getMapName()));
-    gameInfo.setRanked(gameDto.getRanked());
-    gameInfo.setDuration(gameDto.getDuration());
-    gameInfo.setSeason(gameDto.getSeason());
-    gameInfo.setMatchId(gameDto.getId());
-    gameInfo.setBannedChamps(gameDto.getBannedChamps());
-    gameInfo.setTeam1Points(gameDto.getTeam1Points());
-    gameInfo.setTeam2Points(gameDto.getTeam2Points());
-    return gameInfo;
+  public Match convertToGameInfo(GameDto gameDto) {
+    Match match = new Match();
+    match.setAverageRank(gameDto.getAverageRank());
+    match.setMap(convertToMapInfo(gameDto.getMapName()));
+    match.setRanked(gameDto.getRanked());
+    match.setDuration(gameDto.getDuration());
+    match.setSeason(gameDto.getSeason());
+    match.setMatchId(gameDto.getId());
+    match.setBannedChamps(convertBannedChamps(gameDto));
+    match.setTeam1Points(gameDto.getTeam1Points());
+    match.setTeam2Points(gameDto.getTeam2Points());
+    return match;
   }
 
-  public PlayedChampInfo convertToChampInfo(ChampDto champDto) {
-    PlayedChampInfo playedChampInfo = new PlayedChampInfo();
-    playedChampInfo.setChampInfo(convertToPaladinsChampInfo(champDto));
-    playedChampInfo.setChampLevel(champDto.getChampLevel());
-    playedChampInfo.setLeagueTier(champDto.getLeagueTier());
-    playedChampInfo.setLeaguePoints(champDto.getLeaguePoints());
-    playedChampInfo.setPlayer(convertToPlayerInfo(champDto));
-    playedChampInfo.setWon(champDto.getWon());
-    playedChampInfo.setSelfHeal(champDto.getSelfHeal());
-    playedChampInfo.setHeal(champDto.getHeal());
-    playedChampInfo.setDamageDone(champDto.getDamageDone());
-    playedChampInfo.setDamageTaken(champDto.getDamageTaken());
-    playedChampInfo.setDamageShielded(champDto.getDamageShielded());
-    playedChampInfo.setDeaths(champDto.getDeaths());
-    playedChampInfo.setKills(champDto.getKills());
-    playedChampInfo.setKillingSpree(champDto.getKillingSpree());
-    playedChampInfo.setAssists(champDto.getAssists());
-    playedChampInfo.setGoldEarned(champDto.getGoldEarned());
-    return playedChampInfo;
+  public List<BannedChamp> convertBannedChamps(GameDto gameDto) {
+    List<BannedChamp> bannedChamps = new ArrayList<>();
+    Match match = convertToGameInfo(gameDto);
+    for (BannedChampDto bannedChampDto : gameDto.getBannedChamps()) {
+      BannedChamp bannedChamp = new BannedChamp();
+      bannedChamp.setMatch(match);
+      bannedChamp.setChamp(convertToPaladinsChampFromBannedChampDto(bannedChampDto));
+      bannedChamps.add(bannedChamp);
+    }
+    return bannedChamps;
   }
 
-  public PaladinsChampInfo convertToPaladinsChampInfo(ChampDto champDto) {
-    PaladinsChampInfo paladinsChampInfo = new PaladinsChampInfo();
-    paladinsChampInfo.setId(champDto.getChampId());
-    paladinsChampInfo.setCategoryId(champDto.getCategoryId());
-    return paladinsChampInfo;
+  private PaladinsChamp convertToPaladinsChampFromBannedChampDto(BannedChampDto bannedChampDto) {
+    PaladinsChamp paladinsChamp = new PaladinsChamp();
+    paladinsChamp.setId(bannedChampDto.getChampId());
+    paladinsChamp.setCategoryId(bannedChampDto.getCategoryId());
+    return paladinsChamp;
   }
 
-  public MapInfo convertToMapInfo(String mapName) {
-    MapInfo mapInfo = new MapInfo();
-    mapInfo.setMapName(mapName);
-    return mapInfo;
+  public PlayedChamp convertToChampInfo(ChampDto champDto) {
+    PlayedChamp playedChamp = new PlayedChamp();
+    playedChamp.setChampInfo(convertToPaladinsChampInfo(champDto));
+    playedChamp.setChampLevel(champDto.getChampLevel());
+    playedChamp.setLeagueTier(champDto.getLeagueTier());
+    playedChamp.setLeaguePoints(champDto.getLeaguePoints());
+    playedChamp.setPlayer(convertToPlayerInfo(champDto));
+    playedChamp.setWon(champDto.getWon());
+    playedChamp.setSelfHeal(champDto.getSelfHeal());
+    playedChamp.setHeal(champDto.getHeal());
+    playedChamp.setDamageDone(champDto.getDamageDone());
+    playedChamp.setDamageTaken(champDto.getDamageTaken());
+    playedChamp.setDamageShielded(champDto.getDamageShielded());
+    playedChamp.setDeaths(champDto.getDeaths());
+    playedChamp.setKills(champDto.getKills());
+    playedChamp.setKillingSpree(champDto.getKillingSpree());
+    playedChamp.setAssists(champDto.getAssists());
+    playedChamp.setGoldEarned(champDto.getGoldEarned());
+    return playedChamp;
   }
 
-  public PlayerInfo convertToPlayerInfo(ChampDto champDto) {
-    PlayerInfo playerInfo = new PlayerInfo();
-    playerInfo.setPlayerName(champDto.getPlayerName());
-    playerInfo.setPlayerId(champDto.getPlayerId());
-    playerInfo.setPlatformId(champDto.getPlatformId());
-    playerInfo.setRegion(convertToRegionInfo(champDto.getRegion()));
-    return playerInfo;
+  public PaladinsChamp convertToPaladinsChampInfo(ChampDto champDto) {
+    PaladinsChamp paladinsChamp = new PaladinsChamp();
+    paladinsChamp.setId(champDto.getChampId());
+    paladinsChamp.setCategoryId(champDto.getCategoryId());
+    return paladinsChamp;
   }
 
-  public RegionInfo convertToRegionInfo(String regionName) {
-    RegionInfo regionInfo = new RegionInfo();
-    regionInfo.setRegionName(regionName);
-    return regionInfo;
+  public Map convertToMapInfo(String mapName) {
+    Map map = new Map();
+    map.setMapName(mapName);
+    return map;
   }
 
-  public ItemInfo convertToItemInfo(ChampDto champDto) {
-    ItemInfo itemInfo = new ItemInfo();
-    itemInfo.setItem1(champDto.getItem1());
-    itemInfo.setItem2(champDto.getItem2());
-    itemInfo.setItem3(champDto.getItem3());
-    itemInfo.setItem4(champDto.getItem4());
-    itemInfo.setItem1Level(champDto.getItem1Level());
-    itemInfo.setItem2Level(champDto.getItem2Level());
-    itemInfo.setItem3Level(champDto.getItem3Level());
-    itemInfo.setItem4Level(champDto.getItem4Level());
-    itemInfo.setChamp(convertToChampInfo(champDto));
-    return itemInfo;
+  public Player convertToPlayerInfo(ChampDto champDto) {
+    Player player = new Player();
+    player.setPlayerName(champDto.getPlayerName());
+    player.setPlayerId(champDto.getPlayerId());
+    player.setPlatformId(champDto.getPlatformId());
+    player.setRegion(convertToRegionInfo(champDto.getRegion()));
+    return player;
   }
 
-  public DeckInfo convertToDeckInfo(ChampDto champDto) {
-    DeckInfo deckInfo = new DeckInfo();
-    deckInfo.setTalentId(champDto.getTalentId());
-    deckInfo.setDeckCard1(champDto.getDeckCard1());
-    deckInfo.setDeckCard2(champDto.getDeckCard2());
-    deckInfo.setDeckCard3(champDto.getDeckCard3());
-    deckInfo.setDeckCard4(champDto.getDeckCard4());
-    deckInfo.setDeckCard5(champDto.getDeckCard5());
-    deckInfo.setDeckCard1Level(champDto.getDeckCard1Level());
-    deckInfo.setDeckCard2Level(champDto.getDeckCard2Level());
-    deckInfo.setDeckCard3Level(champDto.getDeckCard3Level());
-    deckInfo.setDeckCard4Level(champDto.getDeckCard4Level());
-    deckInfo.setDeckCard5Level(champDto.getDeckCard5Level());
-    deckInfo.setChamp(convertToChampInfo(champDto));
-    return deckInfo;
+  public Region convertToRegionInfo(String regionName) {
+    Region region = new Region();
+    region.setRegionName(regionName);
+    return region;
+  }
+
+  public ItemDraft convertToItemInfo(ChampDto champDto) {
+    ItemDraft itemDraft = new ItemDraft();
+    itemDraft.setItem1(champDto.getItem1());
+    itemDraft.setItem2(champDto.getItem2());
+    itemDraft.setItem3(champDto.getItem3());
+    itemDraft.setItem4(champDto.getItem4());
+    itemDraft.setItem1Level(champDto.getItem1Level());
+    itemDraft.setItem2Level(champDto.getItem2Level());
+    itemDraft.setItem3Level(champDto.getItem3Level());
+    itemDraft.setItem4Level(champDto.getItem4Level());
+    itemDraft.setChamp(convertToChampInfo(champDto));
+    return itemDraft;
+  }
+
+  public Deck convertToDeckInfo(ChampDto champDto) {
+    Deck deck = new Deck();
+    deck.setTalentId(champDto.getTalentId());
+    deck.setDeckCard1(champDto.getDeckCard1());
+    deck.setDeckCard2(champDto.getDeckCard2());
+    deck.setDeckCard3(champDto.getDeckCard3());
+    deck.setDeckCard4(champDto.getDeckCard4());
+    deck.setDeckCard5(champDto.getDeckCard5());
+    deck.setDeckCard1Level(champDto.getDeckCard1Level());
+    deck.setDeckCard2Level(champDto.getDeckCard2Level());
+    deck.setDeckCard3Level(champDto.getDeckCard3Level());
+    deck.setDeckCard4Level(champDto.getDeckCard4Level());
+    deck.setDeckCard5Level(champDto.getDeckCard5Level());
+    deck.setChamp(convertToChampInfo(champDto));
+    return deck;
   }
 }
