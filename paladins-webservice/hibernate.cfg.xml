@@ -20,7 +20,7 @@
         <mapping class="dev.luzifer.database.objects.PlayedChamp"/>
         <mapping class="dev.luzifer.database.objects.BannedChamp"/>
         <mapping class="dev.luzifer.database.objects.PaladinsChamp"/>
-        <mapping class="dev.luzifer.database.objects.flaws.Match"/>
+        <mapping class="dev.luzifer.database.objects.Match"/>
         <mapping class="dev.luzifer.database.objects.Deck"/>
     </session-factory>
 </hibernate-configuration>

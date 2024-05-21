@@ -11,7 +11,7 @@ import dev.luzifer.database.objects.PaladinsChamp;
 import dev.luzifer.database.objects.PlayedChamp;
 import dev.luzifer.database.objects.Player;
 import dev.luzifer.database.objects.Region;
-import dev.luzifer.database.objects.flaws.Match;
+import dev.luzifer.database.objects.Match;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;

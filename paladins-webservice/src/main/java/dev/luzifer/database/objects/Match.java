@@ -1,7 +1,5 @@
-package dev.luzifer.database.objects.flaws;
+package dev.luzifer.database.objects;
 
-import dev.luzifer.database.objects.BannedChamp;
-import dev.luzifer.database.objects.Map;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

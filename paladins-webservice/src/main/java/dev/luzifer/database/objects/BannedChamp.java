@@ -1,6 +1,5 @@
 package dev.luzifer.database.objects;
 
-import dev.luzifer.database.objects.flaws.Match;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
