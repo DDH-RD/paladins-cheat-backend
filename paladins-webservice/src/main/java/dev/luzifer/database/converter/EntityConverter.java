@@ -31,7 +31,7 @@ public class EntityConverter {
 
   public PlayedChampInfo convertToChampInfo(ChampDto champDto) {
     PlayedChampInfo playedChampInfo = new PlayedChampInfo();
-    playedChampInfo.setChampId(champDto.getChampId());
+    playedChampInfo.setChampInfo(convertToPaladinsChampInfo(champDto));
     playedChampInfo.setChampLevel(champDto.getChampLevel());
     playedChampInfo.setLeagueTier(champDto.getLeagueTier());
     playedChampInfo.setLeaguePoints(champDto.getLeaguePoints());

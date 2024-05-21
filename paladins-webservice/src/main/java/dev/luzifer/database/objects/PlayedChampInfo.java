@@ -18,7 +18,10 @@ public class PlayedChampInfo {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   int id;
 
-  int champId;
+  @ManyToOne
+  @JoinColumn(name = "champId", referencedColumnName = "id")
+  PaladinsChampInfo champInfo;
+
   int leagueTier;
   int leaguePoints;
   int champLevel;
