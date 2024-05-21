@@ -3,6 +3,7 @@ package dev.luzifer.spring.controller;
 import dev.luzifer.database.Database;
 import dev.luzifer.database.dto.GameDto;
 import java.util.concurrent.CompletableFuture;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/gameinfo")
 public class GameInfoController {
@@ -27,6 +29,7 @@ public class GameInfoController {
   @PostMapping
   public CompletableFuture<ResponseEntity<Void>> pushGameInfo(@RequestBody GameDto[] gameDtos) {
     database.saveGames(gameDtos);
+    log.info("Saved {} games", gameDtos.length);
     return CompletableFuture.completedFuture(ResponseEntity.ok().build());
   }
 
