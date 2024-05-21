@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 @Data
 @Configuration
 @PropertySource("classpath:application.properties")
-@ConfigurationProperties(prefix = "database")
+@ConfigurationProperties(prefix = "spring.datasource")
 public class DatabaseProperties {
 
   private String url;

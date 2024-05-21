@@ -12,7 +12,7 @@ import lombok.Data;
 import java.util.List;
 
 @Entity
-@Table(name = "match")
+@Table(name = "matches")
 @Data
 public class Match {
 
