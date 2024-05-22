@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,14 +37,26 @@ public class MatchController {
 
   @Async("taskExecutor")
   @PostMapping
-  public CompletableFuture<ResponseEntity<Void>> pushGameInfo(@RequestBody GameDto[] gameDtos) {
-    ChampDto[] champDtos = pullChamps(gameDtos);
-    matchService.saveMatches(gameDtos);
-    champService.saveChamps(champDtos);
-    playerService.savePlayers(champDtos);
+  public CompletableFuture<ResponseEntity<?>> pushMatches(@RequestBody GameDto[] gameDtos) {
+    try {
+      if (gameDtos == null || gameDtos.length == 0) {
+        return CompletableFuture.completedFuture(
+            ResponseEntity.badRequest().body("No game information provided."));
+      }
 
-    log.info("Saved {} games with {} champ information", gameDtos.length, champDtos.length);
-    return CompletableFuture.completedFuture(ResponseEntity.ok().build());
+      ChampDto[] champDtos = pullChamps(gameDtos);
+      matchService.saveMatches(gameDtos);
+      champService.saveChamps(champDtos);
+      playerService.savePlayers(champDtos);
+
+      log.info("Saved {} games with {} champ information", gameDtos.length, champDtos.length);
+      return CompletableFuture.completedFuture(ResponseEntity.ok().build());
+    } catch (Exception e) {
+      log.error("Error processing game information", e);
+      return CompletableFuture.completedFuture(
+          ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body("Error processing game information."));
+    }
   }
 
   @Async("taskExecutor")
