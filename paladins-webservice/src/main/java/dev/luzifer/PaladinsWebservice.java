@@ -40,7 +40,7 @@ public class PaladinsWebservice {
         Files.createFile(filePath);
         fillFileFromResources(filePath, fileName);
         log.info("Created {} file at {}", fileName, filePath);
-        log.info("Please start the application with --spring.config.location={}", filePath);
+        log.info("Please restart the application with --spring.config.location={}", filePath);
       } catch (IOException e) {
         log.error("Failed to create {} file at {}", fileName, filePath, e);
       }
