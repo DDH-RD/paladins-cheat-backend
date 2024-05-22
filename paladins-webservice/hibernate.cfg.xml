@@ -13,14 +13,14 @@
         <property name="hbm2ddl.auto">update</property>
 
         <!-- Add your classes here -->
-        <mapping class="dev.luzifer.database.objects.Map"/>
-        <mapping class="dev.luzifer.database.objects.ItemDraft"/>
-        <mapping class="dev.luzifer.database.objects.Player"/>
-        <mapping class="dev.luzifer.database.objects.Region"/>
-        <mapping class="dev.luzifer.database.objects.PlayedChamp"/>
-        <mapping class="dev.luzifer.database.objects.BannedChamp"/>
-        <mapping class="dev.luzifer.database.objects.PaladinsChamp"/>
-        <mapping class="dev.luzifer.database.objects.Match"/>
-        <mapping class="dev.luzifer.database.objects.Deck"/>
+        <mapping class="dev.luzifer.data.entity.Map"/>
+        <mapping class="dev.luzifer.data.entity.ItemDraft"/>
+        <mapping class="dev.luzifer.data.entity.Player"/>
+        <mapping class="dev.luzifer.data.entity.Region"/>
+        <mapping class="dev.luzifer.data.entity.PlayedChamp"/>
+        <mapping class="dev.luzifer.data.entity.BannedChamp"/>
+        <mapping class="dev.luzifer.data.entity.PaladinsChamp"/>
+        <mapping class="dev.luzifer.data.entity.Match"/>
+        <mapping class="dev.luzifer.data.entity.Deck"/>
     </session-factory>
 </hibernate-configuration>

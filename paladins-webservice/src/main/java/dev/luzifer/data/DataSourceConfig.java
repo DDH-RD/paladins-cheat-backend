@@ -1,4 +1,4 @@
-package dev.luzifer.database;
+package dev.luzifer.data;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;

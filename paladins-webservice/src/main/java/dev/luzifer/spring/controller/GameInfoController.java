@@ -1,7 +1,7 @@
 package dev.luzifer.spring.controller;
 
-import dev.luzifer.database.Database;
-import dev.luzifer.database.dto.GameDto;
+import dev.luzifer.data.Database;
+import dev.luzifer.data.dto.GameDto;
 import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

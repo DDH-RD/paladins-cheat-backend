@@ -1,4 +1,4 @@
-package dev.luzifer.database.dto;
+package dev.luzifer.data.dto;
 
 import lombok.Data;
 
