@@ -15,11 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: Set up JDK 22
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '22'
           cache: 'maven'
 
       - name: Build with Maven
@@ -45,9 +45,9 @@ jobs:
       - name: Deploy Webservice
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          username: 'paladins'
+          username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          server: '202.61.202.50'
+          server: ${{ secrets.SERVER_IP }}
           port: 22
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           local_path: '*.jar'

@@ -1,71 +1,47 @@
 package dev.luzifer.data.dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.Value;
+import lombok.Data;
 
-@Value
-@Getter
-@RequiredArgsConstructor
-@ToString
-@EqualsAndHashCode
+@Data
 public class ChampDto {
 
-    /* Die ID des Champs */
-    int champId;
-    /* player specific data */
-    int playerId;
-    String playerName;
-    String region;
-    int platformId;
-    int leagueTier;
-    int leaguePoints;
-    int champLevel;
-    /* 0 = false, 1 = true */
-    int won;
-    /* Die ID der Champ-Category
-     *  0: TANK
-     *  1: HEAL
-     *  2: FLANK
-     *  3: DAMAGE
-     */
-    int categoryId;
-    /* credits */
-    int goldEarned;
-    /* Das Talent, dass der jeweilige Champ gespielt hat. */
-    int talentId;
-    /* Die IDs der einzelnen Karten. */
-    int deckCard1;
-    int deckCard2;
-    int deckCard3;
-    int deckCard4;
-    int deckCard5;
-    /* Die Level der einzelnen Karten. */
-    int deckCard1Level;
-    int deckCard2Level;
-    int deckCard3Level;
-    int deckCard4Level;
-    int deckCard5Level;
-    /* Die gekauften Items.*/
-    int item1;
-    int item2;
-    int item3;
-    int item4;
-    /* Level der Items */
-    int item1Level;
-    int item2Level;
-    int item3Level;
-    int item4Level;
-    /* Game stats. */
-    int killingSpree;
-    int kills;
-    int deaths;
-    int assists;
-    int damageDone;
-    int damageTaken;
-    int damageShielded; /* "migiated" */
-    int heal;
-    int selfHeal;
+  private int champId;
+  private int playerId;
+  private String playerName;
+  private String region;
+  private int platformId;
+  private int leagueTier;
+  private int leaguePoints;
+  private int champLevel;
+  private int won;
+  private int categoryId;
+  private int goldEarned;
+  private int talentId;
+  private int deckCard1;
+  private int deckCard2;
+  private int deckCard3;
+  private int deckCard4;
+  private int deckCard5;
+  private int deckCard1Level;
+  private int deckCard2Level;
+  private int deckCard3Level;
+  private int deckCard4Level;
+  private int deckCard5Level;
+  private int item1;
+  private int item2;
+  private int item3;
+  private int item4;
+  private int item1Level;
+  private int item2Level;
+  private int item3Level;
+  private int item4Level;
+  private int killingSpree;
+  private int kills;
+  private int deaths;
+  private int assists;
+  private int damageDone;
+  private int damageTaken;
+  private int damageShielded;
+  private int heal;
+  private int selfHeal;
 }
