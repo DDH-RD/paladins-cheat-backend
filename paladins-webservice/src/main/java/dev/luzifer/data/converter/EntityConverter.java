@@ -7,11 +7,11 @@ import dev.luzifer.data.entity.BannedChamp;
 import dev.luzifer.data.entity.Deck;
 import dev.luzifer.data.entity.ItemDraft;
 import dev.luzifer.data.entity.Map;
+import dev.luzifer.data.entity.Match;
 import dev.luzifer.data.entity.PaladinsChamp;
 import dev.luzifer.data.entity.PlayedChamp;
 import dev.luzifer.data.entity.Player;
 import dev.luzifer.data.entity.Region;
-import dev.luzifer.data.entity.Match;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -19,10 +19,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class EntityConverter {
 
-  public Match convertToGameInfo(GameDto gameDto) {
+  public Match convertToMatch(GameDto gameDto) {
     Match match = new Match();
     match.setAverageRank(gameDto.getAverageRank());
-    match.setMap(convertToMapInfo(gameDto.getMapName()));
+    match.setMap(convertToMap(gameDto.getMapName()));
     match.setRanked(gameDto.getRanked());
     match.setDuration(gameDto.getDuration());
     match.setSeason(gameDto.getSeason());
@@ -35,7 +35,7 @@ public class EntityConverter {
 
   public List<BannedChamp> convertBannedChamps(GameDto gameDto) {
     List<BannedChamp> bannedChamps = new ArrayList<>();
-    Match match = convertToGameInfo(gameDto);
+    Match match = convertToMatch(gameDto);
     for (BannedChampDto bannedChampDto : gameDto.getBannedChamps()) {
       BannedChamp bannedChamp = new BannedChamp();
       bannedChamp.setMatch(match);
@@ -52,13 +52,13 @@ public class EntityConverter {
     return paladinsChamp;
   }
 
-  public PlayedChamp convertToChampInfo(ChampDto champDto) {
+  public PlayedChamp convertToPlayedChamp(ChampDto champDto) {
     PlayedChamp playedChamp = new PlayedChamp();
-    playedChamp.setChampInfo(convertToPaladinsChampInfo(champDto));
+    playedChamp.setChampInfo(convertToPaladinsChamp(champDto));
     playedChamp.setChampLevel(champDto.getChampLevel());
     playedChamp.setLeagueTier(champDto.getLeagueTier());
     playedChamp.setLeaguePoints(champDto.getLeaguePoints());
-    playedChamp.setPlayer(convertToPlayerInfo(champDto));
+    playedChamp.setPlayer(convertToPlayer(champDto));
     playedChamp.setWon(champDto.getWon());
     playedChamp.setSelfHeal(champDto.getSelfHeal());
     playedChamp.setHeal(champDto.getHeal());
@@ -73,35 +73,35 @@ public class EntityConverter {
     return playedChamp;
   }
 
-  public PaladinsChamp convertToPaladinsChampInfo(ChampDto champDto) {
+  public PaladinsChamp convertToPaladinsChamp(ChampDto champDto) {
     PaladinsChamp paladinsChamp = new PaladinsChamp();
     paladinsChamp.setId(champDto.getChampId());
     paladinsChamp.setCategoryId(champDto.getCategoryId());
     return paladinsChamp;
   }
 
-  public Map convertToMapInfo(String mapName) {
+  public Map convertToMap(String mapName) {
     Map map = new Map();
     map.setMapName(mapName);
     return map;
   }
 
-  public Player convertToPlayerInfo(ChampDto champDto) {
+  public Player convertToPlayer(ChampDto champDto) {
     Player player = new Player();
     player.setPlayerName(champDto.getPlayerName());
     player.setPlayerId(champDto.getPlayerId());
     player.setPlatformId(champDto.getPlatformId());
-    player.setRegion(convertToRegionInfo(champDto.getRegion()));
+    player.setRegion(convertToRegion(champDto.getRegion()));
     return player;
   }
 
-  public Region convertToRegionInfo(String regionName) {
+  public Region convertToRegion(String regionName) {
     Region region = new Region();
     region.setRegionName(regionName);
     return region;
   }
 
-  public ItemDraft convertToItemInfo(ChampDto champDto) {
+  public ItemDraft convertToItemDraft(ChampDto champDto) {
     ItemDraft itemDraft = new ItemDraft();
     itemDraft.setItem1(champDto.getItem1());
     itemDraft.setItem2(champDto.getItem2());
@@ -111,11 +111,11 @@ public class EntityConverter {
     itemDraft.setItem2Level(champDto.getItem2Level());
     itemDraft.setItem3Level(champDto.getItem3Level());
     itemDraft.setItem4Level(champDto.getItem4Level());
-    itemDraft.setChamp(convertToChampInfo(champDto));
+    itemDraft.setChamp(convertToPlayedChamp(champDto));
     return itemDraft;
   }
 
-  public Deck convertToDeckInfo(ChampDto champDto) {
+  public Deck convertToDeck(ChampDto champDto) {
     Deck deck = new Deck();
     deck.setTalentId(champDto.getTalentId());
     deck.setDeckCard1(champDto.getDeckCard1());
@@ -128,7 +128,7 @@ public class EntityConverter {
     deck.setDeckCard3Level(champDto.getDeckCard3Level());
     deck.setDeckCard4Level(champDto.getDeckCard4Level());
     deck.setDeckCard5Level(champDto.getDeckCard5Level());
-    deck.setChamp(convertToChampInfo(champDto));
+    deck.setChamp(convertToPlayedChamp(champDto));
     return deck;
   }
 }
