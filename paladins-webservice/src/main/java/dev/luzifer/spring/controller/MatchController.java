@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/match")
+@RequestMapping("${api.match}")
 public class MatchController {
 
   private final ChampService champService;
@@ -60,7 +60,7 @@ public class MatchController {
   }
 
   @Async("taskExecutor")
-  @GetMapping("/count")
+  @GetMapping("${api.match.count}")
   public CompletableFuture<ResponseEntity<Long>> countGameInfos() {
     long count = matchService.countMatches();
     return CompletableFuture.completedFuture(ResponseEntity.ok(count));
