@@ -28,7 +28,7 @@ public class PaladinsWebservice {
             .orElseThrow(
                 () -> {
                   log.error(
-                      "API key is missing in webservice.properties file at {}", CONFIG_FILE_PATH);
+                      "API key is missing in application.properties file at {}", CONFIG_FILE_PATH);
                   log.error("Please add your API key to the file and restart the application");
                   return new IllegalStateException("API key is missing");
                 });
@@ -40,6 +40,7 @@ public class PaladinsWebservice {
         Files.createFile(filePath);
         fillFileFromResources(filePath, fileName);
         log.info("Created {} file at {}", fileName, filePath);
+        log.info("Please start the application with --spring.config.location={}", filePath);
       } catch (IOException e) {
         log.error("Failed to create {} file at {}", fileName, filePath, e);
       }
