@@ -30,15 +30,19 @@ public class ChampService extends BaseService {
   }
 
   @Transactional
-  public void saveChamps(ChampDto[] champDtoArray) {
+  public void processChamps(ChampDto[] champDtos) {
+    saveChamps(champDtos);
+    savePaladinsChamps(champDtos);
+  }
+
+  private void saveChamps(ChampDto[] champDtoArray) {
     Set<PlayedChamp> playedChampsToSave = new HashSet<>();
     Arrays.stream(champDtoArray)
         .forEach(champ -> playedChampsToSave.add(entityConverter.convertToPlayedChamp(champ)));
     playedChampRepository.saveAll(playedChampsToSave);
   }
 
-  @Transactional
-  public void savePaladinsChamps(ChampDto[] champDtoArray) {
+  private void savePaladinsChamps(ChampDto[] champDtoArray) {
     Set<PaladinsChamp> paladinsChampsToSave = new HashSet<>();
     Arrays.stream(champDtoArray)
         .forEach(champ -> paladinsChampsToSave.add(entityConverter.convertToPaladinsChamp(champ)));

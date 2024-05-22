@@ -31,15 +31,19 @@ public class MatchService extends BaseService {
   }
 
   @Transactional
-  public void saveMatches(GameDto[] gameDtoArray) {
+  public void processMatchData(GameDto[] gameDtoArray) {
+    saveMatches(gameDtoArray);
+    saveMaps(gameDtoArray);
+  }
+
+  private void saveMatches(GameDto[] gameDtoArray) {
     Set<Match> matchesToSave = new HashSet<>();
     Arrays.stream(gameDtoArray)
         .forEach(game -> matchesToSave.add(entityConverter.convertToMatch(game)));
     matchRepository.saveAll(matchesToSave);
   }
 
-  @Transactional
-  public void saveMaps(GameDto[] gameDtoArray) {
+  private void saveMaps(GameDto[] gameDtoArray) {
     Set<Map> mapsToSave = new HashSet<>();
     Arrays.stream(gameDtoArray)
         .forEach(game -> mapsToSave.add(entityConverter.convertToMap(game.getMapName())));

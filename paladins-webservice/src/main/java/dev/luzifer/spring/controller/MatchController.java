@@ -45,9 +45,9 @@ public class MatchController {
       }
 
       ChampDto[] champDtos = pullChamps(gameDtos);
-      matchService.saveMatches(gameDtos);
-      champService.saveChamps(champDtos);
-      playerService.savePlayers(champDtos);
+      matchService.processMatchData(gameDtos);
+      champService.processChamps(champDtos);
+      playerService.processPlayers(champDtos);
 
       log.info("Saved {} games with {} champ information", gameDtos.length, champDtos.length);
       return CompletableFuture.completedFuture(ResponseEntity.ok().build());

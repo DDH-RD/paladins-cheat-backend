@@ -42,31 +42,35 @@ public class PlayerService extends BaseService {
   }
 
   @Transactional
-  public void savePlayers(ChampDto[] champDtoArray) {
+  public void processPlayers(ChampDto[] champDtos) {
+    savePlayers(champDtos);
+    saveRegions(champDtos);
+    saveDecks(champDtos);
+    saveItemDrafts(champDtos);
+  }
+
+  private void savePlayers(ChampDto[] champDtoArray) {
     Set<Player> playersToSave = new HashSet<>();
     Arrays.stream(champDtoArray)
         .forEach(champ -> playersToSave.add(entityConverter.convertToPlayer(champ)));
     playerRepository.saveAll(playersToSave);
   }
 
-  @Transactional
-  public void saveDecks(ChampDto[] champDtoArray) {
+  private void saveDecks(ChampDto[] champDtoArray) {
     Set<Deck> decksToSave = new HashSet<>();
     Arrays.stream(champDtoArray)
         .forEach(champ -> decksToSave.add(entityConverter.convertToDeck(champ)));
     deckRepository.saveAll(decksToSave);
   }
 
-  @Transactional
-  public void saveItemDrafts(ChampDto[] champDtoArray) {
+  private void saveItemDrafts(ChampDto[] champDtoArray) {
     Set<ItemDraft> itemDraftsToSave = new HashSet<>();
     Arrays.stream(champDtoArray)
         .forEach(champ -> itemDraftsToSave.add(entityConverter.convertToItemDraft(champ)));
     itemDraftRepository.saveAll(itemDraftsToSave);
   }
 
-  @Transactional
-  public void saveRegions(ChampDto[] champDtoArray) {
+  private void saveRegions(ChampDto[] champDtoArray) {
     Set<Region> regionsToSave = new HashSet<>();
     Arrays.stream(champDtoArray)
         .forEach(champ -> regionsToSave.add(entityConverter.convertToRegion(champ.getRegion())));
