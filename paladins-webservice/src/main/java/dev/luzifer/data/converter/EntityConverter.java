@@ -40,6 +40,7 @@ public class EntityConverter {
       BannedChamp bannedChamp = new BannedChamp();
       bannedChamp.setMatch(match);
       bannedChamp.setChamp(convertToPaladinsChampFromBannedChampDto(bannedChampDto));
+      bannedChamp.setTeam(bannedChampDto.getTeam());
       bannedChamps.add(bannedChamp);
     }
     return bannedChamps;

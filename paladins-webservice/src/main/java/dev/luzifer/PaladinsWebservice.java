@@ -29,7 +29,8 @@ public class PaladinsWebservice {
                 () -> {
                   log.error(
                       "API key is missing in application.properties file at {}", CONFIG_FILE_PATH);
-                  log.error("Please add your API key to the file and restart the application");
+                  log.error(
+                      "Please add/change the API key in the file and restart the application");
                   return new IllegalStateException("API key is missing");
                 });
   }
@@ -52,7 +53,8 @@ public class PaladinsWebservice {
       Path resourcePath =
           Path.of(PaladinsWebservice.class.getClassLoader().getResource(resourceName).toURI());
       Files.copy(resourcePath, filePath, StandardCopyOption.REPLACE_EXISTING);
-    } catch (Exception ignored) {
+    } catch (Exception exception) {
+      log.error("Failed to copy {} file from resources", resourceName, exception);
     }
   }
 

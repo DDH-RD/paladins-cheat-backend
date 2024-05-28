@@ -20,6 +20,9 @@ public class BannedChamp {
   @Column(name = "id", nullable = false)
   int id;
 
+  @Column(name = "team", nullable = false)
+  int team;
+
   @ManyToOne
   @JoinColumn(name = "champion_id", referencedColumnName = "champion_id", nullable = false)
   PaladinsChamp champ;
