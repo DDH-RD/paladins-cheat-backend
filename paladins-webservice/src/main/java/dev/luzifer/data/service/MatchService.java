@@ -37,29 +37,20 @@ public class MatchService extends BaseService {
 
   @Transactional
   public void processMatchData(GameDto[] gameDtoArray) {
-    saveMatches(gameDtoArray);
-    saveMaps(gameDtoArray);
-    saveBannedChamps(gameDtoArray);
-  }
-
-  private void saveMatches(GameDto[] gameDtoArray) {
     Set<Match> matchesToSave = new HashSet<>();
-    Arrays.stream(gameDtoArray)
-        .forEach(game -> matchesToSave.add(entityConverter.convertToMatch(game)));
-    matchRepository.saveAll(matchesToSave);
-  }
-
-  private void saveMaps(GameDto[] gameDtoArray) {
     Set<Map> mapsToSave = new HashSet<>();
-    Arrays.stream(gameDtoArray)
-        .forEach(game -> mapsToSave.add(entityConverter.convertToMap(game.getMapName())));
-    mapRepository.saveAll(mapsToSave);
-  }
-
-  private void saveBannedChamps(GameDto[] gameDtoArray) {
     Set<BannedChamp> bannedChampsToSave = new HashSet<>();
+
     Arrays.stream(gameDtoArray)
-        .forEach(game -> bannedChampsToSave.addAll(entityConverter.convertBannedChamps(game)));
+        .forEach(
+            game -> {
+              matchesToSave.add(entityConverter.convertToMatch(game));
+              mapsToSave.add(entityConverter.convertToMap(game.getMapName()));
+              bannedChampsToSave.addAll(entityConverter.convertBannedChamps(game));
+            });
+
+    matchRepository.saveAll(matchesToSave);
+    mapRepository.saveAll(mapsToSave);
     bannedChampRepository.saveAll(bannedChampsToSave);
   }
 

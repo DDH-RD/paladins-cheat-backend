@@ -6,5 +6,6 @@ import lombok.Data;
 public class BannedChampDto {
 
   private int champId;
+  private int team;
   private int categoryId;
 }
