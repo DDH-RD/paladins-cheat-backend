@@ -12,12 +12,6 @@ public class ApiKeyAuthenticationToken extends AbstractAuthenticationToken {
     setAuthenticated(false);
   }
 
-  public ApiKeyAuthenticationToken(String apiKey, String principal) {
-    super(null);
-    this.apiKey = apiKey;
-    setAuthenticated(true);
-  }
-
   @Override
   public Object getCredentials() {
     return apiKey;

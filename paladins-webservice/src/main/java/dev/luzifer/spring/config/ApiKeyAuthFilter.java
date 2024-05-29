@@ -1,9 +1,9 @@
 package dev.luzifer.spring.config;
 
-import dev.luzifer.PaladinsWebservice;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -24,12 +24,11 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
   public Authentication attemptAuthentication(
       HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
     String apiKey = request.getHeader(headerName);
-    if (apiKey == null) {
-      apiKey = PaladinsWebservice.getApiKey();
+    apiKey = apiKey == null ? null : apiKey.trim();
+    if (apiKey == null || apiKey.isEmpty()) {
+      throw new BadCredentialsException("API Key not found in request header");
     }
-    apiKey = apiKey.trim();
-    UsernamePasswordAuthenticationToken authRequest =
-        new UsernamePasswordAuthenticationToken(apiKey, null);
-    return getAuthenticationManager().authenticate(authRequest);
+    return getAuthenticationManager()
+        .authenticate(new UsernamePasswordAuthenticationToken(apiKey, null));
   }
 }
