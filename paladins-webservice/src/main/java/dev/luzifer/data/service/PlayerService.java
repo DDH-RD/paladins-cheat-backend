@@ -2,12 +2,8 @@ package dev.luzifer.data.service;
 
 import dev.luzifer.data.converter.EntityConverter;
 import dev.luzifer.data.dto.ChampDto;
-import dev.luzifer.data.entity.Deck;
-import dev.luzifer.data.entity.ItemDraft;
 import dev.luzifer.data.entity.Player;
 import dev.luzifer.data.entity.Region;
-import dev.luzifer.data.repository.DeckRepository;
-import dev.luzifer.data.repository.ItemDraftRepository;
 import dev.luzifer.data.repository.PlayerRepository;
 import dev.luzifer.data.repository.RegionRepository;
 import java.util.Arrays;
@@ -23,57 +19,34 @@ public class PlayerService extends BaseService {
   private final PlayerRepository playerRepository;
   private final RegionRepository regionRepository;
 
-  // Make this an own service
-  private final DeckRepository deckRepository;
-  private final ItemDraftRepository itemDraftRepository;
+  private final DeckItemService deckItemService;
 
   @Autowired
   public PlayerService(
       PlayerRepository playerRepository,
       RegionRepository regionRepository,
-      DeckRepository deckRepository,
-      ItemDraftRepository itemDraftRepository,
+      DeckItemService deckItemService,
       EntityConverter entityConverter) {
     super(entityConverter);
     this.playerRepository = playerRepository;
     this.regionRepository = regionRepository;
-    this.deckRepository = deckRepository;
-    this.itemDraftRepository = itemDraftRepository;
+    this.deckItemService = deckItemService;
   }
 
   @Transactional
   public void processPlayers(ChampDto[] champDtos) {
-    savePlayers(champDtos);
-    saveRegions(champDtos);
-    saveDecks(champDtos);
-    saveItemDrafts(champDtos);
-  }
-
-  private void savePlayers(ChampDto[] champDtoArray) {
     Set<Player> playersToSave = new HashSet<>();
-    Arrays.stream(champDtoArray)
-        .forEach(champ -> playersToSave.add(entityConverter.convertToPlayer(champ)));
-    playerRepository.saveAll(playersToSave);
-  }
-
-  private void saveDecks(ChampDto[] champDtoArray) {
-    Set<Deck> decksToSave = new HashSet<>();
-    Arrays.stream(champDtoArray)
-        .forEach(champ -> decksToSave.add(entityConverter.convertToDeck(champ)));
-    deckRepository.saveAll(decksToSave);
-  }
-
-  private void saveItemDrafts(ChampDto[] champDtoArray) {
-    Set<ItemDraft> itemDraftsToSave = new HashSet<>();
-    Arrays.stream(champDtoArray)
-        .forEach(champ -> itemDraftsToSave.add(entityConverter.convertToItemDraft(champ)));
-    itemDraftRepository.saveAll(itemDraftsToSave);
-  }
-
-  private void saveRegions(ChampDto[] champDtoArray) {
     Set<Region> regionsToSave = new HashSet<>();
-    Arrays.stream(champDtoArray)
-        .forEach(champ -> regionsToSave.add(entityConverter.convertToRegion(champ.getRegion())));
+
+    Arrays.stream(champDtos)
+        .forEach(
+            champ -> {
+              playersToSave.add(entityConverter.convertToPlayer(champ));
+              regionsToSave.add(entityConverter.convertToRegion(champ.getRegion()));
+            });
+
+    playerRepository.saveAll(playersToSave);
     regionRepository.saveAll(regionsToSave);
+    deckItemService.processDeckItems(champDtos);
   }
 }
