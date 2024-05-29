@@ -37,15 +37,22 @@ public class WebSecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
-        .addFilterBefore(
+    http.addFilterBefore(
             apiKeyAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+        .csrf(AbstractHttpConfigurer::disable)
+        .anonymous(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .logout(AbstractHttpConfigurer::disable)
+        .oauth2Login(AbstractHttpConfigurer::disable)
+        .rememberMe(AbstractHttpConfigurer::disable)
+        .requestCache(AbstractHttpConfigurer::disable)
+        .servletApi(AbstractHttpConfigurer::disable)
+        .x509(AbstractHttpConfigurer::disable)
+        .cors(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .exceptionHandling(
-            exception ->
-                exception.authenticationEntryPoint((request, response, authException) -> {}));
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
