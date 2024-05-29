@@ -22,16 +22,6 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
 
     this.headerName = headerName;
     setAuthenticationManager(authenticationManager);
-    setAuthenticationFailureHandler(
-        (request, response, exception) -> {
-          log.debug("Failed to authenticate API key", exception);
-          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        });
-    setAuthenticationSuccessHandler(
-        (request, response, authentication) -> {
-          log.debug("API key authenticated successfully");
-          response.setStatus(HttpServletResponse.SC_OK);
-        });
   }
 
   @Override
