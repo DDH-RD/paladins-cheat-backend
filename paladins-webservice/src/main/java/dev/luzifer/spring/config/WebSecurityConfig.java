@@ -41,15 +41,6 @@ public class WebSecurityConfig {
             apiKeyAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
         .csrf(AbstractHttpConfigurer::disable)
         .anonymous(AbstractHttpConfigurer::disable)
-        .formLogin(AbstractHttpConfigurer::disable)
-        .httpBasic(AbstractHttpConfigurer::disable)
-        .logout(AbstractHttpConfigurer::disable)
-        .oauth2Login(AbstractHttpConfigurer::disable)
-        .rememberMe(AbstractHttpConfigurer::disable)
-        .requestCache(AbstractHttpConfigurer::disable)
-        .servletApi(AbstractHttpConfigurer::disable)
-        .x509(AbstractHttpConfigurer::disable)
-        .cors(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
