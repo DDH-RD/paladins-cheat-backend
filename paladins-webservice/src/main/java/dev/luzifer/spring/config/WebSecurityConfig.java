@@ -41,7 +41,13 @@ public class WebSecurityConfig {
         .addFilterAfter(apiKeyAuthFilter(authenticationManager), FilterChainProxy.class)
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            exception ->
+                exception.authenticationEntryPoint(
+                    (request, response, authException) -> {
+                      // ignored
+                    }));
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
