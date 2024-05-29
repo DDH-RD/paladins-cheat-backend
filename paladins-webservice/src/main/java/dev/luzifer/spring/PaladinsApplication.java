@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableCaching
 @EnableConfigurationProperties(DatabaseProperties.class)
 @EnableJpaRepositories(basePackages = {"dev.luzifer.data.repository"})
-@ComponentScan(basePackages = {"dev.luzifer.data"})
+@ComponentScan(basePackages = {"dev.luzifer.data", "dev.luzifer.spring"})
 @EntityScan(basePackages = {"dev.luzifer.data.entity"})
 public class PaladinsApplication {}
