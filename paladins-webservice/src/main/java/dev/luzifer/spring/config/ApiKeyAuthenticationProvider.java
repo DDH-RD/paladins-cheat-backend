@@ -19,7 +19,9 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
 
     if (authenticationToken.getCredentials() instanceof String credentials) {
       if (apiKey.equals(credentials)) {
-        return new ApiKeyAuthenticationToken(apiKey);
+        ApiKeyAuthenticationToken authenticatedToken = new ApiKeyAuthenticationToken(apiKey);
+        authenticatedToken.setAuthenticated(true);
+        return authenticatedToken;
       }
     }
 
