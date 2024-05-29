@@ -24,9 +24,8 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
       log.debug("Comparing API key with expected value");
       if (apiKey.equals(credentials)) {
         log.debug("API key is valid");
-        ApiKeyAuthenticationToken authenticatedToken = new ApiKeyAuthenticationToken(apiKey);
-        authenticatedToken.setAuthenticated(true);
-        return authenticatedToken;
+        authenticationToken.setAuthenticated(true);
+        return authenticationToken;
       }
     }
 

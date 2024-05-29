@@ -15,7 +15,7 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
   private final String headerName;
 
   public ApiKeyAuthFilter(String headerName, AuthenticationManager authenticationManager) {
-    super("/");
+    super("/*");
 
     this.headerName = headerName;
     setAuthenticationManager(authenticationManager);
