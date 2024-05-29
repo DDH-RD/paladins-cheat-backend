@@ -12,9 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -39,14 +38,16 @@ public class WebSecurityConfig {
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-        .addFilterAfter(
-            apiKeyAuthFilter(authenticationManager), AnonymousAuthenticationFilter.class)
+        .addFilterAfter(apiKeyAuthFilter(authenticationManager), FilterChainProxy.class)
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .anonymous(AbstractHttpConfigurer::disable)
         .exceptionHandling(
-            exception -> exception.authenticationEntryPoint(new Http403ForbiddenEntryPoint()));
+            exception ->
+                exception.authenticationEntryPoint(
+                    (request, response, authException) -> {
+                      // ignored
+                    }));
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
