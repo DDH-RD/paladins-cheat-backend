@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -33,7 +32,6 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
       throw new BadCredentialsException("API Key not found in request header");
     }
     log.info("API Key found in request header, authenticating");
-    return getAuthenticationManager()
-        .authenticate(new UsernamePasswordAuthenticationToken(apiKey, null));
+    return getAuthenticationManager().authenticate(new ApiKeyAuthenticationToken(apiKey));
   }
 }
