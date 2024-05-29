@@ -17,8 +17,10 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     ApiKeyAuthenticationToken authenticationToken = (ApiKeyAuthenticationToken) authentication;
 
-    if (apiKey.equals(authenticationToken.getCredentials())) {
-      return new ApiKeyAuthenticationToken(apiKey, apiKey);
+    if (authenticationToken.getCredentials() instanceof String credentials) {
+      if (apiKey.equals(credentials)) {
+        return new ApiKeyAuthenticationToken(apiKey, apiKey);
+      }
     }
 
     throw new BadCredentialsException("The API key was not found or not the expected value.");
