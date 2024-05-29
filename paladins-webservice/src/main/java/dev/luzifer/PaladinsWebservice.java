@@ -33,6 +33,8 @@ public class PaladinsWebservice {
                       "Please add/change the API key in the file and restart the application");
                   return new IllegalStateException("API key is missing");
                 });
+
+    log.info("API key {} loaded successfully", API_KEY);
   }
 
   private static void ensureFileExists(Path filePath, String fileName) {
