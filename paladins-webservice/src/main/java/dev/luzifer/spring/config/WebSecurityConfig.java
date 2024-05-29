@@ -19,14 +19,17 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 public class WebSecurityConfig {
 
   private final String apiKey;
+  private final String apiKeyHeader;
 
-  public WebSecurityConfig(@Value("${api.key}") String apiKey) {
+  public WebSecurityConfig(
+      @Value("${api.key}") String apiKey, @Value("${api.key.header}") String apiKeyHeader) {
     this.apiKey = apiKey;
+    this.apiKeyHeader = apiKeyHeader;
   }
 
   @Bean
   public ApiKeyAuthFilter apiKeyAuthFilter(AuthenticationManager authenticationManager) {
-    return new ApiKeyAuthFilter("API-KEY-HEADER", authenticationManager);
+    return new ApiKeyAuthFilter(apiKeyHeader, authenticationManager);
   }
 
   @Bean
