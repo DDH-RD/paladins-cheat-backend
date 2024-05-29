@@ -14,7 +14,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @Configuration
@@ -41,8 +40,8 @@ public class WebSecurityConfig {
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
     http.csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
-        .addFilterBefore(apiKeyAuthFilter(authenticationManager), BasicAuthenticationFilter.class)
-        .authorizeRequests(authorize -> authorize.anyRequest().authenticated())
+        .addFilter(apiKeyAuthFilter(authenticationManager))
+        .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     return http.build();
