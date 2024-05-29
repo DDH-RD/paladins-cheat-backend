@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @Configuration
@@ -32,7 +33,8 @@ public class WebSecurityConfig {
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
     http.csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
-        .addFilter(apiKeyAuthFilter(authenticationManager))
+        .addFilterBefore(
+            apiKeyAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
