@@ -12,8 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,16 +38,14 @@ public class WebSecurityConfig {
   public SecurityFilterChain securityFilterChain(
       HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-        .addFilterAfter(apiKeyAuthFilter(authenticationManager), FilterChainProxy.class)
+        .addFilterBefore(
+            apiKeyAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(
             exception ->
-                exception.authenticationEntryPoint(
-                    (request, response, authException) -> {
-                      // ignored
-                    }));
+                exception.authenticationEntryPoint((request, response, authException) -> {}));
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
