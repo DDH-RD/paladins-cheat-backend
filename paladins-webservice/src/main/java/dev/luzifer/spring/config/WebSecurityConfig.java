@@ -46,7 +46,6 @@ public class WebSecurityConfig {
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
-    log.debug("HttpSecurity: {}", http);
 
     return http.build();
   }
