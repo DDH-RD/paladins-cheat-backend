@@ -9,10 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
@@ -24,11 +21,6 @@ public class WebSecurityConfig {
 
   public WebSecurityConfig(@Value("${api.key}") String apiKey) {
     this.apiKey = apiKey;
-  }
-
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return NoOpPasswordEncoder.getInstance();
   }
 
   @Bean
@@ -51,11 +43,6 @@ public class WebSecurityConfig {
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
-  }
-
-  @Bean
-  public WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.debug(true);
   }
 
   @Autowired
