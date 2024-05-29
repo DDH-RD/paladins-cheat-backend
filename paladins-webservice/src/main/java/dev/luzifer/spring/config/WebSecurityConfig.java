@@ -56,8 +56,15 @@ public class WebSecurityConfig {
     return authenticationConfiguration.getAuthenticationManager();
   }
 
+  @Bean
+  public ApiKeyAuthenticationProvider apiKeyAuthenticationProvider() {
+    return new ApiKeyAuthenticationProvider(apiKey);
+  }
+
   @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth) {
-    auth.authenticationProvider(new ApiKeyAuthenticationProvider(apiKey));
+  public void configureGlobal(
+      AuthenticationManagerBuilder auth,
+      ApiKeyAuthenticationProvider apiKeyAuthenticationProvider) {
+    auth.authenticationProvider(apiKeyAuthenticationProvider);
   }
 }
