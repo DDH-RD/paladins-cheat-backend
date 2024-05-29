@@ -1,5 +1,6 @@
 package dev.luzifer.spring.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class WebSecurityConfig {
 
   private final String apiKey;
@@ -41,6 +43,11 @@ public class WebSecurityConfig {
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+    log.debug("API key: {}", apiKey);
+    log.debug("API key header: {}", apiKeyHeader);
+    log.debug("HttpSecurity: {}", http);
+
     return http.build();
   }
 

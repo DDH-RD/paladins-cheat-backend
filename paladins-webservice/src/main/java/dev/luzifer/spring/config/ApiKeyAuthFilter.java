@@ -36,9 +36,12 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
       HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
     String apiKey = request.getHeader(headerName);
     apiKey = apiKey == null ? null : apiKey.trim();
+    log.debug("Received API key: {}", apiKey);
     if (apiKey == null || apiKey.isEmpty()) {
+      log.debug("API Key not found in request header");
       throw new BadCredentialsException("API Key not found in request header");
     }
+    log.debug("Attempting to authenticate API key");
     return getAuthenticationManager().authenticate(new ApiKeyAuthenticationToken(apiKey));
   }
 }
