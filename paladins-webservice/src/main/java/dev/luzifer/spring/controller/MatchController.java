@@ -63,6 +63,7 @@ public class MatchController {
   @GetMapping("${api.match.count}")
   public CompletableFuture<ResponseEntity<Long>> countGameInfos() {
     long count = matchService.countMatches();
+    log.info("Counted {} game information", count);
     return CompletableFuture.completedFuture(ResponseEntity.ok(count));
   }
 
