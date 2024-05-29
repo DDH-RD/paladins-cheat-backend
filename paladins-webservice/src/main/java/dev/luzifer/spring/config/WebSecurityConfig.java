@@ -44,10 +44,7 @@ public class WebSecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .exceptionHandling(
             exception ->
-                exception.authenticationEntryPoint(
-                    (request, response, authException) -> {
-                      // ignored
-                    }));
+                exception.authenticationEntryPoint((request, response, authException) -> {}));
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
