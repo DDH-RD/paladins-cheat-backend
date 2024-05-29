@@ -2,6 +2,8 @@ package dev.luzifer;
 
 import dev.luzifer.spring.PaladinsApplication;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,10 +36,14 @@ public class PaladinsWebservice {
   }
 
   private static void fillFileFromResources(Path filePath, String resourceName) {
-    try {
-      Path resourcePath =
-          Path.of(PaladinsWebservice.class.getClassLoader().getResource(resourceName).toURI());
-      Files.copy(resourcePath, filePath, StandardCopyOption.REPLACE_EXISTING);
+    try (InputStream resourceStream =
+        PaladinsWebservice.class.getClassLoader().getResourceAsStream(resourceName)) {
+      if (resourceStream == null) {
+        log.error("Resource {} not found", resourceName);
+        return;
+      }
+      Files.copy(resourceStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+      log.info("Successfully copied {} to {}", resourceName, filePath);
     } catch (Exception exception) {
       log.error("Failed to copy {} file from resources", resourceName, exception);
     }
