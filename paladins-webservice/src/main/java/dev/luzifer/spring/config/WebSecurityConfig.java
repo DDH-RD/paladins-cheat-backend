@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -34,23 +35,24 @@ public class WebSecurityConfig {
     return new ApiKeyAuthFilter(apiKeyHeader, authenticationManager);
   }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(
-      HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-    http.addFilterBefore(
-            apiKeyAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-        .csrf(AbstractHttpConfigurer::disable)
-        .anonymous(AbstractHttpConfigurer::disable)
-        .formLogin(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+        http.addFilterBefore(
+                        apiKeyAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .csrf(AbstractHttpConfigurer::disable)
+                .anonymous(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(apiKeyAuthFilter(authenticationManager), BasicAuthenticationFilter.class);
 
-    log.debug("API key: {}", apiKey);
-    log.debug("API key header: {}", apiKeyHeader);
+        log.debug("API key: {}", apiKey);
+        log.debug("API key header: {}", apiKeyHeader);
 
-    return http.build();
-  }
+        return http.build();
+    }
 
   @Bean
   public AuthenticationManager authenticationManager(
