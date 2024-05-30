@@ -72,8 +72,7 @@ public class WebSecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .anonymous(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(apiKeyAuthFilter(authenticationManager), BasicAuthenticationFilter.class);
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
