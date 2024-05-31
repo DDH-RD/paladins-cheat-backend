@@ -13,9 +13,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +41,7 @@ public class WebSecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     AuthenticationManager authenticationManager =
-        http.getSharedObject(AuthenticationConfiguration.class).getAuthenticationManager();
+        authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
 
     http.csrf(AbstractHttpConfigurer::disable)
         .formLogin(AbstractHttpConfigurer::disable)
@@ -48,12 +50,13 @@ public class WebSecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(
-            apiKeyAuthFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class);
+            apiKeyAuthFilter(authenticationManager), SecurityContextPersistenceFilter.class);
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
 
-    return http.build();
+    return new DefaultSecurityFilterChain(
+        http.getSharedObject(RequestMatcher.class), apiKeyAuthFilter(authenticationManager));
   }
 
   @Bean
