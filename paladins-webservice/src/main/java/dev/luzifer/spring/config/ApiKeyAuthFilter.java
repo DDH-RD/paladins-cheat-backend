@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Slf4j
 public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
@@ -19,7 +20,7 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
   private final String headerName;
 
   public ApiKeyAuthFilter(String headerName, AuthenticationManager authenticationManager) {
-    super("/*");
+    super(new AntPathRequestMatcher("/api/**"));
 
     this.headerName = headerName;
     setAuthenticationManager(authenticationManager);
@@ -51,7 +52,9 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
   }
 
   @Override
-  protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+  protected void unsuccessfulAuthentication(
+      HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+      throws IOException, ServletException {
     SecurityContextHolder.clearContext();
     super.unsuccessfulAuthentication(request, response, failed);
   }
