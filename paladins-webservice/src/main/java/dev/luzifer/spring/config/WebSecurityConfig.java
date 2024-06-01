@@ -1,6 +1,5 @@
 package dev.luzifer.spring.config;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -48,15 +44,12 @@ public class WebSecurityConfig {
         .anonymous(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(
-            apiKeyAuthFilter(authenticationManager), SecurityContextPersistenceFilter.class);
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     log.debug("API key: {}", apiKey);
     log.debug("API key header: {}", apiKeyHeader);
 
-    return new DefaultSecurityFilterChain(
-        http.getSharedObject(RequestMatcher.class), apiKeyAuthFilter(authenticationManager));
+    return new DefaultSecurityFilterChain(request -> true, apiKeyAuthFilter(authenticationManager));
   }
 
   @Bean
@@ -75,23 +68,5 @@ public class WebSecurityConfig {
       AuthenticationManagerBuilder auth,
       ApiKeyAuthenticationProvider apiKeyAuthenticationProvider) {
     auth.authenticationProvider(apiKeyAuthenticationProvider);
-  }
-
-  @Autowired private FilterChainProxy springSecurityFilterChain;
-
-  @PostConstruct
-  public void printSecurityFilters() {
-    log.debug("Security Filter Chain: ");
-    springSecurityFilterChain
-        .getFilterChains()
-        .forEach(
-            chain -> {
-              chain
-                  .getFilters()
-                  .forEach(
-                      filter -> {
-                        log.debug("Filter: " + filter.getClass().getName());
-                      });
-            });
   }
 }
