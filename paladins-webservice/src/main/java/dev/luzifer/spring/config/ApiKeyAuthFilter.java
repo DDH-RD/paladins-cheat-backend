@@ -1,12 +1,16 @@
 package dev.luzifer.spring.config;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -17,7 +21,6 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
 
   public ApiKeyAuthFilter(String headerName, AuthenticationManager authenticationManager) {
     super(new AntPathRequestMatcher("/api/**"));
-
     this.headerName = headerName;
     setAuthenticationManager(authenticationManager);
   }
@@ -34,5 +37,32 @@ public class ApiKeyAuthFilter extends AbstractAuthenticationProcessingFilter {
     }
     log.debug("Attempting to authenticate API key");
     return getAuthenticationManager().authenticate(new ApiKeyAuthenticationToken(apiKey));
+  }
+
+  @Override
+  protected void successfulAuthentication(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      FilterChain chain,
+      Authentication authResult)
+      throws IOException, ServletException {
+    SecurityContextHolder.getContext().setAuthentication(authResult);
+    chain.doFilter(request, response);
+  }
+
+  @Override
+  protected void unsuccessfulAuthentication(
+      HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+      throws IOException {
+    SecurityContextHolder.clearContext();
+    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, failed.getMessage());
+  }
+
+  @Override
+  protected boolean requiresAuthentication(
+      HttpServletRequest request, HttpServletResponse response) {
+    // Avoid re-authentication if already authenticated
+    return SecurityContextHolder.getContext().getAuthentication() == null
+        || !SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
   }
 }

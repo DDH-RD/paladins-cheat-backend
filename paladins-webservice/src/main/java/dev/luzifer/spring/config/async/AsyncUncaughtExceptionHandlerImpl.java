@@ -1,7 +1,6 @@
 package dev.luzifer.spring.config.async;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
@@ -10,10 +9,10 @@ public class AsyncUncaughtExceptionHandlerImpl implements AsyncUncaughtException
 
   @Override
   public void handleUncaughtException(Throwable throwable, Method method, Object... objects) {
-    log.error(
-        "Uncaught exception in async executed method {} with arguments {}",
-        method,
-        Arrays.toString(objects),
-        throwable);
+    log.error("Exception message - " + throwable.getMessage());
+    log.error("Method name - " + method.getName());
+    for (Object param : objects) {
+      log.error("Parameter value - " + param);
+    }
   }
 }
