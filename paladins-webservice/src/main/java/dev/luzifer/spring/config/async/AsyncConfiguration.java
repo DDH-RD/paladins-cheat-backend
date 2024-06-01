@@ -1,5 +1,6 @@
 package dev.luzifer.spring.config.async;
 
+import java.util.concurrent.Executor;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +15,17 @@ public class AsyncConfiguration implements AsyncConfigurer {
   @Bean(name = "taskExecutor")
   public ThreadPoolTaskExecutor taskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(5);
-    executor.setMaxPoolSize(10);
-    executor.setQueueCapacity(100);
+    executor.setCorePoolSize(20);
+    executor.setMaxPoolSize(50);
+    executor.setQueueCapacity(200);
     executor.setThreadNamePrefix("Async-");
     executor.initialize();
     return executor;
+  }
+
+  @Override
+  public Executor getAsyncExecutor() {
+    return taskExecutor();
   }
 
   @Override
